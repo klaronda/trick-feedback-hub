@@ -21,7 +21,7 @@ export type Database = {
           id: string
           status: string
           trick_name: string | null
-          user_id: string | null
+          user_id: string
           video_path: string
         }
         Insert: {
@@ -30,7 +30,7 @@ export type Database = {
           id?: string
           status?: string
           trick_name?: string | null
-          user_id?: string | null
+          user_id: string
           video_path: string
         }
         Update: {
@@ -39,7 +39,7 @@ export type Database = {
           id?: string
           status?: string
           trick_name?: string | null
-          user_id?: string | null
+          user_id?: string
           video_path?: string
         }
         Relationships: []

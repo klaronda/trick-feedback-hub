@@ -39,10 +39,16 @@ export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
     setIsUploading(true);
     
     try {
-      // Upload video to storage
+      // Ensure user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('You must be logged in to upload.');
+      }
+
+      // Upload video to storage (folder = user id to satisfy RLS)
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
-      const filePath = `tricks/${fileName}`;
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('videos')
@@ -52,10 +58,11 @@ export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
         throw uploadError;
       }
 
-      // Insert row into trick_attempts
+      // Insert row into trick_attempts with user_id for RLS
       const { error: insertError } = await supabase
         .from('trick_attempts')
         .insert({
+          user_id: user.id,
           trick_name: trickName.trim(),
           video_path: filePath,
           status: 'Pending'
