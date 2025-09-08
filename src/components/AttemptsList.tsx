@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Plus, VideoIcon } from "lucide-react";
+import { Eye, Plus, VideoIcon, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface TrickAttempt {
   id: string;
@@ -23,6 +24,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) 
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAttempts();
@@ -74,6 +76,23 @@ export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) 
     });
   };
 
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to logout. Please try again.",
+      });
+    } else {
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+      navigate('/auth');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
@@ -92,10 +111,16 @@ export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) 
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">My Trick Attempts</h1>
-        <Button onClick={onUploadNew} className="flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Upload New
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
+          <Button onClick={onUploadNew} className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Upload New
+          </Button>
+        </div>
       </div>
 
       {attempts.length === 0 ? (
