@@ -36,6 +36,17 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     fetchAttemptDetails();
   }, [attemptId]);
 
+  // Auto-refresh when status is pending
+  useEffect(() => {
+    if (!attempt || attempt.status.toLowerCase() !== 'pending') return;
+    
+    const interval = setInterval(() => {
+      fetchAttemptDetails();
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [attempt?.status]);
+
   const fetchAttemptDetails = async () => {
     try {
       const { data, error } = await supabase
