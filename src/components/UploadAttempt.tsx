@@ -59,22 +59,48 @@ export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
       }
 
       // Insert row into trick_attempts with user_id for RLS
-      const { error: insertError } = await supabase
+      const { data: attemptData, error: insertError } = await supabase
         .from('trick_attempts')
         .insert({
           user_id: user.id,
           trick_name: trickName.trim(),
           video_path: filePath,
           status: 'Pending'
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) {
         throw insertError;
       }
 
+      // Trigger video analysis
+      try {
+        const response = await fetch(
+          "https://ezktqnzawbemjhvnawmt.functions.supabase.co/analyze-video",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6a3Rxbnphd2JlbWpodm5hd210Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzE1NzksImV4cCI6MjA3Mjc0NzU3OX0.Qy9sKQJiGGAgVYhsPQ-Dbph11OBKV3fCtULwsUvyULA",
+            },
+            body: JSON.stringify({ attempt_id: attemptData.id }),
+          }
+        );
+
+        if (response.ok) {
+          console.log("Video analysis started successfully");
+        } else {
+          console.error("Failed to start video analysis:", response.status);
+        }
+      } catch (analysisError) {
+        console.error("Error triggering video analysis:", analysisError);
+        // Don't fail the upload if analysis fails to start
+      }
+
       toast({
         title: "Upload successful!",
-        description: "Your trick attempt has been saved."
+        description: "Your trick attempt has been saved and is being analyzed."
       });
 
       setTrickName("");
