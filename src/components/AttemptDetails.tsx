@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -26,10 +23,7 @@ interface AttemptDetailsProps {
 export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
   const [attempt, setAttempt] = useState<TrickAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdating, setIsUpdating] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string>("");
-  const [feedback, setFeedback] = useState("");
-  const [status, setStatus] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -69,8 +63,6 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
       }
 
       setAttempt(data);
-      setFeedback(data.feedback || "");
-      setStatus(data.status);
 
       // Get signed URL for private video (since bucket is private)
       const { data: urlData, error: urlError } = await supabase.storage
@@ -100,43 +92,6 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     }
   };
 
-  const handleUpdateAttempt = async () => {
-    if (!attempt) return;
-
-    setIsUpdating(true);
-    
-    try {
-      const { error } = await supabase
-        .from('trick_attempts')
-        .update({
-          feedback: feedback.trim() || null,
-          status: status
-        })
-        .eq('id', attemptId);
-
-      if (error) {
-        throw error;
-      }
-
-      toast({
-        title: "Updated successfully!",
-        description: "Attempt details have been saved."
-      });
-
-      // Refresh the attempt data
-      await fetchAttemptDetails();
-
-    } catch (error) {
-      console.error('Error updating attempt:', error);
-      toast({
-        title: "Update failed",
-        description: "Failed to save changes",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -263,43 +218,23 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
             </div>
           </div>
         ) : (
-          <>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Reviewed">Reviewed</option>
-                </select>
-              </div>
-            </div>
-
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="feedback">Feedback</Label>
-              <Textarea
-                id="feedback"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Add your coaching feedback here..."
-                rows={6}
-                className="resize-none"
-              />
+              <h3 className="text-lg font-semibold">Status</h3>
+              <Badge variant="outline" className={getStatusColor(attempt.status)}>
+                {getStatusEmoji(attempt.status)} {attempt.status}
+              </Badge>
             </div>
-
-            <Button 
-              onClick={handleUpdateAttempt}
-              disabled={isUpdating}
-              className="flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              {isUpdating ? 'Saving...' : 'Save Changes'}
-            </Button>
-          </>
+            
+            {attempt.feedback && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Feedback</h3>
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="whitespace-pre-wrap">{attempt.feedback}</p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </Card>
     </div>
