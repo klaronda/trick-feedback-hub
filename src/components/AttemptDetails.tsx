@@ -42,22 +42,40 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
         .from('trick_attempts')
         .select('*')
         .eq('id', attemptId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         throw error;
+      }
+
+      if (!data) {
+        toast({
+          title: "Attempt not found",
+          description: "This attempt no longer exists",
+          variant: "destructive"
+        });
+        return;
       }
 
       setAttempt(data);
       setFeedback(data.feedback || "");
       setStatus(data.status);
 
-      // Get public URL for video
-      const { data: urlData } = supabase.storage
+      // Get signed URL for private video (since bucket is private)
+      const { data: urlData, error: urlError } = await supabase.storage
         .from('videos')
-        .getPublicUrl(data.video_path);
+        .createSignedUrl(data.video_path, 3600); // 1 hour expiry
       
-      setVideoUrl(urlData.publicUrl);
+      if (urlError) {
+        console.error('Error getting video URL:', urlError);
+        toast({
+          title: "Video loading error",
+          description: "Unable to load video. Please try refreshing.",
+          variant: "destructive"
+        });
+      } else {
+        setVideoUrl(urlData.signedUrl);
+      }
 
     } catch (error) {
       console.error('Error fetching attempt details:', error);
@@ -193,6 +211,15 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
               src={videoUrl}
               className="w-full aspect-video"
               controls
+              preload="metadata"
+              onError={(e) => {
+                console.error('Video load error:', e);
+                toast({
+                  title: "Video playback error",
+                  description: "Unable to play video. The file may be corrupted or in an unsupported format.",
+                  variant: "destructive"
+                });
+              }}
             />
           ) : (
             <div className="w-full aspect-video flex items-center justify-center bg-muted">
