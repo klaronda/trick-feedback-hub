@@ -129,13 +129,21 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'completed':
+      case 'reviewed':
         return "bg-green-100 text-green-800 border-green-200";
-      case 'in_progress':
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case 'pending':
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    }
+  };
+
+  const getStatusEmoji = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'reviewed':
+        return "🟢";
+      case 'pending':
+      default:
+        return "🟡";
     }
   };
 
@@ -198,7 +206,7 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
           </p>
         </div>
         <Badge variant="outline" className={getStatusColor(attempt.status)}>
-          {attempt.status}
+          {getStatusEmoji(attempt.status)} {attempt.status}
         </Badge>
       </div>
 
@@ -233,42 +241,55 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
       <Card className="p-6 space-y-6">
         <h2 className="text-xl font-semibold">Analysis & Feedback</h2>
         
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <select
-              id="status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Completed">Completed</option>
-            </select>
+        {attempt.status.toLowerCase() === 'pending' ? (
+          <div className="text-center py-8 space-y-4">
+            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto" />
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">Analyzing your trick...</h3>
+              <p className="text-muted-foreground">
+                Our AI is reviewing your video. This usually takes a few minutes.
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <select
+                  id="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Reviewed">Reviewed</option>
+                </select>
+              </div>
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="feedback">Feedback</Label>
-          <Textarea
-            id="feedback"
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-            placeholder="Add your coaching feedback here..."
-            rows={6}
-            className="resize-none"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="feedback">Feedback</Label>
+              <Textarea
+                id="feedback"
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Add your coaching feedback here..."
+                rows={6}
+                className="resize-none"
+              />
+            </div>
 
-        <Button 
-          onClick={handleUpdateAttempt}
-          disabled={isUpdating}
-          className="flex items-center gap-2"
-        >
-          <Save className="w-4 h-4" />
-          {isUpdating ? 'Saving...' : 'Save Changes'}
-        </Button>
+            <Button 
+              onClick={handleUpdateAttempt}
+              disabled={isUpdating}
+              className="flex items-center gap-2"
+            >
+              <Save className="w-4 h-4" />
+              {isUpdating ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </>
+        )}
       </Card>
     </div>
   );
