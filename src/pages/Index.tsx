@@ -154,7 +154,7 @@ const Index = () => {
                       // Update local state
                       setUserPlan({ plan_name: "pro", is_subscribed: true });
                       
-                      alert("🎉 You're now Pro! Enjoy unlimited uploads!");
+                      alert("🎉 You're now on the Pro Plan!");
                     } catch (error) {
                       console.error('Upgrade error:', error);
                       alert("Upgrade failed. Please try again.");
