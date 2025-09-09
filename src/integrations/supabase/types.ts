@@ -80,7 +80,7 @@ export type Database = {
           subscribed_at: string | null
         }
         Insert: {
-          created_at: string
+          created_at?: string
           id: string
           is_active?: boolean | null
           is_subscribed?: boolean
@@ -105,7 +105,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_monthly_uploads: {
+        Row: {
+          uploads_this_month: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trick_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       get_user_plan: {
