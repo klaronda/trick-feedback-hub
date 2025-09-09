@@ -46,30 +46,35 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw new Error('You must be logged in to upload.');
       }
 
-      // STEP 1: Check how many uploads this user made this month
-      const { data: uploadsThisMonth, error } = await supabase
-        .from("user_monthly_uploads")
-        .select("uploads_this_month")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // STEP 1: Count this user's uploads in the current month
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
-      if (error) {
-        console.error("Error fetching usage", error);
+      const { count, error: countError } = await supabase
+        .from('trick_attempts')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .gte('created_at', startOfMonth.toISOString());
+
+      if (countError) {
+        console.error('Error counting uploads', countError);
         toast({
-          title: "Could not verify usage limits",
-          description: "Try again later.",
-          variant: "destructive"
+          title: 'Could not verify usage limits',
+          description: 'Try again later.',
+          variant: 'destructive'
         });
         return;
       }
 
-      // STEP 2: Block if over limit
+      // STEP 2: Block if over limit (skip for Pro)
+      const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
       const limit = 3; // Free users allowed 3 uploads/month
-      if ((uploadsThisMonth?.uploads_this_month ?? 0) >= limit) {
+      if (!isPro && (count ?? 0) >= limit) {
         toast({
-          title: "Upload limit reached",
+          title: 'Upload limit reached',
           description: "You've reached your upload limit for this month. Upgrade to Pro for more uploads.",
-          variant: "destructive"
+          variant: 'destructive'
         });
         return;
       }
