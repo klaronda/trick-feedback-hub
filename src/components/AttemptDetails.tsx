@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +16,7 @@ interface TrickAttempt {
   video_path: string;
   processed_at: string | null;
   analysis_data: any;
+  coach_notes: string | null;
 }
 
 interface AttemptDetailsProps {
@@ -26,6 +28,7 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
   const [attempt, setAttempt] = useState<TrickAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string>("");
+  const [coachNotes, setCoachNotes] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -105,6 +108,33 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     }
   };
 
+  const saveCoachNotes = async () => {
+    if (!attempt) return;
+
+    try {
+      const { error } = await supabase
+        .from('trick_attempts')
+        .update({ coach_notes: coachNotes } as any)
+        .eq('id', attemptId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Coach notes saved",
+        description: "Your notes have been saved successfully."
+      });
+
+      fetchAttemptDetails();
+    } catch (error) {
+      console.error('Coach notes save error:', error);
+      toast({
+        title: "Save failed",
+        description: "Failed to save coach notes. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const addTag = async (tag: string) => {
     if (!attempt) return;
 
@@ -163,8 +193,12 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
       setAttempt({
         ...data,
         processed_at: (data as any).processed_at || null,
-        analysis_data: (data as any).analysis_data || {}
+        analysis_data: (data as any).analysis_data || {},
+        coach_notes: (data as any).coach_notes || null
       });
+
+      // Load coach notes
+      setCoachNotes((data as any).coach_notes || "");
 
       // Get signed URL for private video (since bucket is private)
       const { data: urlData, error: urlError } = await supabase.storage
@@ -384,6 +418,19 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
                   );
                 })}
               </div>
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Coach Notes</h3>
+              <Textarea
+                value={coachNotes}
+                onChange={(e) => setCoachNotes(e.target.value)}
+                placeholder="Add your coaching notes here..."
+                className="min-h-[100px]"
+              />
+              <Button onClick={saveCoachNotes} variant="outline" size="sm">
+                Save Notes
+              </Button>
             </div>
           </div>
         )}
