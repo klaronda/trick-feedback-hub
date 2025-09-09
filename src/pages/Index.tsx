@@ -46,8 +46,9 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleUploadSuccess = () => {
-    setCurrentView('list');
+  const handleUploadSuccess = (attemptId: string) => {
+    setSelectedAttemptId(attemptId);
+    setCurrentView('details');
   };
 
   const handleViewDetails = (attemptId: string) => {

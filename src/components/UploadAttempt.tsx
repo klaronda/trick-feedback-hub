@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 interface UploadAttemptProps {
-  onUploadSuccess: () => void;
+  onUploadSuccess: (attemptId: string) => void;
 }
 
 export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
@@ -99,7 +99,7 @@ export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
       });
 
       setTrickName("");
-      onUploadSuccess();
+      onUploadSuccess(attemptData.id);
       
     } catch (error) {
       console.error('Upload error:', error);

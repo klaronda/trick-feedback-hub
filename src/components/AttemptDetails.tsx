@@ -13,6 +13,8 @@ interface TrickAttempt {
   created_at: string;
   feedback: string | null;
   video_path: string;
+  processed_at: string | null;
+  analysis_data: any;
 }
 
 interface AttemptDetailsProps {
@@ -56,6 +58,87 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     };
   }, [attemptId]);
 
+  const handleReprocess = async () => {
+    if (!attempt) return;
+
+    try {
+      // Reset status to pending
+      const { error: updateError } = await supabase
+        .from('trick_attempts')
+        .update({ 
+          status: 'Pending',
+          feedback: null,
+          processed_at: null
+        })
+        .eq('id', attemptId);
+
+      if (updateError) throw updateError;
+
+      // Trigger reanalysis
+      await fetch('https://ezktqnzawbemjhvnawmt.supabase.co/functions/v1/analyze-video', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6a3Rxbnphd2JlbWpodm5hd210Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzE1NzksImV4cCI6MjA3Mjc0NzU3OX0.Qy9sKQJiGGAgVYhsPQ-Dbph11OBKV3fCtULwsUvyULA'}`
+        },
+        body: JSON.stringify({
+          attempt_id: attempt.id,
+          video_path: attempt.video_path,
+          trick_name: attempt.trick_name
+        })
+      });
+
+      toast({
+        title: "Reprocessing started",
+        description: "Your video is being analyzed again."
+      });
+
+      // Refresh the data
+      fetchAttemptDetails();
+    } catch (error) {
+      console.error('Reprocess error:', error);
+      toast({
+        title: "Reprocess failed",
+        description: "Failed to start reprocessing. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const addTag = async (tag: string) => {
+    if (!attempt) return;
+
+    try {
+      const currentTags = (attempt.analysis_data as any)?.tags || [];
+      const newTags = currentTags.includes(tag) 
+        ? currentTags.filter((t: string) => t !== tag)
+        : [...currentTags, tag];
+
+      const updateData: any = { 
+        analysis_data: { 
+          ...(attempt.analysis_data || {}), 
+          tags: newTags 
+        }
+      };
+
+      const { error } = await supabase
+        .from('trick_attempts')
+        .update(updateData)
+        .eq('id', attemptId);
+
+      if (error) throw error;
+
+      fetchAttemptDetails();
+    } catch (error) {
+      console.error('Tag error:', error);
+      toast({
+        title: "Tag update failed",
+        description: "Failed to update tags. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const fetchAttemptDetails = async () => {
     try {
       const { data, error } = await supabase
@@ -77,7 +160,11 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
         return;
       }
 
-      setAttempt(data);
+      setAttempt({
+        ...data,
+        processed_at: (data as any).processed_at || null,
+        analysis_data: (data as any).analysis_data || {}
+      });
 
       // Get signed URL for private video (since bucket is private)
       const { data: urlData, error: urlError } = await supabase.storage
@@ -137,6 +224,23 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
       minute: '2-digit'
     });
   };
+
+  const formatReviewDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const commonTags = [
+    { emoji: '🦶', label: "Didn't pop" },
+    { emoji: '📐', label: "Off balance" },
+    { emoji: '🤷', label: "Not sure what went wrong" },
+    { emoji: '⚡', label: "Too fast" },
+    { emoji: '🐌', label: "Too slow" },
+    { emoji: '🎯', label: "Wrong timing" }
+  ];
 
   if (isLoading) {
     return (
@@ -233,22 +337,54 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">Status</h3>
-              <Badge variant="outline" className={getStatusColor(attempt.status)}>
-                {getStatusEmoji(attempt.status)} {attempt.status}
-              </Badge>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Status</h3>
+                <Badge variant="outline" className={getStatusColor(attempt.status)}>
+                  {getStatusEmoji(attempt.status)} {attempt.status}
+                </Badge>
+              </div>
+              <Button variant="outline" onClick={handleReprocess}>
+                Reprocess Video
+              </Button>
             </div>
             
             {attempt.feedback && (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <h3 className="text-lg font-semibold">Feedback</h3>
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="whitespace-pre-wrap">{attempt.feedback}</p>
+                <div className="p-4 bg-muted rounded-lg space-y-3">
+                  <p className="whitespace-pre-wrap text-base">{attempt.feedback}</p>
+                  {attempt.processed_at && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground border-t pt-3">
+                      <span>🕒</span>
+                      <span>Reviewed on {formatReviewDate(attempt.processed_at)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
+
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold">Tag Issues</h3>
+              <div className="flex flex-wrap gap-2">
+                {commonTags.map((tag) => {
+                  const isSelected = (attempt.analysis_data?.tags || []).includes(tag.label);
+                  return (
+                    <Button
+                      key={tag.label}
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => addTag(tag.label)}
+                      className="flex items-center gap-2"
+                    >
+                      <span>{tag.emoji}</span>
+                      <span>{tag.label}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         )}
       </Card>
