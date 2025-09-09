@@ -46,6 +46,31 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw new Error('You must be logged in to upload.');
       }
 
+      // ✅ Enforce plan check before upload
+      const { data: planData } = await supabase
+        .from('users')
+        .select('plan_name')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const { data: usageData } = await supabase
+        .from('user_monthly_uploads')
+        .select('uploads_this_month')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      const uploads = usageData?.uploads_this_month || 0;
+      const plan = planData?.plan_name || 'free';
+
+      if (plan === 'free' && uploads >= 3) {
+        toast({
+          title: "Upload limit reached",
+          description: "You've hit your monthly upload limit for the Free plan. Upgrade to Pro for unlimited uploads!",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Upload video to storage (folder = user id to satisfy RLS)
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
@@ -74,6 +99,16 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       if (insertError) {
         throw insertError;
       }
+
+      // ✅ Update upload count after successful upload
+      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
+      await supabase
+        .from('user_monthly_uploads')
+        .upsert({
+          user_id: user.id,
+          uploads_this_month: uploads + 1,
+          month: currentMonth
+        });
 
       // Trigger edge function for video analysis
       try {
