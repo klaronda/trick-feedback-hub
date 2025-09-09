@@ -16,31 +16,90 @@ export type Database = {
     Tables: {
       trick_attempts: {
         Row: {
+          analysis_data: Json | null
+          coach_notes: string | null
           created_at: string
           feedback: string | null
           id: string
+          model_version: string | null
+          processed_at: string | null
           status: string
+          tags: string[] | null
           trick_name: string | null
           user_id: string
           video_path: string
         }
         Insert: {
+          analysis_data?: Json | null
+          coach_notes?: string | null
           created_at?: string
           feedback?: string | null
           id?: string
+          model_version?: string | null
+          processed_at?: string | null
           status?: string
+          tags?: string[] | null
           trick_name?: string | null
           user_id: string
           video_path: string
         }
         Update: {
+          analysis_data?: Json | null
+          coach_notes?: string | null
           created_at?: string
           feedback?: string | null
           id?: string
+          model_version?: string | null
+          processed_at?: string | null
           status?: string
+          tags?: string[] | null
           trick_name?: string | null
           user_id?: string
           video_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trick_attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          is_subscribed: boolean
+          name: string | null
+          plan: string | null
+          plan_name: string | null
+          stripe_customer_id: string | null
+          subscribed_at: string | null
+        }
+        Insert: {
+          created_at: string
+          id: string
+          is_active?: boolean | null
+          is_subscribed?: boolean
+          name?: string | null
+          plan?: string | null
+          plan_name?: string | null
+          stripe_customer_id?: string | null
+          subscribed_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          is_subscribed?: boolean
+          name?: string | null
+          plan?: string | null
+          plan_name?: string | null
+          stripe_customer_id?: string | null
+          subscribed_at?: string | null
         }
         Relationships: []
       }
@@ -49,7 +108,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_plan: {
+        Args: { user_id: string }
+        Returns: {
+          is_subscribed: boolean
+          plan_name: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -64,8 +64,8 @@ const Index = () => {
 
   const fetchUserPlan = async (userId: string) => {
     try {
-      // Query using RPC or direct SQL to bypass type checking
-      const { data, error } = await supabase
+      // Query using RPC but bypass strict TS typing by casting
+      const { data, error } = await (supabase as any)
         .rpc('get_user_plan', { user_id: userId });
 
       if (error) {
@@ -75,7 +75,8 @@ const Index = () => {
         return;
       }
 
-      setUserPlan(data || { plan_name: 'free', is_subscribed: false });
+      const plan = Array.isArray(data) ? data[0] : data;
+      setUserPlan(plan || { plan_name: 'free', is_subscribed: false });
     } catch (error) {
       console.error('Error fetching user plan:', error);
       setUserPlan({ plan_name: 'free', is_subscribed: false });
