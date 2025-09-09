@@ -22,6 +22,7 @@ const Index = () => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -34,8 +35,9 @@ const Index = () => {
         
         setLoading(false);
         
-        // Redirect to auth if not logged in
-        if (!session) {
+        // Only redirect to auth if we're on the main page and not authenticated
+        if (!session && window.location.pathname === '/') {
+          console.log('Redirecting to auth - no session');
           navigate('/auth');
         }
       }
@@ -43,6 +45,7 @@ const Index = () => {
 
     // THEN check for existing session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      console.log('Initial session check:', session?.user?.id);
       setSession(session);
       setUser(session?.user ?? null);
       
@@ -53,8 +56,9 @@ const Index = () => {
       
       setLoading(false);
       
-      // Redirect to auth if not logged in
-      if (!session) {
+      // Only redirect to auth if we're on the main page and not authenticated
+      if (!session && window.location.pathname === '/') {
+        console.log('Initial redirect to auth - no session');
         navigate('/auth');
       }
     });
