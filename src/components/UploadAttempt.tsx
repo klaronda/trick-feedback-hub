@@ -46,26 +46,32 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw new Error('You must be logged in to upload.');
       }
 
-      // ✅ Enforce plan check before upload
-      const { data: planData } = await supabase
-        .from('users')
-        .select('plan_name')
-        .eq('id', user.id)
-        .maybeSingle();
+      // Plan check before upload
+      let plan = userPlan?.plan_name ?? null;
+      if (!plan) {
+        const { data: planRow } = await supabase
+          .from('users')
+          .select('plan_name')
+          .eq('id', user.id)
+          .maybeSingle();
+        plan = planRow?.plan_name ?? 'free';
+      }
 
-      const { data: usageData } = await supabase
-        .from('user_monthly_uploads')
-        .select('uploads_this_month')
+      // Count this month's uploads from trick_attempts
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+
+      const { count: monthlyCount, error: countError } = await supabase
+        .from('trick_attempts')
+        .select('id', { count: 'exact', head: true })
         .eq('user_id', user.id)
-        .maybeSingle();
+        .gte('created_at', monthStart.toISOString());
 
-      const uploads = usageData?.uploads_this_month || 0;
-      const plan = planData?.plan_name || 'free';
-
-      if (plan === 'free' && uploads >= 3) {
+      if (!countError && plan === 'free' && ((monthlyCount ?? 0) >= 3)) {
         toast({
           title: "Upload limit reached",
-          description: "You've hit your monthly upload limit for the Free plan. Upgrade to Pro for unlimited uploads!",
+          description: "Free plan allows 3 uploads per month. Upgrade to Pro for more.",
           variant: "destructive"
         });
         return;
@@ -99,16 +105,6 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       if (insertError) {
         throw insertError;
       }
-
-      // ✅ Update upload count after successful upload
-      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
-      await supabase
-        .from('user_monthly_uploads')
-        .upsert({
-          user_id: user.id,
-          uploads_this_month: uploads + 1,
-          month: currentMonth
-        });
 
       // Trigger edge function for video analysis
       try {
