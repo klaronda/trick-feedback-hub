@@ -127,7 +127,7 @@ const Index = () => {
               Skate Coach <span className="text-primary">(MVP)</span>
             </h1>
             <div className="flex items-center gap-3">
-              {/* User Avatar */}
+              {/* User Avatar & Plan */}
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
                   {user?.email?.charAt(0).toUpperCase() || 'U'}
@@ -138,6 +138,33 @@ const Index = () => {
                   </span>
                 )}
               </div>
+              
+              {/* Upgrade Button */}
+              {userPlan?.plan_name !== 'pro' && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const { error } = await supabase
+                        .from("users")
+                        .update({ plan_name: "pro", is_subscribed: true })
+                        .eq("id", user.id);
+                      
+                      if (error) throw error;
+                      
+                      // Update local state
+                      setUserPlan({ plan_name: "pro", is_subscribed: true });
+                      
+                      alert("🎉 You're now Pro! Enjoy unlimited uploads!");
+                    } catch (error) {
+                      console.error('Upgrade error:', error);
+                      alert("Upgrade failed. Please try again.");
+                    }
+                  }}
+                  className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Upgrade to Pro
+                </button>
+              )}
             </div>
           </div>
         </div>
