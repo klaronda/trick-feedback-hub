@@ -74,7 +74,24 @@ export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
         throw insertError;
       }
 
-      // Video analysis will be triggered automatically via webhook
+      // Trigger edge function for video analysis
+      try {
+        await fetch('https://ezktqnzawbemjhvnawmt.supabase.co/functions/v1/analyze-video', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6a3Rxbnphd2JlbWpodm5hd210Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzE1NzksImV4cCI6MjA3Mjc0NzU3OX0.Qy9sKQJiGGAgVYhsPQ-Dbph11OBKV3fCtULwsUvyULA'}`
+          },
+          body: JSON.stringify({
+            attempt_id: attemptData.id,
+            video_path: attemptData.video_path,
+            trick_name: attemptData.trick_name
+          })
+        });
+      } catch (apiError) {
+        console.error('Edge function call failed:', apiError);
+        // Don't throw - upload was successful, analysis failure is secondary
+      }
 
       toast({
         title: "Upload successful!",
