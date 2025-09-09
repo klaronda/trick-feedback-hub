@@ -30,16 +30,31 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     fetchAttemptDetails();
   }, [attemptId]);
 
-  // Auto-refresh when status is pending
+  // Real-time updates for attempt changes
   useEffect(() => {
-    if (!attempt || attempt.status.toLowerCase() !== 'pending') return;
-    
-    const interval = setInterval(() => {
-      fetchAttemptDetails();
-    }, 10000); // Check every 10 seconds
+    if (!attemptId) return;
 
-    return () => clearInterval(interval);
-  }, [attempt?.status]);
+    const channel = supabase
+      .channel('attempt-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'trick_attempts',
+          filter: `id=eq.${attemptId}`
+        },
+        (payload) => {
+          console.log('Attempt updated via realtime:', payload);
+          fetchAttemptDetails();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [attemptId]);
 
   const fetchAttemptDetails = async () => {
     try {
