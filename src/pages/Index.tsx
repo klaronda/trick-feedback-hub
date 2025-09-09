@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UploadAttempt } from "@/components/UploadAttempt";
 import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
+import { PlanBadge } from "@/components/ui/PlanBadge";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
@@ -13,15 +14,24 @@ const Index = () => {
   const [selectedAttemptId, setSelectedAttemptId] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+        
+        // Fetch user plan if logged in
+        if (session?.user) {
+          await fetchUserPlan(session.user.id);
+        } else {
+          setUserPlan(null);
+        }
+        
         setLoading(false);
         
         // Redirect to auth if not logged in
@@ -32,9 +42,15 @@ const Index = () => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Fetch user plan if logged in
+      if (session?.user) {
+        await fetchUserPlan(session.user.id);
+      }
+      
       setLoading(false);
       
       // Redirect to auth if not logged in
@@ -45,6 +61,26 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const fetchUserPlan = async (userId: string) => {
+    try {
+      // Query using RPC or direct SQL to bypass type checking
+      const { data, error } = await supabase
+        .rpc('get_user_plan', { user_id: userId });
+
+      if (error) {
+        console.error('Error fetching user plan:', error);
+        // Set default values if user record doesn't exist
+        setUserPlan({ plan_name: 'free', is_subscribed: false });
+        return;
+      }
+
+      setUserPlan(data || { plan_name: 'free', is_subscribed: false });
+    } catch (error) {
+      console.error('Error fetching user plan:', error);
+      setUserPlan({ plan_name: 'free', is_subscribed: false });
+    }
+  };
 
   const handleUploadSuccess = (attemptId: string) => {
     setSelectedAttemptId(attemptId);
@@ -85,22 +121,38 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold text-center">
-            Skate Coach <span className="text-primary">(MVP)</span>
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-bold">
+              Skate Coach <span className="text-primary">(MVP)</span>
+            </h1>
+            {userPlan && (
+              <div className="flex items-center gap-3">
+                <PlanBadge plan={userPlan.plan_name || 'free'} />
+                {!userPlan.is_subscribed && userPlan.plan_name === 'free' && (
+                  <div className="text-sm text-muted-foreground">
+                    Limited features • <span className="text-primary font-medium cursor-pointer hover:underline">Upgrade to Pro</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-12">
         {currentView === 'upload' && (
-          <UploadAttempt onUploadSuccess={handleUploadSuccess} />
+          <UploadAttempt 
+            onUploadSuccess={handleUploadSuccess} 
+            userPlan={userPlan}
+          />
         )}
         
         {currentView === 'list' && (
           <AttemptsList 
             onViewDetails={handleViewDetails}
             onUploadNew={handleUploadNew}
+            userPlan={userPlan}
           />
         )}
         

@@ -9,9 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 
 interface UploadAttemptProps {
   onUploadSuccess: (attemptId: string) => void;
+  userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
 }
 
-export const UploadAttempt = ({ onUploadSuccess }: UploadAttemptProps) => {
+export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [trickName, setTrickName] = useState("");

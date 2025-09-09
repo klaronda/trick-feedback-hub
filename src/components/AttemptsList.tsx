@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Eye, Plus, VideoIcon, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,9 +19,10 @@ interface TrickAttempt {
 interface AttemptsListProps {
   onViewDetails: (attemptId: string) => void;
   onUploadNew: () => void;
+  userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
 }
 
-export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) => {
+export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsListProps) => {
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -118,7 +120,10 @@ export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">My Trick Attempts</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold">My Trick Attempts</h1>
+          {userPlan && <PlanBadge plan={userPlan.plan_name || 'free'} />}
+        </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleLogout}>
             <LogOut className="w-4 h-4 mr-2" />
@@ -130,6 +135,20 @@ export const AttemptsList = ({ onViewDetails, onUploadNew }: AttemptsListProps) 
           </Button>
         </div>
       </div>
+
+      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && (
+        <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-amber-800">Free Plan - Limited Features</h3>
+              <p className="text-sm text-amber-700">Unlock unlimited uploads and advanced features</p>
+            </div>
+            <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+              Upgrade to Pro
+            </Button>
+          </div>
+        </Card>
+      )}
 
       {attempts.length === 0 ? (
         <Card className="p-12 text-center">
