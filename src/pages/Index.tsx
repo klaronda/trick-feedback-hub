@@ -126,16 +126,19 @@ const Index = () => {
             <h1 className="text-3xl font-bold">
               Skate Coach <span className="text-primary">(MVP)</span>
             </h1>
-            {userPlan && (
-              <div className="flex items-center gap-3">
-                <PlanBadge plan={userPlan.plan_name || 'free'} />
-                {!userPlan.is_subscribed && userPlan.plan_name === 'free' && (
-                  <div className="text-sm text-muted-foreground">
-                    Limited features • <span className="text-primary font-medium cursor-pointer hover:underline">Upgrade to Pro</span>
-                  </div>
+            <div className="flex items-center gap-3">
+              {/* User Avatar */}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
+                  {user?.email?.charAt(0).toUpperCase() || 'U'}
+                </div>
+                {userPlan && (
+                  <span className="text-sm text-muted-foreground">
+                    Plan: <span className="font-medium">{userPlan.plan_name === 'pro' ? 'Pro' : 'Free'}</span>
+                  </span>
                 )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </header>

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PlanBadge } from "@/components/ui/PlanBadge";
-import { Eye, Plus, VideoIcon, LogOut } from "lucide-react";
+import { Eye, Plus, VideoIcon, LogOut, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -78,12 +78,13 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).replace(',', ' •');
   };
 
   const handleLogout = async () => {
@@ -120,12 +121,9 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold">My Trick Attempts</h1>
-          {userPlan && <PlanBadge plan={userPlan.plan_name || 'free'} />}
-        </div>
+        <h1 className="text-3xl font-bold">My Trick Attempts</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleLogout}>
+          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground">
             <LogOut className="w-4 h-4 mr-2" />
             Logout
           </Button>
@@ -168,25 +166,31 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
       ) : (
         <div className="space-y-4">
           {attempts.map((attempt) => (
-            <Card key={attempt.id} className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1 space-y-2">
+            <Card key={attempt.id} className="rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between">
+                <div className="flex-1 space-y-3">
                   <div className="flex items-center gap-3">
                     <h3 className="text-lg font-semibold">
                       {attempt.trick_name || 'Unnamed Trick'}
                     </h3>
                     <Badge 
-                      variant="outline" 
-                      className={getStatusColor(attempt.status)}
+                      className="rounded-full px-3 py-1 text-sm font-medium border-0"
+                      style={{
+                        backgroundColor: attempt.status.toLowerCase() === 'reviewed' ? 'hsl(142 76% 36%)' : 'hsl(45 93% 47%)',
+                        color: 'white'
+                      }}
                     >
-                      {getStatusEmoji(attempt.status)} {attempt.status}
+                      {attempt.status}
                     </Badge>
                   </div>
                   
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <span>{formatDate(attempt.created_at)}</span>
                     {attempt.feedback && (
-                      <span>• Has feedback</span>
+                      <div className="flex items-center gap-1">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Feedback available</span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -195,9 +199,8 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
                   variant="outline" 
                   size="sm"
                   onClick={() => onViewDetails(attempt.id)}
-                  className="flex items-center gap-2"
+                  className="text-sm underline-offset-4 hover:underline"
                 >
-                  <Eye className="w-4 h-4" />
                   View Details
                 </Button>
               </div>
