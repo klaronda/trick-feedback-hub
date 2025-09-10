@@ -88,18 +88,29 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
   };
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to logout. Please try again.",
-      });
-    } else {
+    try {
+      // Clear local storage first to ensure clean logout
+      localStorage.removeItem('supabase.auth.token');
+      
+      const { error } = await supabase.auth.signOut();
+      
+      // Don't show error if it's just a session not found issue
+      if (error && error.message !== "Session from session_id claim in JWT does not exist") {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to logout. Please try again.",
+        });
+        return;
+      }
+      
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
+      navigate('/auth');
+    } catch (error) {
+      // Even if logout fails, redirect to auth page
       navigate('/auth');
     }
   };
