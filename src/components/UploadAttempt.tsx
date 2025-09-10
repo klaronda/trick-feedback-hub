@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Upload, VideoIcon } from "lucide-react";
+import { Upload, VideoIcon, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface UploadAttemptProps {
   onUploadSuccess: (attemptId: string) => void;
@@ -16,6 +17,8 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [trickName, setTrickName] = useState("");
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
   const { toast } = useToast();
 
   const handleFileSelect = async (file: File) => {
@@ -46,39 +49,6 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw new Error('You must be logged in to upload.');
       }
 
-      // STEP 1: Count this user's uploads in the current month
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-
-      const { count, error: countError } = await supabase
-        .from('trick_attempts')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .gte('created_at', startOfMonth.toISOString());
-
-      if (countError) {
-        console.error('Error counting uploads', countError);
-        toast({
-          title: 'Could not verify usage limits',
-          description: 'Try again later.',
-          variant: 'destructive'
-        });
-        return;
-      }
-
-      // STEP 2: Block if over limit (skip for Pro)
-      const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
-      const limit = 3; // Free users allowed 3 uploads/month
-      if (!isPro && (count ?? 0) >= limit) {
-        toast({
-          title: 'Upload limit reached',
-          description: "You've reached your upload limit for this month. Upgrade to Pro for more uploads.",
-          variant: 'destructive'
-        });
-        return;
-      }
-
       // Upload video to storage (folder = user id to satisfy RLS)
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
@@ -92,20 +62,32 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw uploadError;
       }
 
-      // Insert row into trick_attempts with user_id for RLS
-      const { data: attemptData, error: insertError } = await supabase
-        .from('trick_attempts')
-        .insert({
-          user_id: user.id,
-          trick_name: trickName.trim(),
-          video_path: filePath,
-          status: 'Pending'
-        })
-        .select()
-        .single();
+      // Use the RPC function to insert and enforce quota
+      const { error: insertError } = await supabase.rpc('insert_trick_attempt' as any, {
+        _user_id: user.id,
+        _video_path: filePath,
+        _trick_name: trickName.trim()
+      });
 
       if (insertError) {
+        // Check for quota exceeded error
+        if (insertError.message?.includes('QUOTA_EXCEEDED')) {
+          setShowQuotaModal(true);
+          return;
+        }
         throw insertError;
+      }
+
+      // Get the created attempt ID
+      const { data: newAttempt, error: fetchError } = await supabase
+        .from('trick_attempts')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('video_path', filePath)
+        .single();
+
+      if (fetchError) {
+        throw fetchError;
       }
 
       // Trigger edge function for video analysis
@@ -120,10 +102,10 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
             'Authorization': `Bearer ${authToken}`
           },
           body: JSON.stringify({
-            attempt_id: attemptData.id,
-            video_path: attemptData.video_path,
+            attempt_id: newAttempt.id,
+            video_path: filePath,
             user_id: user?.id,
-            trick_name: attemptData.trick_name
+            trick_name: trickName.trim()
           })
         });
       } catch (apiError) {
@@ -137,7 +119,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       });
 
       setTrickName("");
-      onUploadSuccess(attemptData.id);
+      onUploadSuccess(newAttempt.id);
       
     } catch (error) {
       console.error('Upload error:', error);
@@ -148,6 +130,47 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to upgrade",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout-session');
+      
+      if (error) {
+        console.error('Error creating checkout session:', error);
+        toast({
+          title: "Upgrade failed",
+          description: "Failed to create checkout session. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        setShowQuotaModal(false);
+      }
+    } catch (error) {
+      console.error('Upgrade error:', error);
+      toast({
+        title: "Upgrade failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
@@ -170,6 +193,31 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      {showQuotaModal && (
+        <Alert className="border-amber-200 bg-amber-50">
+          <Crown className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-800">Upload limit reached</AlertTitle>
+          <AlertDescription className="text-amber-700 space-y-3">
+            <p>Free users can upload up to 5 videos per month. Upgrade to Pro for unlimited uploads.</p>
+            <div className="flex gap-2 pt-2">
+              <Button 
+                onClick={handleUpgrade}
+                disabled={isUpgrading}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+              >
+                {isUpgrading ? "Processing..." : "Upgrade to Pro"}
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowQuotaModal(false)}
+                className="border-amber-300 text-amber-700 hover:bg-amber-100"
+              >
+                Cancel
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Upload Trick Attempt</h1>
         <p className="text-muted-foreground">
