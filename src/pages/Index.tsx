@@ -144,9 +144,15 @@ const Index = () => {
                 <button
                   onClick={async () => {
                     try {
+                      const user = (await supabase.auth.getUser()).data.user;
+                      if (!user?.email) {
+                        alert("You must be logged in to upgrade.");
+                        return;
+                      }
+
                       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                        headers: {
-                          Authorization: `Bearer ${session?.access_token}`,
+                        body: {
+                          customerEmail: user.email,
                         },
                       });
 

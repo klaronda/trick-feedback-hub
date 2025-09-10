@@ -146,10 +146,15 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
               className="bg-amber-600 hover:bg-amber-700"
               onClick={async () => {
                 try {
-                  const { data: { session } } = await supabase.auth.getSession();
+                  const user = (await supabase.auth.getUser()).data.user;
+                  if (!user?.email) {
+                    alert("You must be logged in to upgrade.");
+                    return;
+                  }
+
                   const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                    headers: {
-                      Authorization: `Bearer ${session?.access_token}`,
+                    body: {
+                      customerEmail: user.email,
                     },
                   });
 

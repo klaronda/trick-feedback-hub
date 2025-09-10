@@ -45,11 +45,19 @@ serve(async (req) => {
     }
 
     const user = userData.user;
-    console.log('Creating checkout session for user:', user.email);
+    
+    // Parse request body
+    const requestBody = await req.json();
+    const { priceId, customerEmail } = requestBody;
+    
+    // Use provided customerEmail or fall back to authenticated user's email
+    const email = customerEmail || user.email;
+    
+    console.log('Creating checkout session for user:', email);
 
     // Check if customer already exists
     const customers = await stripe.customers.list({
-      email: user.email,
+      email: email,
       limit: 1,
     });
 
@@ -59,10 +67,28 @@ serve(async (req) => {
     }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig: any = {
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
-      line_items: [
+      customer_email: customerId ? undefined : email,
+      mode: 'subscription',
+      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/`,
+      metadata: {
+        user_id: user.id,
+      },
+    };
+
+    // If priceId is provided, use it; otherwise use default product configuration
+    if (priceId) {
+      sessionConfig.line_items = [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ];
+    } else {
+      // Default configuration for Skate Coach Pro Plan
+      sessionConfig.line_items = [
         {
           price_data: {
             currency: 'usd',
@@ -77,14 +103,10 @@ serve(async (req) => {
           },
           quantity: 1,
         },
-      ],
-      mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/`,
-      metadata: {
-        user_id: user.id,
-      },
-    });
+      ];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     console.log('Checkout session created:', session.id);
 
