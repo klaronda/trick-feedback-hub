@@ -122,6 +122,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
           body: JSON.stringify({
             attempt_id: attemptData.id,
             video_path: attemptData.video_path,
+            user_id: user?.id,
             trick_name: attemptData.trick_name
           })
         });
