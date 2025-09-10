@@ -144,20 +144,20 @@ const Index = () => {
                 <button
                   onClick={async () => {
                     try {
-                      const { error } = await supabase
-                        .from("users")
-                        .update({ plan_name: "pro", is_subscribed: true })
-                        .eq("id", user.id);
-                      
+                      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                        headers: {
+                          Authorization: `Bearer ${session?.access_token}`,
+                        },
+                      });
+
                       if (error) throw error;
-                      
-                      // Update local state
-                      setUserPlan({ plan_name: "pro", is_subscribed: true });
-                      
-                      alert("🎉 You're now on the Pro Plan!");
+
+                      if (data?.url) {
+                        window.location.href = data.url;
+                      }
                     } catch (error) {
-                      console.error('Upgrade error:', error);
-                      alert("Upgrade failed. Please try again.");
+                      console.error('Checkout error:', error);
+                      alert("Failed to start checkout. Please try again.");
                     }
                   }}
                   className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"

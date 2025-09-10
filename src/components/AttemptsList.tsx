@@ -141,7 +141,29 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
               <h3 className="font-semibold text-amber-800">Free Plan - Limited Features</h3>
               <p className="text-sm text-amber-700">Unlock unlimited uploads and advanced features</p>
             </div>
-            <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+            <Button 
+              size="sm" 
+              className="bg-amber-600 hover:bg-amber-700"
+              onClick={async () => {
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                    headers: {
+                      Authorization: `Bearer ${session?.access_token}`,
+                    },
+                  });
+
+                  if (error) throw error;
+
+                  if (data?.url) {
+                    window.location.href = data.url;
+                  }
+                } catch (error) {
+                  console.error('Checkout error:', error);
+                  alert("Failed to start checkout. Please try again.");
+                }
+              }}
+            >
               Upgrade to Pro
             </Button>
           </div>
