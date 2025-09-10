@@ -156,7 +156,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
                   if (error) throw error;
 
                   if (data?.url) {
-                    window.location.href = data.url;
+                    window.open(data.url, '_blank');
                   }
                 } catch (error) {
                   console.error('Checkout error:', error);
