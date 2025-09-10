@@ -78,7 +78,7 @@ serve(async (req) => {
       },
     };
 
-    // If priceId is provided, use it; otherwise use default product configuration
+    // If priceId is provided, use it; otherwise use your specific price ID
     if (priceId) {
       sessionConfig.line_items = [
         {
@@ -87,20 +87,10 @@ serve(async (req) => {
         },
       ];
     } else {
-      // Default configuration for Skate Coach Pro Plan
+      // Use your specific price ID for Skate Coach Pro Plan
       sessionConfig.line_items = [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Skate Coach Pro Plan',
-              description: 'Unlimited video uploads and advanced coaching features',
-            },
-            unit_amount: 999, // $9.99 in cents
-            recurring: {
-              interval: 'month',
-            },
-          },
+          price: 'price_1S5qZDKctiwqkWkG2avjOG8M',
           quantity: 1,
         },
       ];
