@@ -72,7 +72,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : email,
       mode: 'subscription',
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/`,
+      cancel_url: `${req.headers.get('origin')}/cancel`,
       metadata: {
         user_id: user.id,
       },
