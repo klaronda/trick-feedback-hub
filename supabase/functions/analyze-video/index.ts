@@ -14,16 +14,21 @@ serve(async (req) => {
   }
 
   try {
-    const { attempt_id } = await req.json();
+    const { attempt_id, video_path, user_id } = await req.json();
     
-    if (!attempt_id) {
+    if (!attempt_id || !video_path) {
       return new Response(
-        JSON.stringify({ error: 'attempt_id is required' }),
+        JSON.stringify({ error: 'Missing attempt_id or video_path' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
+    }
+
+    // user_id can be optional for now
+    if (!user_id) {
+      console.warn("⚠️ No user_id provided in payload");
     }
 
     // Initialize Supabase client
