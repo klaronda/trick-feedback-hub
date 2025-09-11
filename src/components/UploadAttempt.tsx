@@ -99,9 +99,9 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       });
 
       if (insertError) {
-        // Check for quota exceeded error (robust across message/details/hint)
+        // Check for quota exceeded error (robust across message/details/hint and P0001 code)
         const errText = `${insertError.message ?? ''} ${insertError.details ?? ''} ${insertError.hint ?? ''}`;
-        if (errText.includes('QUOTA_EXCEEDED')) {
+        if (errText.includes('QUOTA_EXCEEDED') || insertError.code === 'P0001' || errText.includes('monthly upload limit reached')) {
           setShowQuotaModal(true);
           return;
         }
@@ -226,9 +226,9 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       {showQuotaModal && (
         <Alert className="border-amber-200 bg-amber-50">
           <Crown className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-800">Upload limit reached</AlertTitle>
+          <AlertTitle className="text-amber-800">Monthly upload limit reached</AlertTitle>
           <AlertDescription className="text-amber-700 space-y-3">
-            <p>Free users can upload up to 5 videos per month. Upgrade to Pro for unlimited uploads.</p>
+            <p>You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.</p>
             <div className="flex gap-2 pt-2">
               <Button 
                 onClick={handleUpgrade}
@@ -242,7 +242,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
                 onClick={() => setShowQuotaModal(false)}
                 className="border-amber-300 text-amber-700 hover:bg-amber-100"
               >
-                Cancel
+                Maybe later
               </Button>
             </div>
           </AlertDescription>
