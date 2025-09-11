@@ -5,6 +5,10 @@ import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { supabase } from "@/integrations/supabase/client";
+import { useUploadGuard } from "@/hooks/useUploadGuard";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Crown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { User, Session } from "@supabase/supabase-js";
 
 type AppView = 'list' | 'upload' | 'details';
@@ -16,7 +20,10 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
   const navigate = useNavigate();
+  const { checking, checkAndNavigate, invalidateCache } = useUploadGuard();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -94,6 +101,36 @@ const Index = () => {
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [user?.id]);
 
+  const handleUpgrade = async () => {
+    setIsUpgrading(true);
+    try {
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user?.email) {
+        alert("You must be logged in to upgrade.");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          customerEmail: user.email,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+        setShowQuotaModal(false);
+        invalidateCache(); // Clear cache when user might upgrade
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert("Failed to start checkout. Please try again.");
+    } finally {
+      setIsUpgrading(false);
+    }
+  };
+
   const handleUploadSuccess = (attemptId: string) => {
     setSelectedAttemptId(attemptId);
     setCurrentView('details');
@@ -104,8 +141,16 @@ const Index = () => {
     setCurrentView('details');
   };
 
-  const handleUploadNew = () => {
-    setCurrentView('upload');
+  const handleUploadNew = async () => {
+    if (userPlan?.plan_name === 'free') {
+      const shouldShowUpgrade = await checkAndNavigate(() => setCurrentView('upload'));
+      if (shouldShowUpgrade) {
+        setShowQuotaModal(true);
+        return;
+      }
+    } else {
+      setCurrentView('upload');
+    }
   };
 
   const handleBackToList = () => {
@@ -187,6 +232,35 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Quota Modal */}
+      {showQuotaModal && (
+        <div className="max-w-2xl mx-auto mb-6">
+          <Alert className="border-amber-200 bg-amber-50">
+            <Crown className="h-4 w-4 text-amber-600" />
+            <AlertTitle className="text-amber-800">Monthly upload limit reached</AlertTitle>
+            <AlertDescription className="text-amber-700 space-y-3">
+              <p>You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.</p>
+              <div className="flex gap-2 pt-2">
+                <Button 
+                  onClick={handleUpgrade}
+                  disabled={isUpgrading}
+                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                >
+                  {isUpgrading ? "Processing..." : "Upgrade to Pro"}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowQuotaModal(false)}
+                  className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                >
+                  Maybe later
+                </Button>
+              </div>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-12">
         {currentView === 'upload' && (
@@ -201,6 +275,7 @@ const Index = () => {
             onViewDetails={handleViewDetails}
             onUploadNew={handleUploadNew}
             userPlan={userPlan}
+            checking={checking}
           />
         )}
         

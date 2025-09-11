@@ -74,7 +74,6 @@ export type Database = {
           is_active: boolean | null
           is_subscribed: boolean
           name: string | null
-          plan: string | null
           plan_name: string | null
           stripe_customer_id: string | null
           subscribed_at: string | null
@@ -85,7 +84,6 @@ export type Database = {
           is_active?: boolean | null
           is_subscribed?: boolean
           name?: string | null
-          plan?: string | null
           plan_name?: string | null
           stripe_customer_id?: string | null
           subscribed_at?: string | null
@@ -96,7 +94,6 @@ export type Database = {
           is_active?: boolean | null
           is_subscribed?: boolean
           name?: string | null
-          plan?: string | null
           plan_name?: string | null
           stripe_customer_id?: string | null
           subscribed_at?: string | null
@@ -122,11 +119,28 @@ export type Database = {
       }
     }
     Functions: {
+      call_reset_quotas: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_monthly_trick_attempt_count: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       get_user_plan: {
         Args: { user_id: string }
         Returns: {
           is_subscribed: boolean
           plan_name: string
+        }[]
+      }
+      insert_trick_attempt: {
+        Args:
+          | { p_metadata?: Json; p_user_id: string; p_video_url: string }
+          | { p_trick_id: number; p_video_url: string }
+          | { trick_name: string; user_id: string; video_path: string }
+        Returns: {
+          id: number
         }[]
       }
     }

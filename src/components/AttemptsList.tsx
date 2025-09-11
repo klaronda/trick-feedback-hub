@@ -20,9 +20,10 @@ interface AttemptsListProps {
   onViewDetails: (attemptId: string) => void;
   onUploadNew: () => void;
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
+  checking?: boolean;
 }
 
-export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsListProps) => {
+export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }: AttemptsListProps) => {
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
@@ -138,9 +139,13 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
             <LogOut className="w-4 h-4 mr-2" />
             Logout
           </Button>
-          <Button onClick={onUploadNew} className="flex items-center gap-2">
+          <Button 
+            onClick={onUploadNew} 
+            disabled={checking}
+            className="flex items-center gap-2"
+          >
             <Plus className="w-4 h-4" />
-            Upload New
+            {checking ? "Checking..." : "Upload New"}
           </Button>
         </div>
       </div>
@@ -198,7 +203,9 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan }: AttemptsL
                 Upload your first trick attempt to get started
               </p>
             </div>
-            <Button onClick={onUploadNew}>Upload First Attempt</Button>
+            <Button onClick={onUploadNew} disabled={checking}>
+              {checking ? "Checking..." : "Upload First Attempt"}
+            </Button>
           </div>
         </Card>
       ) : (
