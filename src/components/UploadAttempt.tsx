@@ -40,14 +40,43 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       return;
     }
 
+    // Get current user and pre-check monthly quota before uploading large files
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "You must be logged in to upload.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // If on Free plan, check current month's upload count to gate early
+    try {
+      if (userPlan?.plan_name === 'free') {
+        const now = new Date();
+        const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const { count, error: countError } = await supabase
+          .from('trick_attempts')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .gte('created_at', firstOfMonth.toISOString())
+          .lt('created_at', nextMonth.toISOString());
+
+        if (!countError && (count ?? 0) >= 5) {
+          setShowQuotaModal(true);
+          return;
+        }
+      }
+    } catch (e) {
+      // If quota pre-check fails for any reason, proceed to rely on RPC enforcement below
+      console.warn('Quota pre-check failed, falling back to RPC enforcement', e);
+    }
+
     setIsUploading(true);
     
     try {
-      // Ensure user is authenticated
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('You must be logged in to upload.');
-      }
 
       // Upload video to storage (folder = user id to satisfy RLS)
       const fileExt = file.name.split('.').pop();
@@ -70,8 +99,9 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       });
 
       if (insertError) {
-        // Check for quota exceeded error
-        if (insertError.message?.includes('QUOTA_EXCEEDED')) {
+        // Check for quota exceeded error (robust across message/details/hint)
+        const errText = `${insertError.message ?? ''} ${insertError.details ?? ''} ${insertError.hint ?? ''}`;
+        if (errText.includes('QUOTA_EXCEEDED')) {
           setShowQuotaModal(true);
           return;
         }

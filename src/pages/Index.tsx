@@ -83,6 +83,17 @@ const Index = () => {
     }
   }, [user?.id]);
 
+  // Refresh plan when returning from checkout tab
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && user?.id) {
+        fetchUserPlan(user.id);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [user?.id]);
+
   const handleUploadSuccess = (attemptId: string) => {
     setSelectedAttemptId(attemptId);
     setCurrentView('details');
