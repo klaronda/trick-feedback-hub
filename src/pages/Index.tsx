@@ -4,6 +4,7 @@ import { UploadAttempt } from "@/components/UploadAttempt";
 import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
 import { PlanBadge } from "@/components/ui/PlanBadge";
+import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useUploadGuard } from "@/hooks/useUploadGuard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -22,6 +23,8 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isNewUser, setIsNewUser] = useState(false);
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache } = useUploadGuard();
 
@@ -61,21 +64,31 @@ const Index = () => {
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('plan_name, is_subscribed')
+        .select('plan_name, is_subscribed, onboarding_completed')
         .eq('id', userId)
         .single();
 
       if (error) {
         console.error('Error fetching user plan:', error);
-        // Set default values if user record doesn't exist
+        // Set default values if user record doesn't exist - this means new user
         setUserPlan({ plan_name: 'free', is_subscribed: false });
+        setIsNewUser(true);
+        setShowOnboarding(true);
         return;
       }
 
       setUserPlan(data || { plan_name: 'free', is_subscribed: false });
+      
+      // Check if this is a new user who hasn't completed onboarding
+      if (!data?.onboarding_completed) {
+        setIsNewUser(true);
+        setShowOnboarding(true);
+      }
     } catch (error) {
       console.error('Error fetching user plan:', error);
       setUserPlan({ plan_name: 'free', is_subscribed: false });
+      setIsNewUser(true);
+      setShowOnboarding(true);
     }
   };
 
@@ -158,6 +171,26 @@ const Index = () => {
     setSelectedAttemptId("");
   };
 
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    
+    // Mark onboarding as completed in the database
+    if (user?.id) {
+      try {
+        await supabase
+          .from('users')
+          .upsert({ 
+            id: user.id, 
+            onboarding_completed: true,
+            plan_name: 'free',
+            is_subscribed: false
+          });
+      } catch (error) {
+        console.error('Error updating onboarding status:', error);
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -171,6 +204,11 @@ const Index = () => {
 
   if (!user) {
     return null; // Will redirect to auth
+  }
+
+  // Show onboarding for new users
+  if (showOnboarding) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
   }
 
   return (
