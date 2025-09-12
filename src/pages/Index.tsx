@@ -298,6 +298,7 @@ const Index = () => {
           <AttemptDetails 
             attemptId={selectedAttemptId}
             onBack={handleBackToList}
+            userPlan={userPlan}
           />
         )}
       </main>

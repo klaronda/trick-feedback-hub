@@ -22,14 +22,18 @@ interface TrickAttempt {
 interface AttemptDetailsProps {
   attemptId: string;
   onBack: () => void;
+  userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
 }
 
-export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
+export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsProps) => {
   const [attempt, setAttempt] = useState<TrickAttempt | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [coachNotes, setCoachNotes] = useState<string>("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isSendingCoachMessage, setIsSendingCoachMessage] = useState(false);
+  const [coachMessages, setCoachMessages] = useState<Array<{text: string, timestamp: Date}>>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -109,30 +113,49 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     }
   };
 
-  const saveCoachNotes = async () => {
-    if (!attempt) return;
-
-    try {
-      const { error } = await supabase
-        .from('trick_attempts')
-        .update({ coach_notes: coachNotes } as any)
-        .eq('id', attemptId);
-
-      if (error) throw error;
-
+  const sendCoachMessage = async () => {
+    if (!attempt || !coachNotes.trim() || selectedTags.length === 0) {
       toast({
-        title: "Coach notes saved",
-        description: "Your notes have been saved successfully."
-      });
-
-      fetchAttemptDetails();
-    } catch (error) {
-      console.error('Coach notes save error:', error);
-      toast({
-        title: "Save failed",
-        description: "Failed to save coach notes. Please try again.",
+        title: "Missing information",
+        description: "Please select at least one improvement area and enter a question.",
         variant: "destructive"
       });
+      return;
+    }
+
+    setIsSendingCoachMessage(true);
+    try {
+      // Add user message to the conversation
+      const userMessage = { text: coachNotes, timestamp: new Date() };
+      setCoachMessages(prev => [...prev, userMessage]);
+      
+      // TODO: Call the coach edge function here
+      // For now, simulate a coach response
+      setTimeout(() => {
+        const coachResponse = { 
+          text: "Thanks for your question! Based on your selected areas for improvement, here are some tips...", 
+          timestamp: new Date() 
+        };
+        setCoachMessages(prev => [...prev, coachResponse]);
+        setIsSendingCoachMessage(false);
+      }, 2000);
+
+      // Clear the input
+      setCoachNotes("");
+
+      toast({
+        title: "Message sent",
+        description: "Your question has been sent to the coach."
+      });
+
+    } catch (error) {
+      console.error('Coach message send error:', error);
+      toast({
+        title: "Send failed", 
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+      setIsSendingCoachMessage(false);
     }
   };
 
@@ -168,38 +191,12 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     }
   };
 
-  const addTag = async (tag: string) => {
-    if (!attempt) return;
-
-    try {
-      const currentTags = (attempt.analysis_data as any)?.tags || [];
-      const newTags = currentTags.includes(tag) 
-        ? currentTags.filter((t: string) => t !== tag)
-        : [...currentTags, tag];
-
-      const updateData: any = { 
-        analysis_data: { 
-          ...(attempt.analysis_data || {}), 
-          tags: newTags 
-        }
-      };
-
-      const { error } = await supabase
-        .from('trick_attempts')
-        .update(updateData)
-        .eq('id', attemptId);
-
-      if (error) throw error;
-
-      fetchAttemptDetails();
-    } catch (error) {
-      console.error('Tag error:', error);
-      toast({
-        title: "Tag update failed",
-        description: "Failed to update tags. Please try again.",
-        variant: "destructive"
-      });
-    }
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
   };
 
   const fetchAttemptDetails = async () => {
@@ -300,14 +297,19 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
     });
   };
 
-  const commonTags = [
-    { emoji: '🦶', label: "Didn't pop" },
-    { emoji: '📐', label: "Off balance" },
-    { emoji: '🤷', label: "Not sure what went wrong" },
-    { emoji: '⚡', label: "Too fast" },
-    { emoji: '🐌', label: "Too slow" },
-    { emoji: '🎯', label: "Wrong timing" }
+  const improvementTags = [
+    { icon: '💥', label: "Pop" },
+    { icon: '⚖️', label: "Balance" },
+    { icon: '👣', label: "Foot Positioning" },
+    { icon: '🦵', label: "Foot Motion" },
+    { icon: '💪', label: "Confidence" },
+    { icon: '🏒', label: "Shoulders" },
+    { icon: '😌', label: "Comfort" },
+    { icon: '🏃', label: "Body Motion" },
+    { icon: '🤷', label: "Not Sure" }
   ];
+
+  const isPro = userPlan?.plan_name === 'pro';
 
   if (isLoading) {
     return (
@@ -443,39 +445,117 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
               </div>
             )}
 
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Tag Issues</h3>
-              <div className="flex flex-wrap gap-2">
-                {commonTags.map((tag) => {
-                  const isSelected = (attempt.analysis_data?.tags || []).includes(tag.label);
-                  return (
-                    <Button
-                      key={tag.label}
-                      variant={isSelected ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => addTag(tag.label)}
-                      className="flex items-center gap-2"
-                    >
-                      <span>{tag.emoji}</span>
-                      <span>{tag.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
+            {isPro ? (
+              <div className="space-y-6">
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold">How do you want to improve?</h3>
+                  <p className="text-muted-foreground">Select one or more to chat with a coach.</p>
+                  <div className="flex flex-wrap gap-2">
+                    {improvementTags.map((tag) => {
+                      const isSelected = selectedTags.includes(tag.label);
+                      return (
+                        <Button
+                          key={tag.label}
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => toggleTag(tag.label)}
+                          className="flex items-center gap-2"
+                        >
+                          <span>{tag.icon}</span>
+                          <span>{tag.label}</span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold">Coach Notes</h3>
-              <Textarea
-                value={coachNotes}
-                onChange={(e) => setCoachNotes(e.target.value)}
-                placeholder="Add your coaching notes here..."
-                className="min-h-[100px]"
-              />
-              <Button onClick={saveCoachNotes} variant="outline" size="sm">
-                Save Notes
-              </Button>
-            </div>
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold">Contact Coach</h3>
+                  
+                  {coachMessages.length > 0 && (
+                    <div className="space-y-3 mb-4">
+                      {coachMessages.map((message, index) => (
+                        <div 
+                          key={index}
+                          className={`p-3 rounded-lg ${
+                            index % 2 === 0 
+                              ? 'bg-primary/10 ml-0 mr-8' // User messages
+                              : 'bg-muted ml-8 mr-0'      // Coach messages
+                          }`}
+                        >
+                          <p className="text-sm">{message.text}</p>
+                          <span className="text-xs text-muted-foreground">
+                            {message.timestamp.toLocaleTimeString()}
+                          </span>
+                        </div>
+                      ))}
+                      {isSendingCoachMessage && (
+                        <div className="p-3 rounded-lg bg-muted ml-8 mr-0">
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full" />
+                            <p className="text-sm">Coach is typing...</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <Textarea
+                    value={coachNotes}
+                    onChange={(e) => setCoachNotes(e.target.value)}
+                    placeholder={coachMessages.length > 0 ? "Asking another question..." : "Ask the coach a question..."}
+                    className="min-h-[100px]"
+                    disabled={selectedTags.length === 0}
+                  />
+                  <Button 
+                    onClick={sendCoachMessage} 
+                    variant="outline" 
+                    size="sm"
+                    disabled={!coachNotes.trim() || selectedTags.length === 0 || isSendingCoachMessage}
+                  >
+                    {isSendingCoachMessage ? "Sending..." : "Send"}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="p-4 bg-muted/50 rounded-lg border border-dashed">
+                  <h3 className="text-lg font-semibold mb-2">Want to ask a coach a question?</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Add a plan for just $5/month and get answers to improve your skating.
+                  </p>
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        const user = (await supabase.auth.getUser()).data.user;
+                        if (!user?.email) {
+                          alert("You must be logged in to upgrade.");
+                          return;
+                        }
+
+                        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                          body: {
+                            customerEmail: user.email,
+                          },
+                        });
+
+                        if (error) throw error;
+
+                        if (data?.url) {
+                          window.open(data.url, '_blank');
+                        }
+                      } catch (error) {
+                        console.error('Checkout error:', error);
+                        alert("Failed to start checkout. Please try again.");
+                      }
+                    }}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Go Pro
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Card>
