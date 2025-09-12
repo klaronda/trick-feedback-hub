@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_reports: {
+        Row: {
+          created_at: string
+          id: number
+          metrics: Json
+          period_end: string | null
+          period_start: string | null
+          run_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          metrics: Json
+          period_end?: string | null
+          period_start?: string | null
+          run_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          metrics?: Json
+          period_end?: string | null
+          period_start?: string | null
+          run_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -136,6 +163,39 @@ export type Database = {
           plan_name?: string | null
           stripe_customer_id?: string | null
           subscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      video_ai_responses: {
+        Row: {
+          ai_response: string
+          created_at: string
+          id: number
+          metadata: Json | null
+          tags: string[]
+          user_id: string
+          user_prompt: string
+          video_id: number
+        }
+        Insert: {
+          ai_response: string
+          created_at?: string
+          id?: never
+          metadata?: Json | null
+          tags: string[]
+          user_id: string
+          user_prompt: string
+          video_id: number
+        }
+        Update: {
+          ai_response?: string
+          created_at?: string
+          id?: never
+          metadata?: Json | null
+          tags?: string[]
+          user_id?: string
+          user_prompt?: string
+          video_id?: number
         }
         Relationships: []
       }

@@ -310,9 +310,6 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   ];
 
   const isPro = userPlan?.plan_name === 'pro';
-  
-  console.log('AttemptDetails - userPlan:', userPlan);
-  console.log('AttemptDetails - isPro:', isPro);
 
   if (isLoading) {
     return (
