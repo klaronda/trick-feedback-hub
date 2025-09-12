@@ -30,6 +30,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -205,43 +206,53 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
         </Alert>
       )}
 
-      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && (
+      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && !bannerDismissed && (
         <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-amber-800">Free Plan - Limited Features</h3>
               <p className="text-sm text-amber-700">Unlock unlimited uploads and advanced features</p>
             </div>
-            <Button 
-              size="sm" 
-              className="bg-amber-600 hover:bg-amber-700"
-              onClick={async () => {
-                try {
-                  const user = (await supabase.auth.getUser()).data.user;
-                  if (!user?.email) {
-                    alert("You must be logged in to upgrade.");
-                    return;
+            <div className="flex items-center gap-2">
+              <Button 
+                size="sm" 
+                className="bg-amber-600 hover:bg-amber-700"
+                onClick={async () => {
+                  try {
+                    const user = (await supabase.auth.getUser()).data.user;
+                    if (!user?.email) {
+                      alert("You must be logged in to upgrade.");
+                      return;
+                    }
+
+                    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                      body: {
+                        customerEmail: user.email,
+                      },
+                    });
+
+                    if (error) throw error;
+
+                    if (data?.url) {
+                      window.open(data.url, '_blank');
+                    }
+                  } catch (error) {
+                    console.error('Checkout error:', error);
+                    alert("Failed to start checkout. Please try again.");
                   }
-
-                  const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                    body: {
-                      customerEmail: user.email,
-                    },
-                  });
-
-                  if (error) throw error;
-
-                  if (data?.url) {
-                    window.open(data.url, '_blank');
-                  }
-                } catch (error) {
-                  console.error('Checkout error:', error);
-                  alert("Failed to start checkout. Please try again.");
-                }
-              }}
-            >
-              Upgrade to Pro
-            </Button>
+                }}
+              >
+                Upgrade to Pro
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setBannerDismissed(true)}
+                className="text-amber-600 hover:text-amber-700 hover:bg-amber-100"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </Card>
       )}
