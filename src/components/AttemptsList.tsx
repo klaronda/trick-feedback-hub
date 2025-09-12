@@ -30,7 +30,9 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useState(() => {
+    return localStorage.getItem('freePlanBannerDismissed') === 'true';
+  });
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -242,12 +244,15 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                   }
                 }}
               >
-                Upgrade to Pro
+                Go Pro
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setBannerDismissed(true)}
+                onClick={() => {
+                  setBannerDismissed(true);
+                  localStorage.setItem('freePlanBannerDismissed', 'true');
+                }}
                 className="text-amber-600 hover:text-amber-700 hover:bg-amber-100"
               >
                 <X className="w-4 h-4" />

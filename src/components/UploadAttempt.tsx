@@ -229,7 +229,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
                 disabled={isUpgrading}
                 className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
               >
-                {isUpgrading ? "Processing..." : "Upgrade to Pro"}
+                {isUpgrading ? "Processing..." : "Go Pro"}
               </Button>
               <Button 
                 variant="outline" 

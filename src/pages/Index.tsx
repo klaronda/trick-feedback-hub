@@ -254,7 +254,7 @@ const Index = () => {
                   }}
                   className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                 >
-                  Upgrade to Pro
+                  Go Pro
                 </button>
               )}
             </div>
@@ -276,7 +276,7 @@ const Index = () => {
                   disabled={isUpgrading}
                   className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
                 >
-                  {isUpgrading ? "Processing..." : "Upgrade to Pro"}
+                  {isUpgrading ? "Processing..." : "Go Pro"}
                 </Button>
                 <Button 
                   variant="outline" 
