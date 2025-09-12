@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +29,7 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [videoUrl, setVideoUrl] = useState<string>("");
   const [coachNotes, setCoachNotes] = useState<string>("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -132,6 +133,38 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
         description: "Failed to save coach notes. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirm('Are you sure you want to delete this attempt? This action cannot be undone.')) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('trick_attempts')
+        .delete()
+        .eq('id', attemptId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Attempt deleted",
+        description: "The attempt has been removed successfully."
+      });
+
+      onBack();
+    } catch (error) {
+      console.error('Error deleting attempt:', error);
+      toast({
+        title: "Delete failed",
+        description: "Failed to delete the attempt. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -324,9 +357,31 @@ export const AttemptDetails = ({ attemptId, onBack }: AttemptDetailsProps) => {
             Uploaded {formatDate(attempt.created_at)}
           </p>
         </div>
-        <Badge variant="outline" className={getStatusColor(attempt.status)}>
-          {getStatusEmoji(attempt.status)} {attempt.status}
-        </Badge>
+        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className={getStatusColor(attempt.status)}>
+            {getStatusEmoji(attempt.status)} {attempt.status}
+          </Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Video Player */}

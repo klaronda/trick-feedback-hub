@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PlanBadge } from "@/components/ui/PlanBadge";
-import { Eye, Plus, VideoIcon, LogOut, MessageCircle } from "lucide-react";
+import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface TrickAttempt {
   id: string;
@@ -21,11 +22,14 @@ interface AttemptsListProps {
   onUploadNew: () => void;
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
   checking?: boolean;
+  uploadBlocked?: boolean;
+  onShowUpgrade?: () => void;
 }
 
-export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }: AttemptsListProps) => {
+export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, uploadBlocked, onShowUpgrade }: AttemptsListProps) => {
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -88,6 +92,39 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }:
     }).replace(',', ' •');
   };
 
+  const handleDelete = async (attemptId: string) => {
+    if (!confirm('Are you sure you want to delete this attempt? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeletingId(attemptId);
+    try {
+      const { error } = await supabase
+        .from('trick_attempts')
+        .delete()
+        .eq('id', attemptId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Attempt deleted",
+        description: "The attempt has been removed successfully."
+      });
+
+      // Refresh the list
+      fetchAttempts();
+    } catch (error) {
+      console.error('Error deleting attempt:', error);
+      toast({
+        title: "Delete failed",
+        description: "Failed to delete the attempt. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       // Clear local storage first to ensure clean logout
@@ -141,7 +178,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }:
           </Button>
           <Button 
             onClick={onUploadNew} 
-            disabled={checking}
+            disabled={checking || uploadBlocked}
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
@@ -150,7 +187,25 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }:
         </div>
       </div>
 
-      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && (
+      {uploadBlocked && userPlan?.plan_name === 'free' && (
+        <Alert className="border-amber-200 bg-amber-50">
+          <Crown className="h-4 w-4 text-amber-600" />
+          <AlertTitle className="text-amber-800">You've reached your upload max this month.</AlertTitle>
+          <AlertDescription className="text-amber-700 space-y-3">
+            <p>It will reset again next month. Add a subscription for just $5/month and upload as many as you want.</p>
+            <div className="flex gap-2 pt-2">
+              <Button 
+                onClick={onShowUpgrade}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+              >
+                Go Pro
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && (
         <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
           <div className="flex items-center justify-between">
             <div>
@@ -203,7 +258,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }:
                 Upload your first trick attempt to get started
               </p>
             </div>
-            <Button onClick={onUploadNew} disabled={checking}>
+            <Button onClick={onUploadNew} disabled={checking || uploadBlocked}>
               {checking ? "Checking..." : "Upload First Attempt"}
             </Button>
           </div>
@@ -240,19 +295,35 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking }:
                   </div>
                 </div>
 
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => onViewDetails(attempt.id)}
-                  className="text-sm underline-offset-4 hover:underline"
-                >
-                  View Details
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onViewDetails(attempt.id)}
+                    className="text-sm underline-offset-4 hover:underline"
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(attempt.id)}
+                    disabled={deletingId === attempt.id}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}
         </div>
       )}
+      
+      {/* Disclaimer */}
+      <div className="text-center text-sm text-muted-foreground mt-8">
+        Your videos are stored in the cloud for up to 180 days.
+      </div>
     </div>
   );
 };

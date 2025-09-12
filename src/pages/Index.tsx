@@ -26,7 +26,7 @@ const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
   const navigate = useNavigate();
-  const { checking, checkAndNavigate, invalidateCache } = useUploadGuard();
+  const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -306,6 +306,8 @@ const Index = () => {
             onUploadNew={handleUploadNew}
             userPlan={userPlan}
             checking={checking}
+            uploadBlocked={exhausted}
+            onShowUpgrade={handleUpgrade}
           />
         )}
         

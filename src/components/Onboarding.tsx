@@ -126,6 +126,13 @@ const Onboarding = ({ onComplete }: OnboardingProps) => {
               {currentScreen.body}
             </p>
 
+            {/* Disclaimer for upgrade screen */}
+            {currentStep === 2 && (
+              <p className="text-xs text-muted-foreground text-center mb-4">
+                Your videos are stored in the cloud for up to 180 days.
+              </p>
+            )}
+
             {/* Buttons */}
             <div className="flex flex-col gap-3">
               <Button
