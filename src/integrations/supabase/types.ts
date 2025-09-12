@@ -14,16 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          created_at: string | null
+          free_uploads_exhausted: boolean | null
+          id: string
+          is_subscribed: boolean | null
+          plan_name: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          free_uploads_exhausted?: boolean | null
+          id?: string
+          is_subscribed?: boolean | null
+          plan_name?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          free_uploads_exhausted?: boolean | null
+          id?: string
+          is_subscribed?: boolean | null
+          plan_name?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       trick_attempts: {
         Row: {
           analysis_data: Json | null
           coach_notes: string | null
           created_at: string
+          deleted_at: string | null
           feedback: string | null
           id: string
           model_version: string | null
           processed_at: string | null
           status: string
+          storage_path: string | null
           tags: string[] | null
           trick_name: string | null
           user_id: string
@@ -33,11 +65,13 @@ export type Database = {
           analysis_data?: Json | null
           coach_notes?: string | null
           created_at?: string
+          deleted_at?: string | null
           feedback?: string | null
           id?: string
           model_version?: string | null
           processed_at?: string | null
           status?: string
+          storage_path?: string | null
           tags?: string[] | null
           trick_name?: string | null
           user_id: string
@@ -47,11 +81,13 @@ export type Database = {
           analysis_data?: Json | null
           coach_notes?: string | null
           created_at?: string
+          deleted_at?: string | null
           feedback?: string | null
           id?: string
           model_version?: string | null
           processed_at?: string | null
           status?: string
+          storage_path?: string | null
           tags?: string[] | null
           trick_name?: string | null
           user_id?: string
@@ -123,6 +159,10 @@ export type Database = {
     }
     Functions: {
       call_reset_quotas: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      delete_expired_trick_attempts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

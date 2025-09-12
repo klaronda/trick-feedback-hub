@@ -92,10 +92,10 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       }
 
       // Use the RPC function to insert and enforce quota
-      const { error: insertError } = await supabase.rpc('insert_trick_attempt' as any, {
-        _user_id: user.id,
-        _video_path: filePath,
-        _trick_name: trickName.trim()
+      const { data: insertResult, error: insertError } = await supabase.rpc('insert_trick_attempt', {
+        user_id: user.id,
+        video_path: filePath,
+        trick_name: trickName.trim()
       });
 
       if (insertError) {
@@ -108,16 +108,10 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         throw insertError;
       }
 
-      // Get the created attempt ID
-      const { data: newAttempt, error: fetchError } = await supabase
-        .from('trick_attempts')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('video_path', filePath)
-        .single();
-
-      if (fetchError) {
-        throw fetchError;
+      // Get the created attempt ID from the RPC result
+      const newAttempt = insertResult?.[0];
+      if (!newAttempt?.id) {
+        throw new Error('Failed to get attempt ID from insert');
       }
 
       // Trigger edge function for video analysis
@@ -149,7 +143,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       });
 
       setTrickName("");
-      onUploadSuccess(newAttempt.id);
+      onUploadSuccess(String(newAttempt.id));
       
     } catch (error) {
       console.error('Upload error:', error);
