@@ -155,15 +155,7 @@ const Index = () => {
   };
 
   const handleUploadNew = async () => {
-    if (userPlan?.plan_name === 'free') {
-      const shouldShowUpgrade = await checkAndNavigate(() => setCurrentView('upload'));
-      if (shouldShowUpgrade) {
-        setShowQuotaModal(true);
-        return;
-      }
-    } else {
-      setCurrentView('upload');
-    }
+    checkAndNavigate(() => setCurrentView('upload'));
   };
 
   const handleBackToList = () => {

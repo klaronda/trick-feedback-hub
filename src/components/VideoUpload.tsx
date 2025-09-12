@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Upload, VideoIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUploadGuard } from "@/hooks/useUploadGuard";
 
 interface VideoUploadProps {
   onUploadSuccess: (videoPath: string, file: File) => void;
@@ -11,6 +12,7 @@ interface VideoUploadProps {
 
 export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const { handleServerInsertError } = useUploadGuard();
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
@@ -45,13 +47,20 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
         title: "Video uploaded!",
         description: "Processing your trick attempt..."
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Handle server rejection and map to upgrade UI
+      const { handleServerInsertError } = useUploadGuard();
+      const handled = handleServerInsertError(error);
+      
+      if (!handled) {
+        toast({
+          title: "Upload failed",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsUploading(false);
     }

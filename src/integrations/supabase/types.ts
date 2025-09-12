@@ -130,6 +130,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      get_upload_status_for_current_user: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          free_uploads_exhausted: boolean
+          monthly_count: number
+        }[]
+      }
       get_user_plan: {
         Args: { user_id: string }
         Returns: {
