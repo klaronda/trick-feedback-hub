@@ -103,13 +103,14 @@ export function useUploadGuard() {
     try {
       // Quick guard using local flag (most up-to-date via realtime)
       if (exhausted || monthlyCount >= MAX_FREE_UPLOADS) {
-        showUpgradeModal();
-        return;
+        // Return false to indicate upload was blocked
+        return false;
       }
 
       // Not exhausted: navigate to upload screen
       // Navigate first for faster UX; actual insert is still protected server-side
       navigateToUpload();
+      return true;
     } catch (err: any) {
       console.error('Upload pre-check failed', err);
 
@@ -122,7 +123,9 @@ export function useUploadGuard() {
           description: 'Could not verify uploads. You can try uploading but the server will enforce limits.',
         });
         navigateToUpload();
+        return true;
       }
+      return false;
     } finally {
       setChecking(false);
     }

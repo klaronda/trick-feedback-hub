@@ -4,6 +4,7 @@ import { UploadAttempt } from "@/components/UploadAttempt";
 import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
 import { PlanBadge } from "@/components/ui/PlanBadge";
+import { UploadLimitModal } from "@/components/UploadLimitModal";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useUploadGuard } from "@/hooks/useUploadGuard";
@@ -21,7 +22,7 @@ const Index = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showQuotaModal, setShowQuotaModal] = useState(false);
+  const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
@@ -133,7 +134,7 @@ const Index = () => {
 
       if (data?.url) {
         window.open(data.url, '_blank');
-        setShowQuotaModal(false);
+        setShowUploadLimitModal(false);
         invalidateCache(); // Clear cache when user might upgrade
       }
     } catch (error) {
@@ -155,7 +156,10 @@ const Index = () => {
   };
 
   const handleUploadNew = async () => {
-    checkAndNavigate(() => setCurrentView('upload'));
+    const canNavigate = await checkAndNavigate(() => setCurrentView('upload'));
+    if (!canNavigate) {
+      setShowUploadLimitModal(true);
+    }
   };
 
   const handleBackToList = () => {
@@ -262,34 +266,13 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Quota Modal */}
-      {showQuotaModal && (
-        <div className="max-w-2xl mx-auto mb-6">
-          <Alert className="border-amber-200 bg-amber-50">
-            <Crown className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800">Monthly upload limit reached</AlertTitle>
-            <AlertDescription className="text-amber-700 space-y-3">
-              <p>You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.</p>
-              <div className="flex gap-2 pt-2">
-                <Button 
-                  onClick={handleUpgrade}
-                  disabled={isUpgrading}
-                  className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                >
-                  {isUpgrading ? "Processing..." : "Go Pro"}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowQuotaModal(false)}
-                  className="border-amber-300 text-amber-700 hover:bg-amber-100"
-                >
-                  Maybe later
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-        </div>
-      )}
+      {/* Upload Limit Modal */}
+      <UploadLimitModal 
+        isOpen={showUploadLimitModal}
+        onClose={() => setShowUploadLimitModal(false)}
+        onUpgrade={handleUpgrade}
+        isUpgrading={isUpgrading}
+      />
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-12">
@@ -306,8 +289,8 @@ const Index = () => {
             onUploadNew={handleUploadNew}
             userPlan={userPlan}
             checking={checking}
-            uploadBlocked={exhausted}
-            onShowUpgrade={handleUpgrade}
+            uploadBlocked={false}
+            onShowUpgrade={() => setShowUploadLimitModal(true)}
           />
         )}
         

@@ -181,7 +181,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
           </Button>
           <Button 
             onClick={onUploadNew} 
-            disabled={checking || uploadBlocked}
+            disabled={checking}
             className="flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
@@ -274,7 +274,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                 Upload your first trick attempt to get started
               </p>
             </div>
-            <Button onClick={onUploadNew} disabled={checking || uploadBlocked}>
+            <Button onClick={onUploadNew} disabled={checking}>
               {checking ? "Checking..." : "Upload First Attempt"}
             </Button>
           </div>
