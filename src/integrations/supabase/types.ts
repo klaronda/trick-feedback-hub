@@ -74,6 +74,7 @@ export type Database = {
           is_active: boolean | null
           is_subscribed: boolean
           name: string | null
+          onboarding_completed: boolean | null
           plan_name: string | null
           stripe_customer_id: string | null
           subscribed_at: string | null
@@ -84,6 +85,7 @@ export type Database = {
           is_active?: boolean | null
           is_subscribed?: boolean
           name?: string | null
+          onboarding_completed?: boolean | null
           plan_name?: string | null
           stripe_customer_id?: string | null
           subscribed_at?: string | null
@@ -94,6 +96,7 @@ export type Database = {
           is_active?: boolean | null
           is_subscribed?: boolean
           name?: string | null
+          onboarding_completed?: boolean | null
           plan_name?: string | null
           stripe_customer_id?: string | null
           subscribed_at?: string | null

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { ArrowLeft } from "lucide-react";
 import welcomeImage from "@/assets/onboarding-welcome.jpg";
 import uploadImage from "@/assets/onboarding-upload.jpg";
 import upgradeImage from "@/assets/onboarding-upgrade.jpg";
@@ -21,6 +22,12 @@ const Onboarding = ({ onComplete }: OnboardingProps) => {
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
     }
   };
 
@@ -63,13 +70,13 @@ const Onboarding = ({ onComplete }: OnboardingProps) => {
     {
       image: uploadImage,
       header: "Just upload your video",
-      body: "And a coach will drop notes on how you can land your tricks right on the bolts.",
+      body: "And a coach will drop in notes for landing your trick right on the bolts.",
       primaryButton: { text: "Next", action: handleNext },
     },
     {
       image: upgradeImage,
-      header: "You get 5 free uploads per month.",
-      body: "Add a video plan for just $5/month for unlimited videos, and you can chat with with coach to get tips on the fly.\n\nFor the price of a coffee, you'll learn to skate so much faster.",
+      header: "5 free uploads a month.\nOr upgrade for unlimited.",
+      body: "Upload all the videos you want for just $5/month, plus chat with a coach to get tips on the fly.\n\nFor the price of a coffee, you can learn to skate so much faster.",
       primaryButton: { text: isUpgrading ? "Processing..." : "Go Pro", action: handleUpgrade, disabled: isUpgrading },
       secondaryButton: { text: "Maybe Later", action: onComplete },
     },
@@ -81,9 +88,21 @@ const Onboarding = ({ onComplete }: OnboardingProps) => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardContent className="p-0">
-          {/* Progress Bar */}
+          {/* Progress Bar with Back Button */}
           <div className="p-6 pb-4">
-            <Progress value={progress} className="w-full" />
+            <div className="flex items-center gap-3">
+              {currentStep > 0 && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleBack}
+                  className="flex-shrink-0 h-8 w-8 rounded-full"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <Progress value={progress} className="flex-1" />
+            </div>
           </div>
 
           {/* Content */}
