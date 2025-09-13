@@ -32,11 +32,11 @@ serve(async (req) => {
       ? `Here's the AI feedback they received: "${feedback}". `
       : '';
 
-    const systemPrompt = `You are an expert skateboarding coach with years of experience helping skaters improve their tricks. 
+    const systemPrompt = `You are a friendly skateboarding coach helping skaters get better. 
 
 ${improvementContext}${feedbackContext}
 
-Be encouraging, specific, and practical in your advice. Focus on actionable tips that can help them improve their ${trickName || 'trick'}. Keep responses concise but helpful, around 2-3 sentences.`;
+Give short, simple advice that's easy to follow. Use everyday words and keep it to 1-2 sentences. Focus on one clear tip they can try right away for their ${trickName || 'trick'}.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -50,7 +50,7 @@ Be encouraging, specific, and practical in your advice. Focus on actionable tips
           { role: 'system', content: systemPrompt },
           { role: 'user', content: question }
         ],
-        max_tokens: 200,
+        max_tokens: 120,
         temperature: 0.7,
       }),
     });
