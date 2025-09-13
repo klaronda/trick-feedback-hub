@@ -123,29 +123,41 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
       return;
     }
 
+    // Store the question before clearing the input
+    const question = coachNotes;
+
     setIsSendingCoachMessage(true);
     try {
       // Add user message to the conversation
-      const userMessage = { text: coachNotes, timestamp: new Date() };
+      const userMessage = { text: question, timestamp: new Date() };
       setCoachMessages(prev => [...prev, userMessage]);
       
-      // TODO: Call the coach edge function here
-      // For now, simulate a coach response
-      setTimeout(() => {
-        const coachResponse = { 
-          text: "Thanks for your question! Based on your selected areas for improvement, here are some tips...", 
-          timestamp: new Date() 
-        };
-        setCoachMessages(prev => [...prev, coachResponse]);
-        setIsSendingCoachMessage(false);
-      }, 2000);
-
-      // Clear the input
+      // Clear the input immediately for better UX
       setCoachNotes("");
+
+      // Call the coach edge function
+      const { data, error } = await supabase.functions.invoke('coach-chat', {
+        body: {
+          question,
+          selectedTags,
+          trickName: attempt.trick_name,
+          feedback: attempt.feedback
+        }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      const coachResponse = { 
+        text: data.response, 
+        timestamp: new Date() 
+      };
+      setCoachMessages(prev => [...prev, coachResponse]);
 
       toast({
         title: "Message sent",
-        description: "Your question has been sent to the coach."
+        description: "Coach has responded to your question."
       });
 
     } catch (error) {
@@ -155,6 +167,9 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
         description: "Failed to send message. Please try again.",
         variant: "destructive"
       });
+      // Restore the input if there was an error
+      setCoachNotes(question);
+    } finally {
       setIsSendingCoachMessage(false);
     }
   };
