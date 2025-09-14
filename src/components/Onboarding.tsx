@@ -344,7 +344,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           
           {/* Progress bar and back button row - positioned consistently */}
           <div className="mt-4 flex items-center space-x-3">
-            {currentStep > 0 ? (
+            {currentStep > 0 && (
               <Button
                 variant="outline"
                 size="icon"
@@ -353,8 +353,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-            ) : (
-              <div className="h-8 w-8 flex-shrink-0" />
             )}
             <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div 
