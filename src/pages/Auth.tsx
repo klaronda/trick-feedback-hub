@@ -17,6 +17,13 @@ export default function Auth() {
     password: ''
   });
   
+  const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: ''
+  });
+  
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -43,15 +50,61 @@ export default function Auth() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case 'firstName':
+        return value.trim() === '' ? 'First name is required' : '';
+      case 'lastName':
+        return value.trim() === '' ? 'Last name is required' : '';
+      case 'email':
+        if (value.trim() === '') return 'Email address is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+        return '';
+      case 'password':
+        if (value.trim() === '') return 'Password is required';
+        if (value.length < 6) return 'Password must be at least 6 characters';
+        return '';
+      default:
+        return '';
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      firstName: isSignUp ? validateField('firstName', formData.firstName) : '',
+      lastName: isSignUp ? validateField('lastName', formData.lastName) : '',
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password)
+    };
+    
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -98,6 +151,12 @@ export default function Auth() {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -173,8 +232,13 @@ export default function Auth() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   disabled={loading}
-                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/60"
+                  className={`mt-2 h-12 bg-white text-gray-900 placeholder:text-gray-400/60 ${
+                    errors.firstName ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
+                {errors.firstName && (
+                  <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>
+                )}
               </div>
               <div>
                 <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
@@ -189,8 +253,13 @@ export default function Auth() {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   disabled={loading}
-                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/60"
+                  className={`mt-2 h-12 bg-white text-gray-900 placeholder:text-gray-400/60 ${
+                    errors.lastName ? 'border-red-500' : 'border-gray-300'
+                  }`}
                 />
+                {errors.lastName && (
+                  <p className="text-sm text-red-600 mt-1">{errors.lastName}</p>
+                )}
               </div>
             </div>
           )}
@@ -208,8 +277,13 @@ export default function Auth() {
               value={formData.email}
               onChange={handleInputChange}
               disabled={loading}
-              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/60"
+              className={`mt-2 h-12 bg-white text-gray-900 placeholder:text-gray-400/60 ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {errors.email && (
+              <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -225,8 +299,13 @@ export default function Auth() {
               value={formData.password}
               onChange={handleInputChange}
               disabled={loading}
-              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/60"
+              className={`mt-2 h-12 bg-white text-gray-900 placeholder:text-gray-400/60 ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
             />
+            {errors.password && (
+              <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+            )}
           </div>
 
           <Button 
