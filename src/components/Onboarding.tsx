@@ -343,7 +343,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           </div>
           
           {/* Progress bar and back button row - positioned consistently */}
-          <div className="mt-8 flex items-center space-x-3">
+          <div className={`flex items-center space-x-3 ${currentStep === 0 ? 'mt-8' : 'mt-4'}`}>
             {currentStep > 0 && (
               <Button
                 variant="outline"
