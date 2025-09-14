@@ -137,7 +137,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex justify-center pt-16 px-4">
       <div className="w-full max-w-sm">
         {/* Logo and Brand */}
         <div className="flex items-center justify-center mb-8">
