@@ -330,8 +330,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with white background */}
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
+      {/* Header with white background - fixed height for consistency */}
+      <div className="bg-white border-b border-gray-200 px-4 py-4 h-[120px]">
         <div className="max-w-sm mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -342,9 +342,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </div>
           </div>
           
-          {/* Progress bar and back button row */}
+          {/* Progress bar and back button row - positioned consistently */}
           <div className="mt-4 flex items-center space-x-3">
-            {currentStep > 0 && (
+            {currentStep > 0 ? (
               <Button
                 variant="outline"
                 size="icon"
@@ -353,6 +353,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
+            ) : (
+              <div className="h-8 w-8 flex-shrink-0" />
             )}
             <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div 
