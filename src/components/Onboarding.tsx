@@ -340,22 +340,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               </div>
               <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>
             </div>
-            
+          </div>
+          
+          {/* Progress bar and back button row */}
+          <div className="mt-4 flex items-center space-x-3">
             {currentStep > 0 && (
               <Button
-                variant="ghost"
+                variant="outline"
                 size="icon"
                 onClick={handleBack}
-                className="h-8 w-8 text-gray-600 hover:text-gray-900"
+                className="h-8 w-8 rounded-full border-gray-300 text-gray-600 hover:text-gray-900 hover:border-gray-400 flex-shrink-0"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
             )}
-          </div>
-          
-          {/* Progress bar */}
-          <div className="mt-4">
-            <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-200">
+            <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-gray-200">
               <div 
                 className="h-full bg-gray-900 transition-all duration-300 ease-in-out"
                 style={{ width: `${progressValue}%` }}
@@ -421,19 +420,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </div>
           )}
 
-          {/* Progress indicator dots */}
-          <div className="flex justify-center space-x-2 pt-2">
-            {steps.map((_, index) => (
-              <div
-                key={index}
-                className={`h-2 rounded-full transition-all duration-200 ${
-                  index <= currentStep 
-                    ? 'bg-gray-900 w-8' 
-                    : 'bg-gray-200 w-2'
-                }`}
-              />
-            ))}
-          </div>
         </div>
       </div>
     </div>
