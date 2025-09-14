@@ -43,29 +43,53 @@ export type Database = {
       }
       profiles: {
         Row: {
+          birthday: string | null
           created_at: string | null
+          first_name: string | null
           free_uploads_exhausted: boolean | null
+          gender: string | null
           id: string
           is_subscribed: boolean | null
+          last_name: string | null
+          learning_goals: string | null
+          onboarding_completed: boolean | null
           plan_name: string | null
+          stance: string | null
+          started_skating_year: number | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          birthday?: string | null
           created_at?: string | null
+          first_name?: string | null
           free_uploads_exhausted?: boolean | null
+          gender?: string | null
           id?: string
           is_subscribed?: boolean | null
+          last_name?: string | null
+          learning_goals?: string | null
+          onboarding_completed?: boolean | null
           plan_name?: string | null
+          stance?: string | null
+          started_skating_year?: number | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          birthday?: string | null
           created_at?: string | null
+          first_name?: string | null
           free_uploads_exhausted?: boolean | null
+          gender?: string | null
           id?: string
           is_subscribed?: boolean | null
+          last_name?: string | null
+          learning_goals?: string | null
+          onboarding_completed?: boolean | null
           plan_name?: string | null
+          stance?: string | null
+          started_skating_year?: number | null
           updated_at?: string | null
           user_id?: string
         }
