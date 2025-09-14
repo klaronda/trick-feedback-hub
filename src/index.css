@@ -17,13 +17,13 @@
   --secondary: #f9fafb;
   --secondary-foreground: #111827;
   --muted: #f3f4f6;
-  --muted-foreground: #6b7280;
+  --muted-foreground: #9ca3af;
   --accent: #f9fafb;
   --accent-foreground: #111827;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-  --input: transparent;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
   --input-background: #ffffff;
   --switch-background: #d1d5db;
   --font-weight-medium: 500;
