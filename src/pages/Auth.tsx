@@ -83,12 +83,8 @@ export default function Auth() {
             variant: "destructive",
           });
         }
-      } else {
-        toast({
-          title: "Account created!",
-          description: "Please check your email to verify your account.",
-        });
       }
+      // No success toast - user will be redirected automatically
     } catch (error) {
       toast({
         title: "Error",
@@ -172,7 +168,7 @@ export default function Auth() {
                   id="firstName"
                   name="firstName"
                   type="text"
-                  placeholder="Alex"
+                  placeholder="Enter first name..."
                   required
                   value={formData.firstName}
                   onChange={handleInputChange}
@@ -188,7 +184,7 @@ export default function Auth() {
                   id="lastName"
                   name="lastName"
                   type="text"
-                  placeholder="Rodriguez"
+                  placeholder="Enter last name..."
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
@@ -207,7 +203,7 @@ export default function Auth() {
               id="email"
               name="email"
               type="email"
-              placeholder="alex@example.com"
+              placeholder="youremail@sample.com"
               required
               value={formData.email}
               onChange={handleInputChange}
@@ -224,7 +220,7 @@ export default function Auth() {
               id="password"
               name="password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Enter password..."
               required
               value={formData.password}
               onChange={handleInputChange}

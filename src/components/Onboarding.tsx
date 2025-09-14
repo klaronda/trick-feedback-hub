@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,17 +20,38 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   
+  // Calculate default birthday (today minus 4 years)
+  const today = new Date();
+  const defaultBirthYear = today.getFullYear() - 4;
+  const defaultBirthMonth = (today.getMonth() + 1).toString();
+  const defaultBirthDay = today.getDate().toString();
+  
   const [formData, setFormData] = useState({
-    firstName: 'Alex',
-    lastName: 'Rodriguez',
-    startedSkatingYear: '2018',
+    firstName: '',
+    lastName: '',
+    startedSkatingYear: '2025',
     stance: '',
     gender: '',
-    birthdayMonth: '6',
-    birthdayDay: '15',
-    birthdayYear: '1995',
-    learningGoals: 'I want to master kickflips and heelflips, and eventually learn tre flips. Also working on improving my balance and consistency with basic tricks.'
+    birthdayMonth: defaultBirthMonth,
+    birthdayDay: defaultBirthDay,
+    birthdayYear: defaultBirthYear.toString(),
+    learningGoals: ''
   });
+
+  // Load user's name from auth metadata
+  useEffect(() => {
+    const loadUserData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user?.user_metadata) {
+        setFormData(prev => ({
+          ...prev,
+          firstName: user.user_metadata.first_name || '',
+          lastName: user.user_metadata.last_name || ''
+        }));
+      }
+    };
+    loadUserData();
+  }, []);
 
   const steps = [
     'Tell us about yourself',
@@ -121,7 +142,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     id="firstName"
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    placeholder="Alex"
+                    placeholder="Enter first name..."
                   />
                 </div>
                 <div className="space-y-2">
@@ -130,7 +151,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     id="lastName"
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    placeholder="Rodriguez"
+                    placeholder="Enter last name..."
                   />
                 </div>
               </div>
@@ -138,11 +159,11 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               <div className="space-y-2">
                 <Label>Started Skating</Label>
                 <Select value={formData.startedSkatingYear} onValueChange={(value) => handleInputChange('startedSkatingYear', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="2018" />
+                  <SelectTrigger className="bg-white">
+                    <SelectValue placeholder="2025" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                  <SelectContent className="bg-white">
+                    {Array.from({ length: 57 }, (_, i) => new Date().getFullYear() - i).map(year => (
                       <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                     ))}
                   </SelectContent>
@@ -155,7 +176,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant={formData.stance === 'regular' ? 'default' : 'outline'}
-                    className="h-12"
+                    className={`h-12 ${formData.stance === 'regular' ? 'bg-gray-900 text-white font-bold' : ''}`}
                     onClick={() => handleInputChange('stance', 'regular')}
                   >
                     Regular
@@ -163,7 +184,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant={formData.stance === 'goofy' ? 'default' : 'outline'}
-                    className="h-12"
+                    className={`h-12 ${formData.stance === 'goofy' ? 'bg-gray-900 text-white font-bold' : ''}`}
                     onClick={() => handleInputChange('stance', 'goofy')}
                   >
                     Goofy
@@ -177,7 +198,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant={formData.gender === 'male' ? 'default' : 'outline'}
-                    className="h-12"
+                    className={`h-12 ${formData.gender === 'male' ? 'bg-gray-900 text-white font-bold' : ''}`}
                     onClick={() => handleInputChange('gender', 'male')}
                   >
                     Male
@@ -185,7 +206,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant={formData.gender === 'female' ? 'default' : 'outline'}
-                    className="h-12"
+                    className={`h-12 ${formData.gender === 'female' ? 'bg-gray-900 text-white font-bold' : ''}`}
                     onClick={() => handleInputChange('gender', 'female')}
                   >
                     Female
@@ -197,10 +218,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 <Label>Birthday</Label>
                 <div className="grid grid-cols-3 gap-2">
                   <Select value={formData.birthdayMonth} onValueChange={(value) => handleInputChange('birthdayMonth', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="June" />
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Month" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {['January', 'February', 'March', 'April', 'May', 'June', 
                         'July', 'August', 'September', 'October', 'November', 'December'].map((month, index) => (
                         <SelectItem key={month} value={(index + 1).toString()}>{month}</SelectItem>
@@ -208,21 +229,21 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     </SelectContent>
                   </Select>
                   <Select value={formData.birthdayDay} onValueChange={(value) => handleInputChange('birthdayDay', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="15" />
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Day" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
                         <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <Select value={formData.birthdayYear} onValueChange={(value) => handleInputChange('birthdayYear', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="1995" />
+                    <SelectTrigger className="bg-white">
+                      <SelectValue placeholder="Year" />
                     </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 80 }, (_, i) => new Date().getFullYear() - 10 - i).map(year => (
+                    <SelectContent className="bg-white">
+                      {Array.from({ length: 56 }, (_, i) => new Date().getFullYear() - 4 - i).map(year => (
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
                     </SelectContent>
@@ -236,7 +257,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   id="learningGoals"
                   value={formData.learningGoals}
                   onChange={(e) => handleInputChange('learningGoals', e.target.value)}
-                  placeholder="I want to master kickflips and heelflips, and eventually learn tre flips. Also working on improving my balance and consistency with basic tricks."
+                  placeholder="I want to learn..."
                   className="min-h-[100px]"
                 />
               </div>
@@ -315,11 +336,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           </div>
           
           {/* Progress bar */}
-          {currentStep > 0 && (
-            <div className="mt-4">
-              <Progress value={progressValue} className="h-2" />
-            </div>
-          )}
+          <div className="mt-4">
+            <Progress value={progressValue} className="h-2" />
+          </div>
         </div>
       </div>
 
