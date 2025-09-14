@@ -143,6 +143,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     placeholder="Enter first name..."
+                    className="bg-white placeholder:text-gray-400/20"
                   />
                 </div>
                 <div className="space-y-2">
@@ -152,6 +153,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     placeholder="Enter last name..."
+                    className="bg-white placeholder:text-gray-400/20"
                   />
                 </div>
               </div>
@@ -274,7 +276,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   value={formData.learningGoals}
                   onChange={(e) => handleInputChange('learningGoals', e.target.value)}
                   placeholder="I want to learn..."
-                  className="min-h-[100px] bg-white"
+                  className="min-h-[100px] bg-white placeholder:text-gray-400/20"
                 />
               </div>
             </div>
@@ -353,7 +355,12 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
           
           {/* Progress bar */}
           <div className="mt-4">
-            <Progress value={progressValue} className="h-2" />
+            <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-200">
+              <div 
+                className="h-full bg-gray-900 transition-all duration-300 ease-in-out"
+                style={{ width: `${progressValue}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
