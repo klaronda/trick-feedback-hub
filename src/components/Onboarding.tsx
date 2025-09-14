@@ -143,7 +143,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     value={formData.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     placeholder="Enter first name..."
-                    className="bg-white placeholder:text-gray-400/20"
+                    className="bg-white placeholder:text-gray-400/40"
                   />
                 </div>
                 <div className="space-y-2">
@@ -153,7 +153,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     value={formData.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     placeholder="Enter last name..."
-                    className="bg-white placeholder:text-gray-400/20"
+                    className="bg-white placeholder:text-gray-400/40"
                   />
                 </div>
               </div>
@@ -276,7 +276,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   value={formData.learningGoals}
                   onChange={(e) => handleInputChange('learningGoals', e.target.value)}
                   placeholder="I want to learn..."
-                  className="min-h-[100px] bg-white placeholder:text-gray-400/20"
+                  className="min-h-[100px] bg-white placeholder:text-gray-400/40"
                 />
               </div>
             </div>

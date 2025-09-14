@@ -173,7 +173,7 @@ export default function Auth() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   disabled={loading}
-                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/20"
+                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/40"
                 />
               </div>
               <div>
@@ -189,7 +189,7 @@ export default function Auth() {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   disabled={loading}
-                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/20"
+                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/40"
                 />
               </div>
             </div>
@@ -208,7 +208,7 @@ export default function Auth() {
               value={formData.email}
               onChange={handleInputChange}
               disabled={loading}
-              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/20"
+              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/40"
             />
           </div>
 
@@ -225,7 +225,7 @@ export default function Auth() {
               value={formData.password}
               onChange={handleInputChange}
               disabled={loading}
-              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/20"
+              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400/40"
             />
           </div>
 
