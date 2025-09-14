@@ -175,16 +175,24 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     type="button"
-                    variant={formData.stance === 'regular' ? 'default' : 'outline'}
-                    className={`h-12 ${formData.stance === 'regular' ? 'bg-gray-900 text-white font-bold' : ''}`}
+                    variant="outline"
+                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                      formData.stance === 'regular' 
+                        ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
+                        : 'bg-white text-gray-900 border-gray-300'
+                    }`}
                     onClick={() => handleInputChange('stance', 'regular')}
                   >
                     Regular
                   </Button>
                   <Button
                     type="button"
-                    variant={formData.stance === 'goofy' ? 'default' : 'outline'}
-                    className={`h-12 ${formData.stance === 'goofy' ? 'bg-gray-900 text-white font-bold' : ''}`}
+                    variant="outline"
+                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                      formData.stance === 'goofy' 
+                        ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
+                        : 'bg-white text-gray-900 border-gray-300'
+                    }`}
                     onClick={() => handleInputChange('stance', 'goofy')}
                   >
                     Goofy
@@ -197,16 +205,24 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     type="button"
-                    variant={formData.gender === 'male' ? 'default' : 'outline'}
-                    className={`h-12 ${formData.gender === 'male' ? 'bg-gray-900 text-white font-bold' : ''}`}
+                    variant="outline"
+                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                      formData.gender === 'male' 
+                        ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
+                        : 'bg-white text-gray-900 border-gray-300'
+                    }`}
                     onClick={() => handleInputChange('gender', 'male')}
                   >
                     Male
                   </Button>
                   <Button
                     type="button"
-                    variant={formData.gender === 'female' ? 'default' : 'outline'}
-                    className={`h-12 ${formData.gender === 'female' ? 'bg-gray-900 text-white font-bold' : ''}`}
+                    variant="outline"
+                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                      formData.gender === 'female' 
+                        ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
+                        : 'bg-white text-gray-900 border-gray-300'
+                    }`}
                     onClick={() => handleInputChange('gender', 'female')}
                   >
                     Female
@@ -258,7 +274,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   value={formData.learningGoals}
                   onChange={(e) => handleInputChange('learningGoals', e.target.value)}
                   placeholder="I want to learn..."
-                  className="min-h-[100px]"
+                  className="min-h-[100px] bg-white"
                 />
               </div>
             </div>
