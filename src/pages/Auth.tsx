@@ -136,26 +136,22 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm space-y-6">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <div className="bg-gray-900 text-white rounded-lg p-2">
-            <span className="text-xl font-bold">⚡</span>
+    <div className="min-h-screen bg-background flex justify-center pt-16 px-4">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Logo and Brand */}
+        <div className="flex items-center gap-3">
+          <div className="bg-primary text-primary-foreground rounded-lg p-2 flex items-center justify-center w-8 h-8">
+            <span className="text-sm font-semibold">⚡</span>
           </div>
-        </div>
-
-        {/* App Title */}
-        <div className="text-center">
-          <h1 className="text-xl font-semibold text-gray-900">SkateCoach</h1>
+          <h1 className="text-xl font-semibold text-foreground">SkateCoach</h1>
         </div>
 
         {/* Form Title */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-semibold text-gray-900">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold text-foreground tracking-tight">
             {isSignUp ? 'Create Account' : 'Welcome back'}
           </h2>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground text-sm">
             {isSignUp 
               ? 'Start your skateboarding journey with personalized coaching'
               : 'Sign in to continue your skating journey'
@@ -173,6 +169,7 @@ export default function Auth() {
                   id="firstName"
                   name="firstName"
                   type="text"
+                  placeholder="Alex"
                   required
                   value={formData.firstName}
                   onChange={handleInputChange}
@@ -185,6 +182,7 @@ export default function Auth() {
                   id="lastName"
                   name="lastName"
                   type="text"
+                  placeholder="Rodriguez"
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
@@ -214,6 +212,7 @@ export default function Auth() {
               id="password"
               name="password"
               type="password"
+              placeholder="••••••••"
               required
               value={formData.password}
               onChange={handleInputChange}
@@ -223,7 +222,7 @@ export default function Auth() {
 
           <Button 
             type="submit" 
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white"
+            className="w-full"
             disabled={loading}
           >
             {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
@@ -235,7 +234,7 @@ export default function Auth() {
           <button
             type="button"
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-gray-600 hover:text-gray-900 text-sm"
+            className="text-muted-foreground hover:text-foreground text-sm"
             disabled={loading}
           >
             {isSignUp 
@@ -247,14 +246,14 @@ export default function Auth() {
 
         {/* Terms */}
         {isSignUp && (
-          <p className="text-xs text-gray-500 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             By signing up, you agree to our Terms of Service and Privacy Policy
           </p>
         )}
 
         {/* Progress indicator */}
         <div className="flex justify-center">
-          <div className="w-20 h-1 bg-gray-200 rounded"></div>
+          <div className="w-20 h-1 bg-muted rounded-full"></div>
         </div>
       </div>
     </div>
