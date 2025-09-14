@@ -314,7 +314,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold text-gray-900">5 free uploads a month.</h2>
-              <p className="text-xl font-semibold text-gray-900">Or upgrade for unlimited.</p>
+              <h2 className="text-2xl font-semibold text-gray-900">Or upgrade for unlimited.</h2>
               <div className="space-y-2 text-gray-600">
                 <p>Upload all the videos you want for just $5/month, plus chat with a coach to get tips on the fly.</p>
                 <p>For the price of a coffee, you can learn to skate so much faster.</p>
