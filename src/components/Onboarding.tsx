@@ -335,7 +335,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         <div className="max-w-sm mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-gray-900 text-white rounded-lg p-2 flex items-center justify-center">
+              <div className="bg-gray-900 text-white rounded p-2 flex items-center justify-center">
                 <Zap className="h-5 w-5" />
               </div>
               <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>
