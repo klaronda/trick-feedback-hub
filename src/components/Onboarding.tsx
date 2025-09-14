@@ -5,9 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import onboardingUploadImage from '@/assets/onboarding-upload.jpg';
+import onboardingUpgradeImage from '@/assets/onboarding-upgrade.jpg';
 
 interface OnboardingProps {
   onComplete: () => void;
@@ -19,15 +21,15 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    startedSkatingYear: '',
+    firstName: 'Alex',
+    lastName: 'Rodriguez',
+    startedSkatingYear: '2018',
     stance: '',
     gender: '',
-    birthdayMonth: '',
-    birthdayDay: '',
-    birthdayYear: '',
-    learningGoals: ''
+    birthdayMonth: '6',
+    birthdayDay: '15',
+    birthdayYear: '1995',
+    learningGoals: 'I want to master kickflips and heelflips, and eventually learn tre flips. Also working on improving my balance and consistency with basic tricks.'
   });
 
   const steps = [
@@ -245,13 +247,17 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       case 1:
         return (
           <div className="space-y-6 text-center">
-            <div className="w-64 h-64 mx-auto bg-gray-100 rounded-xl flex items-center justify-center">
-              <div className="text-6xl">🛹</div>
+            <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
+              <img 
+                src={onboardingUploadImage} 
+                alt="Camera setup for video recording"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">Welcome to SkateCoach!</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Just upload your video</h2>
               <p className="text-gray-600 max-w-md mx-auto">
-                From ollies to switch hardflips, you'll learn how to balance, position your feet, pop, flick and land tricks.
+                And a coach will drop in notes for landing your trick right on the bolts.
               </p>
             </div>
           </div>
@@ -260,53 +266,20 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       case 2:
         return (
           <div className="space-y-6 text-center">
-            <div className="w-64 h-64 mx-auto bg-gray-100 rounded-xl flex items-center justify-center">
-              <div className="text-6xl">📹</div>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold">Just upload your video</h2>
-              <p className="text-gray-600 max-w-md mx-auto">
-                And a coach will drop in notes for landing your trick right on the bolts.
-              </p>
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6 text-center">
-            <div className="w-64 h-64 mx-auto bg-gray-100 rounded-xl flex items-center justify-center">
-              <div className="text-6xl">⚡</div>
+            <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
+              <img 
+                src={onboardingUpgradeImage} 
+                alt="Graffiti wall skateboarding scene"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold">5 free uploads a month.</h2>
-              <p className="text-xl font-semibold">Or upgrade for unlimited.</p>
+              <h2 className="text-2xl font-semibold text-gray-900">5 free uploads a month.</h2>
+              <p className="text-xl font-semibold text-gray-900">Or upgrade for unlimited.</p>
               <div className="space-y-2 text-gray-600">
                 <p>Upload all the videos you want for just $5/month, plus chat with a coach to get tips on the fly.</p>
                 <p>For the price of a coffee, you can learn to skate so much faster.</p>
               </div>
-              
-              <div className="space-y-3 pt-4">
-                <Button 
-                  className="w-full bg-gray-900 hover:bg-gray-800 text-white h-12"
-                  onClick={handleNext}
-                  disabled={loading}
-                >
-                  {loading ? 'Setting up...' : 'Go Pro'}
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full"
-                  onClick={completeOnboarding}
-                  disabled={loading}
-                >
-                  Maybe Later
-                </Button>
-              </div>
-              
-              <p className="text-xs text-gray-500">
-                Your videos are stored in the cloud for up to 180 days.
-              </p>
             </div>
           </div>
         );
@@ -317,65 +290,108 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-sm space-y-6">
-        {/* Header */}
-        <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with white background */}
+      <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="max-w-sm mx-auto">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gray-900 text-white rounded-lg p-2 flex items-center justify-center">
+                <Zap className="h-5 w-5" />
+              </div>
+              <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>
+            </div>
+            
+            {currentStep > 0 && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleBack}
+                className="h-8 w-8 text-gray-600 hover:text-gray-900"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          
+          {/* Progress bar */}
           {currentStep > 0 && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleBack}
-              className="h-8 w-8"
+            <div className="mt-4">
+              <Progress value={progressValue} className="h-2" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Body content with gray background */}
+      <div className="p-4 pt-8">
+        <div className="w-full max-w-sm mx-auto">
+          {/* Step Content */}
+          {renderStep()}
+        </div>
+      </div>
+
+      {/* Sticky footer with buttons */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+        <div className="w-full max-w-sm mx-auto space-y-3">
+          {/* Buttons for different steps */}
+          {currentStep === 0 && (
+            <Button 
+              onClick={handleNext}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white h-12"
+              disabled={
+                !formData.firstName || !formData.lastName || !formData.startedSkatingYear || !formData.stance || !formData.gender
+              }
             >
-              <ChevronLeft className="h-4 w-4" />
+              Next
             </Button>
           )}
-          
-          <div className="flex justify-center flex-1">
-            <div className="bg-gray-900 text-white rounded-lg p-2">
-              <span className="text-xl font-bold">⚡</span>
+
+          {currentStep === 1 && (
+            <Button 
+              onClick={handleNext}
+              className="w-full bg-gray-900 hover:bg-gray-800 text-white h-12"
+            >
+              Next
+            </Button>
+          )}
+
+          {currentStep === 2 && (
+            <div className="space-y-3">
+              <Button 
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white h-12"
+                onClick={handleNext}
+                disabled={loading}
+              >
+                {loading ? 'Setting up...' : 'Go Pro'}
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="w-full text-gray-600 hover:text-gray-900"
+                onClick={completeOnboarding}
+                disabled={loading}
+              >
+                Maybe Later
+              </Button>
+              <p className="text-xs text-gray-500 text-center">
+                Your videos are stored in the cloud for up to 180 days.
+              </p>
             </div>
+          )}
+
+          {/* Progress indicator dots */}
+          <div className="flex justify-center space-x-2 pt-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 rounded-full transition-all duration-200 ${
+                  index <= currentStep 
+                    ? 'bg-gray-900 w-8' 
+                    : 'bg-gray-200 w-2'
+                }`}
+              />
+            ))}
           </div>
-        </div>
-
-        <div className="text-center">
-          <h1 className="text-xl font-semibold text-gray-900">SkateCoach</h1>
-        </div>
-
-        {/* Progress */}
-        <div className="space-y-2">
-          <Progress value={progressValue} className="h-2" />
-        </div>
-
-        {/* Step Content */}
-        {renderStep()}
-
-        {/* Next Button (for steps 0-2) */}
-        {currentStep < 3 && (
-          <Button 
-            onClick={handleNext}
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white h-12"
-            disabled={
-              currentStep === 0 && (!formData.firstName || !formData.lastName || !formData.startedSkatingYear || !formData.stance || !formData.gender)
-            }
-          >
-            Next
-          </Button>
-        )}
-
-        {/* Progress indicator */}
-        <div className="flex justify-center space-x-2">
-          {steps.map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all duration-200 ${
-                index <= currentStep 
-                  ? 'bg-gray-900 w-8' 
-                  : 'bg-gray-200 w-2'
-              }`}
-            />
-          ))}
         </div>
       </div>
     </div>
