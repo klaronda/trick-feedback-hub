@@ -178,10 +178,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                    className={`h-12 transition-all duration-200 ${
                       formData.stance === 'regular' 
                         ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
-                        : 'bg-white text-gray-900 border-gray-300'
+                        : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
                     }`}
                     onClick={() => handleInputChange('stance', 'regular')}
                   >
@@ -190,10 +190,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                    className={`h-12 transition-all duration-200 ${
                       formData.stance === 'goofy' 
                         ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
-                        : 'bg-white text-gray-900 border-gray-300'
+                        : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
                     }`}
                     onClick={() => handleInputChange('stance', 'goofy')}
                   >
@@ -208,10 +208,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                    className={`h-12 transition-all duration-200 ${
                       formData.gender === 'male' 
                         ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
-                        : 'bg-white text-gray-900 border-gray-300'
+                        : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
                     }`}
                     onClick={() => handleInputChange('gender', 'male')}
                   >
@@ -220,10 +220,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    className={`h-12 transition-all duration-200 hover:bg-gray-100 ${
+                    className={`h-12 transition-all duration-200 ${
                       formData.gender === 'female' 
                         ? 'bg-gray-900 text-white font-bold border-gray-900 hover:bg-gray-800' 
-                        : 'bg-white text-gray-900 border-gray-300'
+                        : 'bg-white text-gray-900 border-gray-300 hover:bg-gray-50'
                     }`}
                     onClick={() => handleInputChange('gender', 'female')}
                   >
