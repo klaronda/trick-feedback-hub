@@ -228,7 +228,6 @@ export default function Auth() {
                   name="firstName"
                   type="text"
                   placeholder="Enter first name..."
-                  required
                   value={formData.firstName}
                   onChange={handleInputChange}
                   disabled={loading}
@@ -249,7 +248,6 @@ export default function Auth() {
                   name="lastName"
                   type="text"
                   placeholder="Enter last name..."
-                  required
                   value={formData.lastName}
                   onChange={handleInputChange}
                   disabled={loading}
@@ -273,7 +271,6 @@ export default function Auth() {
               name="email"
               type="email"
               placeholder="youremail@sample.com"
-              required
               value={formData.email}
               onChange={handleInputChange}
               disabled={loading}
@@ -295,7 +292,6 @@ export default function Auth() {
               name="password"
               type="password"
               placeholder="Enter password..."
-              required
               value={formData.password}
               onChange={handleInputChange}
               disabled={loading}
