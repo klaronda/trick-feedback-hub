@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -33,7 +33,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('freePlanBannerDismissed') === 'true';
   });
-  const { toast } = useToast();
+  const { notification, showNotification, hideNotification } = useNotificationBar();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,11 +54,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       setAttempts(data || []);
     } catch (error) {
       console.error('Error fetching attempts:', error);
-      toast({
-        title: "Error loading attempts",
-        description: "Failed to load your trick attempts",
-        variant: "destructive"
-      });
+      showNotification('Failed to load your trick attempts', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -109,20 +105,13 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
 
       if (error) throw error;
 
-      toast({
-        title: "Attempt deleted",
-        description: "The attempt has been removed successfully."
-      });
+      showNotification('The attempt has been removed successfully.', 'success');
 
       // Refresh the list
       fetchAttempts();
     } catch (error) {
       console.error('Error deleting attempt:', error);
-      toast({
-        title: "Delete failed",
-        description: "Failed to delete the attempt. Please try again.",
-        variant: "destructive"
-      });
+      showNotification('Failed to delete the attempt. Please try again.', 'error');
     } finally {
       setDeletingId(null);
     }
@@ -137,22 +126,26 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       
       // Don't show error if it's just a session not found issue
       if (error && error.message !== "Session from session_id claim in JWT does not exist") {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to logout. Please try again.",
-        });
+        showNotification('Failed to logout. Please try again.', 'error');
         return;
       }
       
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      });
-      navigate('/auth');
+      // Show success notification
+      showNotification('You successfully signed out.', 'success');
+      
+      // Delay navigation to show notification
+      setTimeout(() => {
+        navigate('/auth');
+      }, 500);
     } catch (error) {
-      // Even if logout fails, redirect to auth page
-      navigate('/auth');
+      console.error('Logout error:', error);
+      // Show error notification but still redirect
+      showNotification('Failed to logout completely, but redirecting to login.', 'error');
+      
+      // Delay navigation to show notification  
+      setTimeout(() => {
+        navigate('/auth');
+      }, 500);
     }
   };
 
@@ -171,7 +164,14 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <>
+      <NotificationBar
+        message={notification.message}
+        type={notification.type}
+        isVisible={notification.isVisible}
+        onHide={hideNotification}
+      />
+      <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">My Trick Attempts</h1>
         <div className="flex gap-2">
@@ -340,6 +340,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       <div className="text-center text-sm text-muted-foreground mt-8">
         Your videos are stored in the cloud for up to 180 days.
       </div>
-    </div>
+      </div>
+    </>
   );
 };
