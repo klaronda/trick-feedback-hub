@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -136,22 +137,22 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex justify-center pt-16 px-4">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
         {/* Logo and Brand */}
-        <div className="flex items-center gap-3">
-          <div className="bg-primary text-primary-foreground rounded-lg p-2 flex items-center justify-center w-8 h-8">
-            <span className="text-sm font-semibold">⚡</span>
+        <div className="flex items-center justify-center mb-8">
+          <div className="bg-gray-900 text-white rounded-lg p-2 flex items-center justify-center w-8 h-8 mr-3">
+            <Zap className="w-4 h-4" />
           </div>
-          <h1 className="text-xl font-semibold text-foreground">SkateCoach</h1>
+          <h1 className="text-xl font-semibold text-gray-900">SkateCoach</h1>
         </div>
 
         {/* Form Title */}
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground tracking-tight">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900">
             {isSignUp ? 'Create Account' : 'Welcome back'}
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-gray-600 text-sm mt-2">
             {isSignUp 
               ? 'Start your skateboarding journey with personalized coaching'
               : 'Sign in to continue your skating journey'
@@ -163,8 +164,10 @@ export default function Auth() {
         <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
           {isSignUp && (
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
+              <div>
+                <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
+                  First name
+                </Label>
                 <Input
                   id="firstName"
                   name="firstName"
@@ -174,10 +177,13 @@ export default function Auth() {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   disabled={loading}
+                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder-gray-400"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last name</Label>
+              <div>
+                <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
+                  Last name
+                </Label>
                 <Input
                   id="lastName"
                   name="lastName"
@@ -187,13 +193,16 @@ export default function Auth() {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   disabled={loading}
+                  className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder-gray-400"
                 />
               </div>
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+          <div>
+            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+              Email
+            </Label>
             <Input
               id="email"
               name="email"
@@ -203,11 +212,14 @@ export default function Auth() {
               value={formData.email}
               onChange={handleInputChange}
               disabled={loading}
+              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder-gray-400"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+          <div>
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+              Password
+            </Label>
             <Input
               id="password"
               name="password"
@@ -217,12 +229,13 @@ export default function Auth() {
               value={formData.password}
               onChange={handleInputChange}
               disabled={loading}
+              className="mt-2 h-12 bg-white border-gray-300 text-gray-900 placeholder-gray-400"
             />
           </div>
 
           <Button 
             type="submit" 
-            className="w-full"
+            className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium mt-6"
             disabled={loading}
           >
             {loading ? 'Loading...' : (isSignUp ? 'Create Account' : 'Sign In')}
@@ -230,11 +243,11 @@ export default function Auth() {
         </form>
 
         {/* Toggle Sign Up/In */}
-        <div className="text-center">
+        <div className="text-center mt-6">
           <button
             type="button"
             onClick={() => setIsSignUp(!isSignUp)}
-            className="text-muted-foreground hover:text-foreground text-sm"
+            className="text-gray-600 hover:text-gray-900 text-sm font-medium"
             disabled={loading}
           >
             {isSignUp 
@@ -246,15 +259,10 @@ export default function Auth() {
 
         {/* Terms */}
         {isSignUp && (
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-gray-500 text-center mt-6">
             By signing up, you agree to our Terms of Service and Privacy Policy
           </p>
         )}
-
-        {/* Progress indicator */}
-        <div className="flex justify-center">
-          <div className="w-20 h-1 bg-muted rounded-full"></div>
-        </div>
       </div>
     </div>
   );
