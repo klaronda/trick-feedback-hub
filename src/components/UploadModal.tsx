@@ -19,7 +19,7 @@ interface UploadModalProps {
 const TRICK_SUGGESTIONS = [
   "Kickflip", "Heelflip", "Ollie", "Pop Shuvit", "Frontside 180", 
   "Backside 180", "Tre Flip", "Varial Flip", "Hardflip", "Inward Heelflip",
-  "Fs Shuvit", "Bs Shuvit", "Casper", "Rail Stand", "Pogo"
+  "Frontside Shuvit", "Backside Flip", "Varial Heel", "Nollie", "Fakie Ollie"
 ];
 
 const NOTES_PLACEHOLDERS = [
