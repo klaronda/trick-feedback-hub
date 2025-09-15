@@ -85,10 +85,10 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
 
   return (
     <Card 
-      className={`p-8 border-2 border-dashed transition-all ${
+      className={`p-8 border-2 border-dashed transition-all bg-card ${
         isDragging 
-          ? 'border-primary bg-primary/5' 
-          : 'border-muted-foreground/25 hover:border-primary/50'
+          ? 'border-foreground bg-muted/50' 
+          : 'border-border hover:border-foreground/50'
       }`}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
@@ -96,16 +96,16 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
       onDragLeave={() => setIsDragging(false)}
     >
       <div className="flex flex-col items-center justify-center text-center space-y-4">
-        <div className="p-4 rounded-full bg-primary/10">
+        <div className="p-4 rounded-full bg-muted">
           {isUploading ? (
-            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full" />
           ) : (
-            <VideoIcon className="w-8 h-8 text-primary" />
+            <VideoIcon className="w-8 h-8 text-foreground" />
           )}
         </div>
         
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold text-foreground">
             {isUploading ? 'Uploading...' : 'Upload Your Trick Attempt'}
           </h3>
           <p className="text-muted-foreground">
@@ -117,7 +117,7 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
           <Button 
             disabled={isUploading}
             onClick={() => document.getElementById('video-input')?.click()}
-            className="flex items-center gap-2"
+            className="bg-foreground hover:bg-foreground/90 text-background font-medium"
           >
             <Upload className="w-4 h-4" />
             Choose Video

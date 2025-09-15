@@ -328,16 +328,18 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <h1 className="text-3xl font-bold">Loading...</h1>
-        </div>
-        <div className="text-center py-12">
-          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground mt-4">Loading attempt details...</p>
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" onClick={onBack} className="border-border hover:bg-muted">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <h1 className="text-3xl font-semibold text-foreground">Loading...</h1>
+          </div>
+          <div className="text-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
+            <p className="text-muted-foreground mt-4">Loading attempt details...</p>
+          </div>
         </div>
       </div>
     );
@@ -345,77 +347,83 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
   if (!attempt) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <h1 className="text-3xl font-bold">Attempt Not Found</h1>
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="sm" onClick={onBack} className="border-border hover:bg-muted">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <h1 className="text-3xl font-semibold text-foreground">Attempt Not Found</h1>
+          </div>
+          <Card className="p-12 text-center bg-card border-border">
+            <p className="text-muted-foreground">This attempt could not be found.</p>
+          </Card>
         </div>
-        <Card className="p-12 text-center">
-          <p className="text-muted-foreground">This attempt could not be found.</p>
-        </Card>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="sm" onClick={onBack}>
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">
-            {attempt.trick_name || 'Unnamed Trick'}
-          </h1>
-          <p className="text-muted-foreground">
-            Uploaded {formatDate(attempt.created_at)}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className={getStatusColor(attempt.status)}>
-            {getStatusEmoji(attempt.status)} {attempt.status}
-          </Badge>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <Trash2 className="w-4 h-4" />
+    <div className="min-h-screen bg-background px-4 py-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-border hover:bg-muted">
+            <ArrowLeft className="w-4 h-4" />
           </Button>
+          <div className="flex-1">
+            <h1 className="text-3xl font-semibold text-foreground">
+              {attempt.trick_name || 'Unnamed Trick'}
+            </h1>
+            <p className="text-muted-foreground">
+              Uploaded {formatDate(attempt.created_at)}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge 
+              variant="secondary" 
+              className={`${getStatusColor(attempt.status)} border`}
+            >
+              {getStatusEmoji(attempt.status)} {attempt.status}
+            </Badge>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 border-border"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
-      </div>
 
-      {/* Video Player */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Video</h2>
-        <div className="relative bg-black rounded-lg overflow-hidden">
-          {videoUrl ? (
-            <video
-              src={videoUrl}
-              className="w-full aspect-video"
-              controls
-              preload="metadata"
-              onError={(e) => {
-                console.error('Video load error:', e);
-                toast({
-                  title: "Video playback error",
-                  description: "Unable to play video. The file may be corrupted or in an unsupported format.",
-                  variant: "destructive"
-                });
-              }}
-            />
-          ) : (
-            <div className="w-full aspect-video flex items-center justify-center bg-muted">
-              <p className="text-muted-foreground">Loading video...</p>
-            </div>
-          )}
-        </div>
-      </Card>
+        {/* Video Player */}
+        <Card className="p-6 bg-card border-border">
+          <h2 className="text-xl font-semibold text-foreground mb-4">Video</h2>
+          <div className="relative bg-black rounded-lg overflow-hidden">
+            {videoUrl ? (
+              <video
+                src={videoUrl}
+                className="w-full aspect-video"
+                controls
+                preload="metadata"
+                onError={(e) => {
+                  console.error('Video load error:', e);
+                  toast({
+                    title: "Video playback error",
+                    description: "Unable to play video. The file may be corrupted or in an unsupported format.",
+                    variant: "destructive"
+                  });
+                }}
+              />
+            ) : (
+              <div className="w-full aspect-video flex items-center justify-center bg-muted">
+                <p className="text-muted-foreground">Loading video...</p>
+              </div>
+            )}
+          </div>
+        </Card>
 
       {/* Status and Feedback */}
       <Card className="p-6 space-y-6">
@@ -574,6 +582,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 };

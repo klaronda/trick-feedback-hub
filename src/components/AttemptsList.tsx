@@ -151,13 +151,15 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">My Trick Attempts</h1>
-        </div>
-        <div className="text-center py-12">
-          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground mt-4">Loading your attempts...</p>
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-semibold text-foreground">My Trick Attempts</h1>
+          </div>
+          <div className="text-center py-12">
+            <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
+            <p className="text-muted-foreground mt-4">Loading your attempts...</p>
+          </div>
         </div>
       </div>
     );
@@ -171,175 +173,182 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
         isVisible={notification.isVisible}
         onHide={hideNotification}
       />
-      <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">My Trick Attempts</h1>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground">
-            <LogOut className="w-4 h-4 mr-2" />
-            Logout
-          </Button>
-          <Button 
-            onClick={onUploadNew} 
-            disabled={checking}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            {checking ? "Checking..." : "Upload New"}
-          </Button>
-        </div>
-      </div>
-
-      {uploadBlocked && userPlan?.plan_name === 'free' && (
-        <Alert className="border-amber-200 bg-amber-50">
-          <Crown className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-800">You've reached your upload max this month.</AlertTitle>
-          <AlertDescription className="text-amber-700 space-y-3">
-            <p>It will reset again next month. Add a subscription for just $5/month and upload as many as you want.</p>
-            <div className="flex gap-2 pt-2">
-              <Button 
-                onClick={onShowUpgrade}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-              >
-                Go Pro
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-semibold text-foreground">My Trick Attempts</h1>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
               </Button>
-            </div>
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && !bannerDismissed && (
-        <Card className="p-4 bg-gradient-to-r from-amber-50 to-amber-100 border-amber-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold text-amber-800">Free Plan - Limited Features</h3>
-              <p className="text-sm text-amber-700">Unlock unlimited uploads and advanced features</p>
-            </div>
-            <div className="flex items-center gap-2">
               <Button 
-                size="sm" 
-                className="bg-amber-600 hover:bg-amber-700"
-                onClick={async () => {
-                  try {
-                    const user = (await supabase.auth.getUser()).data.user;
-                    if (!user?.email) {
-                      alert("You must be logged in to upgrade.");
-                      return;
-                    }
-
-                    const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                      body: {
-                        customerEmail: user.email,
-                      },
-                    });
-
-                    if (error) throw error;
-
-                    if (data?.url) {
-                      window.open(data.url, '_blank');
-                    }
-                  } catch (error) {
-                    console.error('Checkout error:', error);
-                    alert("Failed to start checkout. Please try again.");
-                  }
-                }}
+                onClick={onUploadNew} 
+                disabled={checking}
+                className="bg-foreground hover:bg-foreground/90 text-background font-medium"
               >
-                Go Pro
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setBannerDismissed(true);
-                  localStorage.setItem('freePlanBannerDismissed', 'true');
-                }}
-                className="text-amber-600 hover:text-amber-700 hover:bg-amber-100"
-              >
-                <X className="w-4 h-4" />
+                <Plus className="w-4 h-4" />
+                {checking ? "Checking..." : "Upload New"}
               </Button>
             </div>
           </div>
-        </Card>
-      )}
 
-      {attempts.length === 0 ? (
-        <Card className="p-12 text-center">
-          <div className="space-y-4">
-            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
-              <VideoIcon className="w-8 h-8 text-muted-foreground" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">No attempts yet</h3>
-              <p className="text-muted-foreground">
-                Upload your first trick attempt to get started
-              </p>
-            </div>
-            <Button onClick={onUploadNew} disabled={checking}>
-              {checking ? "Checking..." : "Upload First Attempt"}
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {attempts.map((attempt) => (
-            <Card key={attempt.id} className="rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold">
-                      {attempt.trick_name || 'Unnamed Trick'}
-                    </h3>
-                    <Badge 
-                      className="rounded-full px-3 py-1 text-sm font-medium border-0"
-                      style={{
-                        backgroundColor: attempt.status.toLowerCase() === 'reviewed' ? 'hsl(142 76% 36%)' : 'hsl(45 93% 47%)',
-                        color: 'white'
-                      }}
-                    >
-                      {attempt.status}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>{formatDate(attempt.created_at)}</span>
-                    {attempt.feedback && (
-                      <div className="flex items-center gap-1">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>Feedback available</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
+          {uploadBlocked && userPlan?.plan_name === 'free' && (
+            <Alert className="border-warning bg-warning/10">
+              <Crown className="h-4 w-4 text-warning" />
+              <AlertTitle className="text-foreground">You've reached your upload max this month.</AlertTitle>
+              <AlertDescription className="text-muted-foreground space-y-3">
+                <p>It will reset again next month. Add a subscription for just $5/month and upload as many as you want.</p>
+                <div className="flex gap-2 pt-2">
                   <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => onViewDetails(attempt.id)}
-                    className="text-sm underline-offset-4 hover:underline"
+                    onClick={onShowUpgrade}
+                    className="bg-foreground hover:bg-foreground/90 text-background font-medium"
                   >
-                    View Details
+                    Go Pro
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && !bannerDismissed && (
+            <Card className="p-4 bg-muted/50 border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-foreground">Free Plan - Limited Features</h3>
+                  <p className="text-sm text-muted-foreground">Unlock unlimited uploads and advanced features</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button 
+                    size="sm" 
+                    className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+                    onClick={async () => {
+                      try {
+                        const user = (await supabase.auth.getUser()).data.user;
+                        if (!user?.email) {
+                          alert("You must be logged in to upgrade.");
+                          return;
+                        }
+
+                        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+                          body: {
+                            customerEmail: user.email,
+                          },
+                        });
+
+                        if (error) throw error;
+
+                        if (data?.url) {
+                          window.open(data.url, '_blank');
+                        }
+                      } catch (error) {
+                        console.error('Checkout error:', error);
+                        alert("Failed to start checkout. Please try again.");
+                      }
+                    }}
+                  >
+                    Go Pro
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onClick={() => handleDelete(attempt.id)}
-                    disabled={deletingId === attempt.id}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => {
+                      setBannerDismissed(true);
+                      localStorage.setItem('freePlanBannerDismissed', 'true');
+                    }}
+                    className="text-muted-foreground hover:text-foreground"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <X className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
             </Card>
-          ))}
+          )}
+
+          {attempts.length === 0 ? (
+            <Card className="p-12 text-center bg-card border-border">
+              <div className="space-y-4">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto">
+                  <VideoIcon className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-foreground">No attempts yet</h3>
+                  <p className="text-muted-foreground">
+                    Upload your first trick attempt to get started
+                  </p>
+                </div>
+                <Button 
+                  onClick={onUploadNew} 
+                  disabled={checking}
+                  className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+                >
+                  {checking ? "Checking..." : "Upload First Attempt"}
+                </Button>
+              </div>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {attempts.map((attempt) => (
+                <Card key={attempt.id} className="p-6 bg-card border-border hover:bg-muted/50 transition-colors">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-semibold text-foreground">
+                          {attempt.trick_name || 'Unnamed Trick'}
+                        </h3>
+                        <Badge 
+                          variant="secondary"
+                          className={`px-3 py-1 text-sm font-medium ${
+                            attempt.status.toLowerCase() === 'reviewed' 
+                              ? 'bg-success/10 text-success border-success/20' 
+                              : 'bg-warning/10 text-warning border-warning/20'
+                          }`}
+                        >
+                          {attempt.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>{formatDate(attempt.created_at)}</span>
+                        {attempt.feedback && (
+                          <div className="flex items-center gap-1">
+                            <MessageCircle className="w-4 h-4" />
+                            <span>Feedback available</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => onViewDetails(attempt.id)}
+                        className="text-sm border-border hover:bg-muted"
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDelete(attempt.id)}
+                        disabled={deletingId === attempt.id}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 border-border"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )}
+          
+          {/* Disclaimer */}
+          <div className="text-center text-sm text-muted-foreground mt-8">
+            Your videos are stored in the cloud for up to 180 days.
+          </div>
         </div>
-      )}
-      
-      {/* Disclaimer */}
-      <div className="text-center text-sm text-muted-foreground mt-8">
-        Your videos are stored in the cloud for up to 180 days.
-      </div>
       </div>
     </>
   );
