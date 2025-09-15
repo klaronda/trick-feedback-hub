@@ -234,8 +234,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
               <div className="space-y-2">
                 <Label>Birthday</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  <Select value={formData.birthdayMonth} onValueChange={(value) => handleInputChange('birthdayMonth', value)}>
+                <div className="grid grid-cols-6 gap-2">
+                  <div className="col-span-3">
+                    <Select value={formData.birthdayMonth} onValueChange={(value) => handleInputChange('birthdayMonth', value)}>
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
@@ -245,8 +246,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         <SelectItem key={month} value={(index + 1).toString()}>{month}</SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
-                  <Select value={formData.birthdayDay} onValueChange={(value) => handleInputChange('birthdayDay', value)}>
+                    </Select>
+                  </div>
+                  <div className="col-span-1">
+                    <Select value={formData.birthdayDay} onValueChange={(value) => handleInputChange('birthdayDay', value)}>
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
@@ -255,8 +258,10 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
-                  <Select value={formData.birthdayYear} onValueChange={(value) => handleInputChange('birthdayYear', value)}>
+                    </Select>
+                  </div>
+                  <div className="col-span-2">
+                    <Select value={formData.birthdayYear} onValueChange={(value) => handleInputChange('birthdayYear', value)}>
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
@@ -265,7 +270,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                         <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
                     </SelectContent>
-                  </Select>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
