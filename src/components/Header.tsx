@@ -15,7 +15,7 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
       <div className="flex items-center justify-between px-4 py-4 max-w-sm mx-auto">
         {/* Logo */}
         <div className="flex items-center space-x-3">
-          <div className="bg-gray-900 text-white rounded p-2 flex items-center justify-center">
+          <div className="bg-gray-900 text-white p-2 flex items-center justify-center">
             <Zap className="h-5 w-5" />
           </div>
           <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>
