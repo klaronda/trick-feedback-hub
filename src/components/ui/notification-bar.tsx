@@ -24,8 +24,8 @@ export function NotificationBar({ message, type, isVisible, onHide }: Notificati
       className={cn(
         'fixed top-0 left-0 right-0 z-50 px-4 py-3 text-center font-medium transition-transform duration-300 ease-in-out',
         type === 'success' 
-          ? 'bg-[var(--green-600)] text-white' 
-          : 'bg-[var(--red-600)] text-white',
+          ? 'bg-[var(--green-soft)] text-white' 
+          : 'bg-[var(--red-soft)] text-white',
         isVisible 
           ? 'transform translate-y-0' 
           : 'transform -translate-y-full'

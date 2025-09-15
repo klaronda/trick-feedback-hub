@@ -49,6 +49,10 @@
   --soft-black: #1f2937; /* gray-800 */
   --soft-black-secondary: #d1d5db; /* gray-300 */
   
+  /* Softer notification colors */
+  --green-soft: #16a34a; /* green-600 */
+  --red-soft: #dc2626; /* red-600 */
+  
   /* SkateCoach specific colors */
   --orange-50: #fff7ed;
   --orange-100: #ffedd5;
@@ -162,6 +166,10 @@
   /* Form focus/idle color tokens (dark) */
   --soft-black: #e5e7eb; /* gray-200 */
   --soft-black-secondary: #6b7280; /* gray-500 */
+  
+  /* Softer notification colors (dark) */
+  --green-soft: #22c55e; /* green-500 */
+  --red-soft: #ef4444; /* red-500 */
 }
 
 @layer base {
