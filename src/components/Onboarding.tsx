@@ -291,7 +291,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
       case 1:
         return (
-          <div className="space-y-6 text-center">
+          <div className="space-y-6">
             <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
               <img 
                 src={onboardingUploadImage} 
@@ -310,7 +310,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
       case 2:
         return (
-          <div className="space-y-6 text-center">
+          <div className="space-y-6">
             <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
               <img 
                 src={onboardingUpgradeImage} 
@@ -422,7 +422,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               >
                 Maybe Later
               </Button>
-              <p className="text-xs text-gray-500 text-center">
+              <p className="text-xs text-gray-500">
                 Your videos are stored in the cloud for up to 180 days.
               </p>
             </div>

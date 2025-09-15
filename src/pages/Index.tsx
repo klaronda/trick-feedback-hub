@@ -237,7 +237,7 @@ const Index = () => {
         {currentView === 'home' && (
           <div className="space-y-6">
             {/* Welcome Section */}
-            <div className="text-center space-y-2">
+            <div className="space-y-2">
               <h1 className="text-2xl font-semibold text-gray-900">Welcome back, Alex!</h1>
               <p className="text-gray-600">Ready to improve your skating today?</p>
             </div>

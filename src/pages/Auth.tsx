@@ -190,7 +190,7 @@ export default function Auth() {
           </div>
 
           {/* Form Title */}
-          <div className="text-center mb-8">
+          <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900">
               {isSignUp ? 'Create Account' : 'Welcome back'}
             </h2>
@@ -301,7 +301,7 @@ export default function Auth() {
           </form>
 
           {/* Toggle Sign Up/In */}
-          <div className="text-center mt-6">
+          <div className="mt-6">
             <button
               type="button"
               onClick={() => setIsSignUp(!isSignUp)}
@@ -317,7 +317,7 @@ export default function Auth() {
 
           {/* Terms */}
           {isSignUp && (
-            <p className="text-xs text-gray-500 text-center mt-6">
+            <p className="text-xs text-gray-500 mt-6">
               By signing up, you agree to our Terms of Service and Privacy Policy
             </p>
           )}

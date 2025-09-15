@@ -99,7 +99,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
           </Button>
         </div>
         
-        <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Upload className="w-6 h-6 text-gray-400" />
           </div>
