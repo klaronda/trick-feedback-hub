@@ -108,7 +108,6 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
             Start your skateboarding journey by uploading a video of your trick attempt.
           </p>
           <Button onClick={onUploadNew} className="w-full bg-gray-900 hover:bg-gray-800 text-white h-10">
-            <Upload className="w-4 h-4 mr-2" />
             Let's Go!
           </Button>
         </div>
@@ -153,7 +152,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
                 
                 {attempt.status === 'processing' && (
                   <p className="text-sm text-gray-600 mb-3">
-                    We're reviewing your technique
+                     We're reviewing your technique
                   </p>
                 )}
                 
