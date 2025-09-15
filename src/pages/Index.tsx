@@ -3,20 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { UploadAttempt } from "@/components/UploadAttempt";
 import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
-import { PlanBadge } from "@/components/ui/PlanBadge";
+import { Header } from "@/components/Header";
+import { Navigation } from "@/components/Navigation";
+import { DailyTrickTips } from "@/components/DailyTrickTips";
+import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
+import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useUploadGuard } from "@/hooks/useUploadGuard";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 
-type AppView = 'list' | 'upload' | 'details';
+type AppView = 'home' | 'videos' | 'upload' | 'details';
 
 const Index = () => {
-  const [currentView, setCurrentView] = useState<AppView>('list');
+  const [currentView, setCurrentView] = useState<AppView>('home');
   const [selectedAttemptId, setSelectedAttemptId] = useState<string>("");
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -163,7 +166,7 @@ const Index = () => {
   };
 
   const handleBackToList = () => {
-    setCurrentView('list');
+    setCurrentView('videos');
     setSelectedAttemptId("");
   };
 
@@ -207,64 +210,19 @@ const Index = () => {
     return <Onboarding onComplete={handleOnboardingComplete} />;
   }
 
+  const handleNavigate = (view: 'home' | 'videos' | 'coach' | 'profile') => {
+    if (view === 'videos') {
+      setCurrentView('videos');
+    } else if (view === 'home') {
+      setCurrentView('home');
+    }
+    // Coach and Profile will be implemented later
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">
-              Skate Coach <span className="text-primary">(MVP)</span>
-            </h1>
-            <div className="flex items-center gap-3">
-              {/* User Avatar & Plan */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-medium">
-                  {user?.email?.charAt(0).toUpperCase() || 'U'}
-                </div>
-                {userPlan && (
-                  <span className="text-sm text-muted-foreground">
-                    Plan: <span className="font-medium">{userPlan.plan_name === 'pro' ? 'Pro' : 'Free'}</span>
-                  </span>
-                )}
-              </div>
-              
-              {/* Upgrade Button */}
-              {userPlan?.plan_name !== 'pro' && (
-                <button
-                  onClick={async () => {
-                    try {
-                      const user = (await supabase.auth.getUser()).data.user;
-                      if (!user?.email) {
-                        alert("You must be logged in to upgrade.");
-                        return;
-                      }
-
-                      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-                        body: {
-                          customerEmail: user.email,
-                        },
-                      });
-
-                      if (error) throw error;
-
-                      if (data?.url) {
-                        window.open(data.url, '_blank');
-                      }
-                    } catch (error) {
-                      console.error('Checkout error:', error);
-                      alert("Failed to start checkout. Please try again.");
-                    }
-                  }}
-                  className="px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                >
-                  Go Pro
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header userPlan={userPlan} />
 
       {/* Upload Limit Modal */}
       <UploadLimitModal 
@@ -275,7 +233,40 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-12">
+      <main className="max-w-md mx-auto px-6 py-6">
+        {currentView === 'home' && (
+          <div className="space-y-6">
+            {/* Welcome Section */}
+            <div className="text-center space-y-2">
+              <h1 className="text-2xl font-bold">Welcome back, Alex!</h1>
+              <p className="text-muted-foreground">Ready to improve your skating today?</p>
+            </div>
+
+            {/* Upload Button */}
+            <Button 
+              onClick={handleUploadNew}
+              className="w-full py-4 text-base font-medium"
+              size="lg"
+            >
+              <Upload className="w-5 h-5 mr-2" />
+              Upload Video
+            </Button>
+
+            {/* Daily Trick Tips - Pro Only */}
+            <DailyTrickTips userPlan={userPlan} />
+
+            {/* Top Weekly Tricks */}
+            <TopWeeklyTricks />
+
+            {/* Recent Uploads */}
+            <RecentUploads 
+              onViewDetails={handleViewDetails}
+              onUploadNew={handleUploadNew}
+              onViewAll={() => setCurrentView('videos')}
+            />
+          </div>
+        )}
+
         {currentView === 'upload' && (
           <UploadAttempt 
             onUploadSuccess={handleUploadSuccess} 
@@ -283,7 +274,7 @@ const Index = () => {
           />
         )}
         
-        {currentView === 'list' && (
+        {currentView === 'videos' && (
           <AttemptsList 
             onViewDetails={handleViewDetails}
             onUploadNew={handleUploadNew}
@@ -302,6 +293,12 @@ const Index = () => {
           />
         )}
       </main>
+
+      {/* Bottom Navigation */}
+      <Navigation 
+        currentView={currentView === 'home' ? 'home' : currentView === 'videos' ? 'videos' : 'home'} 
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 };
