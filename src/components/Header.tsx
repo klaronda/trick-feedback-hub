@@ -11,11 +11,11 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
   return (
-    <header className="sticky top-0 z-50 bg-card border-b border-border rounded-none">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-4 max-w-sm mx-auto">
         {/* Logo */}
         <div className="flex items-center space-x-3">
-          <div className="bg-gray-900 text-white p-2 flex items-center justify-center">
+          <div className="bg-gray-900 text-white rounded p-2 flex items-center justify-center">
             <Zap className="h-5 w-5" />
           </div>
           <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>

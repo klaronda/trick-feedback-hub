@@ -255,6 +255,6 @@
   header, footer, nav, input, button, textarea, select,
   [class*="header"], [class*="footer"], [class*="navigation"],
   [class*="input"], [class*="button"], [class*="textarea"], [class*="select"] {
-    border-radius: 0 !important;
+    border-radius: var(--radius) !important;
   }
 }
