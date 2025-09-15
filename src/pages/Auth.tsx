@@ -179,11 +179,11 @@ export default function Auth() {
         isVisible={notification.isVisible}
         onHide={hideNotification}
       />
-      <div className="min-h-screen bg-gray-50 flex justify-center pt-16 px-4">
+      <div className="min-h-screen bg-gray-50 flex justify-left pt-16 px-4">
         <div className="w-full max-w-sm">
           {/* Logo and Brand */}
-          <div className="flex items-center justify-center mb-8">
-            <div className="bg-gray-900 text-white rounded-lg p-2 flex items-center justify-center w-8 h-8 mr-3">
+          <div className="flex items-left justify-left mb-8">
+            <div className="bg-gray-900 text-white rounded-lg p-2 flex items-left justify-left w-8 h-8 mr-3">
               <Zap className="w-4 h-4" />
             </div>
             <h1 className="text-xl font-semibold text-gray-900">SkateCoach</h1>
@@ -192,12 +192,12 @@ export default function Auth() {
           {/* Form Title */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900">
-              {isSignUp ? 'Create Account' : 'Welcome back'}
+              {isSignUp ? 'Create a SkateCoach account' : 'Welcome back'}
             </h2>
             <p className="text-gray-600 text-sm mt-2">
               {isSignUp 
-                ? 'Start your skateboarding journey with personalized coaching'
-                : 'Sign in to continue your skating journey'
+                ? 'Start your skateboarding coaching journey.'
+                : 'Sign in to continue your skating journey.'
               }
             </p>
           </div>
