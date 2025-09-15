@@ -8,7 +8,7 @@ interface NavigationProps {
 
 export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
       <div className="flex items-center justify-around py-2 px-4 max-w-sm mx-auto">
         <Button
           variant="ghost"
@@ -17,7 +17,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'home' 
               ? 'text-primary bg-primary/10' 
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -31,7 +31,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'videos' 
               ? 'text-primary bg-primary/10' 
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
           }`}
         >
           <Video className="w-5 h-5" />
@@ -45,9 +45,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'coach' 
               ? 'text-primary bg-primary/10' 
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
           }`}
-          disabled
         >
           <MessageCircle className="w-5 h-5" />
           <span className="text-xs font-medium">Coach</span>
@@ -60,7 +59,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'profile' 
               ? 'text-primary bg-primary/10' 
-              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
           }`}
           disabled
         >

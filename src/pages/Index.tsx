@@ -16,8 +16,9 @@ import { useUploadGuard } from "@/hooks/useUploadGuard";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
+import CoachChat from "@/components/CoachChat";
 
-type AppView = 'home' | 'videos' | 'upload' | 'details';
+ type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -228,8 +229,10 @@ const Index = () => {
       setCurrentView('videos');
     } else if (view === 'home') {
       setCurrentView('home');
+    } else if (view === 'coach') {
+      setCurrentView('coach');
     }
-    // Coach and Profile will be implemented later
+    // Profile will be implemented later
   };
 
   return (
@@ -305,6 +308,10 @@ const Index = () => {
           />
         )}
         
+        {currentView === 'coach' && (
+          <CoachChat userFirstName={userProfile?.first_name} />
+        )}
+        
         {currentView === 'details' && selectedAttemptId && (
           <AttemptDetails 
             attemptId={selectedAttemptId}
@@ -316,7 +323,7 @@ const Index = () => {
 
       {/* Bottom Navigation */}
       <Navigation 
-        currentView={currentView === 'home' ? 'home' : currentView === 'videos' ? 'videos' : 'home'} 
+        currentView={currentView === 'details' ? 'videos' : (currentView === 'upload' ? 'videos' : (currentView as 'home' | 'videos' | 'coach' | 'profile'))}
         onNavigate={handleNavigate}
       />
     </div>
