@@ -44,11 +44,11 @@ export const TopWeeklyTricks = () => {
 
       // Fill with mock data if not enough real data
       const mockTricks = [
-        { trick_name: "Ollie", count: 45 },
-        { trick_name: "Kickflip", count: 32 },
-        { trick_name: "Heelflip", count: 28 },
-        { trick_name: "Pop Shuvit", count: 24 },
-        { trick_name: "Frontside 180", count: 18 }
+        { trick_name: "Kickflip", count: 45 },
+        { trick_name: "Ollie", count: 38 },
+        { trick_name: "360 Flip", count: 28 },
+        { trick_name: "Frontside Shuvit", count: 24 },
+        { trick_name: "Heelflip", count: 18 }
       ];
 
       setTopTricks(sortedTricks.length > 0 ? sortedTricks : mockTricks);
@@ -56,11 +56,11 @@ export const TopWeeklyTricks = () => {
       console.error('Error fetching top tricks:', error);
       // Use mock data on error
       setTopTricks([
-        { trick_name: "Ollie", count: 45 },
-        { trick_name: "Kickflip", count: 32 },
-        { trick_name: "Heelflip", count: 28 },
-        { trick_name: "Pop Shuvit", count: 24 },
-        { trick_name: "Frontside 180", count: 18 }
+        { trick_name: "Kickflip", count: 45 },
+        { trick_name: "Ollie", count: 38 },
+        { trick_name: "360 Flip", count: 28 },
+        { trick_name: "Frontside Shuvit", count: 24 },
+        { trick_name: "Heelflip", count: 18 }
       ]);
     } finally {
       setLoading(false);

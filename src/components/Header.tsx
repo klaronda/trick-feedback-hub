@@ -23,7 +23,7 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
 
         {/* Right - Plan Badge & Notifications */}
         <div className="flex items-center gap-2">
-          <Badge variant={isPro ? "pro" : "category"}>
+          <Badge variant={isPro ? "active" : "category"}>
             {isPro ? "Pro" : "Free"}
           </Badge>
           <Button 

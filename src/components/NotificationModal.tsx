@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Upload, Bell, BookmarkPlus, Video } from "lucide-react";
+import { Upload, Bell, BookmarkPlus, MessageSquare } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface NotificationModalProps {
@@ -18,7 +18,6 @@ interface ActivityItem {
   description: string;
   timestamp: string;
   icon: React.ReactNode;
-  color: string;
 }
 
 export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: NotificationModalProps) => {
@@ -53,8 +52,7 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
           title: 'Video uploaded',
           description: `Your ${attempt.trick_name || 'trick'} attempt is being reviewed by Coach`,
           timestamp: formatTimestamp(attempt.created_at),
-          icon: <Upload className="w-4 h-4" />,
-          color: 'text-blue-500'
+          icon: <Upload className="w-4 h-4" />
         });
 
         // Feedback activity (if processed)
@@ -65,35 +63,55 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
             title: 'Coach feedback ready',
             description: `Your ${attempt.trick_name || 'trick'} analysis is complete with coaching tips`,
             timestamp: formatTimestamp(attempt.processed_at),
-            icon: <Bell className="w-4 h-4" />,
-            color: 'text-orange-500'
+            icon: <MessageSquare className="w-4 h-4" />
           });
         }
       });
 
       // Add some sample activities for demonstration
-      activityItems.push(
+      if (activityItems.length === 0) {
+        activityItems.push(
+          {
+            id: 'upload-demo',
+            type: 'upload',
+            title: 'Video uploaded',
+            description: 'Your 360 flip attempt is being reviewed by Coach',
+            timestamp: '10 hours ago',
+            icon: <Upload className="w-4 h-4" />
+          },
+          {
+            id: 'tip-saved-1',
+            type: 'tip_saved',
+            title: 'Tip saved',
+            description: 'You saved "Master Your Ollie Foundation" to your collection',
+            timestamp: 'Yesterday',
+            icon: <BookmarkPlus className="w-4 h-4" />
+          }
+        );
+      }
+
+      setActivities(activityItems.slice(0, 8)); // Show max 8 items
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+      // Show demo data on error
+      setActivities([
+        {
+          id: 'upload-demo',
+          type: 'upload',
+          title: 'Video uploaded',
+          description: 'Your 360 flip attempt is being reviewed by Coach',
+          timestamp: '10 hours ago',
+          icon: <Upload className="w-4 h-4" />
+        },
         {
           id: 'tip-saved-1',
           type: 'tip_saved',
           title: 'Tip saved',
           description: 'You saved "Master Your Ollie Foundation" to your collection',
           timestamp: 'Yesterday',
-          icon: <BookmarkPlus className="w-4 h-4" />,
-          color: 'text-green-500'
+          icon: <BookmarkPlus className="w-4 h-4" />
         }
-      );
-
-      // Sort by most recent first
-      activityItems.sort((a, b) => {
-        // For demo purposes, just maintain the order
-        return 0;
-      });
-
-      setActivities(activityItems.slice(0, 8)); // Show max 8 items
-    } catch (error) {
-      console.error('Error fetching activities:', error);
-      setActivities([]);
+      ]);
     } finally {
       setLoading(false);
     }
@@ -110,40 +128,42 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
     return date.toLocaleDateString();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm mx-auto h-[80vh] p-0 gap-0 rounded-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-white rounded-2xl max-h-[80vh] flex flex-col">
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 bg-white border-b border-gray-100 p-4 rounded-t-2xl">
-          <DialogHeader className="space-y-2">
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-lg font-semibold text-gray-900">
-                {userFirstName}'s Activity
-              </DialogTitle>
-              <Button 
-                onClick={onClose}
-                className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-1.5 h-auto text-sm rounded-lg"
-              >
-                Done
-              </Button>
-            </div>
-            <DialogDescription className="text-sm text-gray-600">
-              Recent uploads, notifications, saved tips and more.
-            </DialogDescription>
-          </DialogHeader>
+        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {userFirstName}'s Activity
+            </h2>
+            <Button 
+              onClick={onClose}
+              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-1.5 h-auto text-sm rounded-lg font-medium"
+            >
+              Done
+            </Button>
+          </div>
+          <p className="text-sm text-gray-600">
+            Recent uploads, notifications, saved tips and more.
+          </p>
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 px-4 pb-4">
+        <ScrollArea className="flex-1 px-6 pb-6">
           {loading ? (
             <div className="space-y-4 pt-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg animate-pulse">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-200 rounded w-full"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -151,20 +171,22 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
           ) : activities.length > 0 ? (
             <div className="space-y-3 pt-4">
               {activities.map((activity) => (
-                <div key={activity.id} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className={`w-8 h-8 rounded-full bg-white border-2 border-gray-100 flex items-center justify-center ${activity.color}`}>
-                    {activity.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium text-gray-900 mb-1">
-                      {activity.title}
-                    </h4>
-                    <p className="text-sm text-gray-600 mb-2 leading-relaxed">
-                      {activity.description}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {activity.timestamp}
-                    </p>
+                <div key={activity.id} className="bg-gray-50 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                      {activity.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
+                        {activity.title}
+                      </h4>
+                      <p className="text-sm text-gray-600 mb-2 leading-relaxed">
+                        {activity.description}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {activity.timestamp}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -181,7 +203,7 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
             </div>
           )}
         </ScrollArea>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
