@@ -258,7 +258,7 @@ const Index = () => {
           <div className="space-y-6">
             {/* Welcome Section */}
             <div className="space-y-2">
-              <h1 className="text-2xl font-semibold text-gray-900">Welcome back, Alex!</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">Welcome back{userProfile?.first_name ? `, ${userProfile.first_name}` : ''}!</h1>
               <p className="text-gray-600">Ready to improve your skating today?</p>
             </div>
 
