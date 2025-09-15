@@ -60,15 +60,24 @@ serve(async (req) => {
         age--;
       }
       
-      // Determine reading level based on age (cap at 10th grade for under 16)
-      if (age < 16) {
-        readingLevel = '10th grade';
-      } else if (age >= 16 && age <= 18) {
-        readingLevel = 'high school';
+      // Determine reading level based on age - scales with age up to 10th grade at 16
+      if (age <= 6) {
+        readingLevel = '2nd grade';
+      } else if (age === 7) {
+        readingLevel = '3rd grade';
+      } else if (age === 8 || age === 9) {
+        readingLevel = '4th grade';  
+      } else if (age === 10 || age === 11) {
+        readingLevel = '5th grade';
+      } else if (age === 12 || age === 13) {
+        readingLevel = '6th grade';
+      } else if (age === 14 || age === 15) {
+        readingLevel = '8th grade';
       } else {
-        readingLevel = 'adult';
+        readingLevel = '10th grade'; // 16+ stays at 10th grade
       }
     }
+
 
     // Build personalized context
     const personalContext = [];
