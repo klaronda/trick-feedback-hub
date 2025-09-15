@@ -192,7 +192,7 @@ export default function Auth() {
           {/* Form Title */}
           <div className="mb-8">
             <h2 className="text-2xl font-semibold text-gray-900">
-              {isSignUp ? 'Create a SkateCoach account' : 'Welcome back'}
+              {isSignUp ? 'Create a SkateCoach account.' : 'Yo! Welcome back.'}
             </h2>
             <p className="text-gray-600 text-sm mt-2">
               {isSignUp 
