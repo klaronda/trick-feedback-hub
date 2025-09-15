@@ -11,7 +11,7 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+    <header className="sticky top-0 z-50 bg-card border-b border-border rounded-none">
       <div className="flex items-center justify-between px-4 py-4 max-w-sm mx-auto">
         {/* Logo */}
         <div className="flex items-center space-x-3">
