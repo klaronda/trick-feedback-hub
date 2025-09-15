@@ -316,7 +316,7 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-600" />
-                  <span>Works with iOS, Android, macOS, and Windows</span>
+                  <span>Works with iOS, Android, macOS, or Windows</span>
                 </div>
               </div>
             </div>
