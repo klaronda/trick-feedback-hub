@@ -179,7 +179,7 @@ export default function Auth() {
         isVisible={notification.isVisible}
         onHide={hideNotification}
       />
-      <div className="min-h-screen bg-gray-50 flex justify-left pt-16 px-4">
+      <div className="min-h-screen bg-gray-50 flex justify-center pt-16 px-4">
         <div className="w-full max-w-sm">
           {/* Logo and Brand */}
           <div className="flex items-left justify-left mb-8">
