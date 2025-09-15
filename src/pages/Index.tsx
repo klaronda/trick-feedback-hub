@@ -9,6 +9,7 @@ import { DailyTrickTips } from "@/components/DailyTrickTips";
 import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
+import { NotificationModal } from "@/components/NotificationModal";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useUploadGuard } from "@/hooks/useUploadGuard";
@@ -24,9 +25,11 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ first_name: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
@@ -67,14 +70,22 @@ const Index = () => {
 
   const fetchUserPlan = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Fetch user plan from users table
+      const { data: userData, error: userError } = await supabase
         .from('users')
         .select('plan_name, is_subscribed, onboarding_completed')
         .eq('id', userId)
         .single();
+      
+      // Fetch user profile from profiles table
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('first_name')
+        .eq('user_id', userId)
+        .single();
 
-      if (error) {
-        console.error('Error fetching user plan:', error);
+      if (userError) {
+        console.error('Error fetching user plan:', userError);
         // Set default values if user record doesn't exist - this means new user
         setUserPlan({ plan_name: 'free', is_subscribed: false });
         setIsNewUser(true);
@@ -82,10 +93,11 @@ const Index = () => {
         return;
       }
 
-      setUserPlan(data || { plan_name: 'free', is_subscribed: false });
+      setUserPlan(userData || { plan_name: 'free', is_subscribed: false });
+      setUserProfile(profileData || { first_name: null });
       
       // Check if this is a new user who hasn't completed onboarding
-      if (!data?.onboarding_completed) {
+      if (!userData?.onboarding_completed) {
         setIsNewUser(true);
         setShowOnboarding(true);
       }
@@ -223,7 +235,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <Header userPlan={userPlan} />
+      <Header userPlan={userPlan} onNotificationClick={() => setShowNotificationModal(true)} />
 
       {/* Upload Limit Modal */}
       <UploadLimitModal 
@@ -231,6 +243,13 @@ const Index = () => {
         onClose={() => setShowUploadLimitModal(false)}
         onUpgrade={handleUpgrade}
         isUpgrading={isUpgrading}
+      />
+
+      {/* Notification Modal */}
+      <NotificationModal
+        isOpen={showNotificationModal}
+        onClose={() => setShowNotificationModal(false)}
+        userFirstName={userProfile?.first_name || "User"}
       />
 
       {/* Main Content */}

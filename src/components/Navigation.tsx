@@ -14,8 +14,10 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('home')}
-          className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'home' ? 'text-gray-900' : 'text-gray-400'
+          className={`flex flex-col items-center gap-1 p-3 transition-all ${
+            currentView === 'home' 
+              ? 'text-primary bg-primary/10' 
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -26,8 +28,10 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('videos')}
-          className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'videos' ? 'text-gray-900' : 'text-gray-400'
+          className={`flex flex-col items-center gap-1 p-3 transition-all ${
+            currentView === 'videos' 
+              ? 'text-primary bg-primary/10' 
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
           }`}
         >
           <Video className="w-5 h-5" />
@@ -38,8 +42,10 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('coach')}
-          className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'coach' ? 'text-gray-900' : 'text-gray-400'
+          className={`flex flex-col items-center gap-1 p-3 transition-all ${
+            currentView === 'coach' 
+              ? 'text-primary bg-primary/10' 
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
           }`}
           disabled
         >
@@ -51,8 +57,10 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('profile')}
-          className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'profile' ? 'text-gray-900' : 'text-gray-400'
+          className={`flex flex-col items-center gap-1 p-3 transition-all ${
+            currentView === 'profile' 
+              ? 'text-primary bg-primary/10' 
+              : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
           }`}
           disabled
         >

@@ -4,9 +4,10 @@ import { Badge } from "@/components/ui/badge";
 
 interface HeaderProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
+  onNotificationClick?: () => void;
 }
 
-export const Header = ({ userPlan }: HeaderProps) => {
+export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
   return (
@@ -20,16 +21,18 @@ export const Header = ({ userPlan }: HeaderProps) => {
           <h1 className="text-lg font-semibold text-gray-900">SkateCoach</h1>
         </div>
 
-        {/* Right - Plan Badge, Notifications & Profile */}
+        {/* Right - Plan Badge & Notifications */}
         <div className="flex items-center gap-2">
           <Badge variant={isPro ? "pro" : "category"}>
             {isPro ? "Pro" : "Free"}
           </Badge>
-          <Button variant="ghost" size="sm" className="p-1.5 text-gray-600 hover:text-gray-900">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onNotificationClick}
+            className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+          >
             <Bell className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm" className="p-1.5 text-gray-600 hover:text-gray-900">
-            <User className="w-4 h-4" />
           </Button>
         </div>
       </div>
