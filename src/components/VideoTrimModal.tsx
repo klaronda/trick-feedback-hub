@@ -103,14 +103,31 @@ export const VideoTrimModal = ({ isOpen, onClose, file, onTrimComplete }: VideoT
                 />
               </div>
               
+              {/* Start handle */}
+              <div 
+                className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-900 rounded-full border-2 border-white shadow-md cursor-pointer z-10"
+                style={{ left: `calc(${(startTime / duration) * 100}% - 8px)` }}
+              />
+              
+              {/* End handle */}
+              <div 
+                className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-900 rounded-full border-2 border-white shadow-md cursor-pointer z-10"
+                style={{ left: `calc(${(endTime / duration) * 100}% - 8px)` }}
+              />
+              
               <input
                 type="range"
                 min={0}
                 max={duration}
                 step={0.1}
                 value={startTime}
-                onChange={(e) => setStartTime(Number(e.target.value))}
-                className="absolute top-0 w-full h-2 opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  const newStartTime = Number(e.target.value);
+                  if (newStartTime < endTime) {
+                    setStartTime(newStartTime);
+                  }
+                }}
+                className="absolute top-0 w-full h-4 opacity-0 cursor-pointer z-20"
               />
               <input
                 type="range"
@@ -118,8 +135,13 @@ export const VideoTrimModal = ({ isOpen, onClose, file, onTrimComplete }: VideoT
                 max={duration}
                 step={0.1}
                 value={endTime}
-                onChange={(e) => setEndTime(Number(e.target.value))}
-                className="absolute top-0 w-full h-2 opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  const newEndTime = Number(e.target.value);
+                  if (newEndTime > startTime) {
+                    setEndTime(newEndTime);
+                  }
+                }}
+                className="absolute top-0 w-full h-4 opacity-0 cursor-pointer z-20"
               />
             </div>
           </div>
