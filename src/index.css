@@ -251,9 +251,13 @@
     border-radius: 8px !important;
   }
   
-  /* Keep header, navigation, and form elements square */
-  header, footer, nav, input, button, textarea, select,
-  [class*="header"], [class*="footer"], [class*="navigation"],
+  /* Keep header and navigation elements completely square */
+  header, nav, [class*="header"], [class*="navigation"] {
+    border-radius: 0 !important;
+  }
+  
+  /* Keep form elements with standard radius */
+  input, button, textarea, select,
   [class*="input"], [class*="button"], [class*="textarea"], [class*="select"] {
     border-radius: var(--radius) !important;
   }
