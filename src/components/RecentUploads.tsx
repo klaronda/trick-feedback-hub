@@ -69,22 +69,20 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent Uploads</h2>
-          <Button variant="link" className="p-0 font-medium text-sm">
+          <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 text-sm">
             View All
           </Button>
         </div>
         <div className="space-y-3">
           {Array(3).fill(0).map((_, i) => (
-            <Card key={i} className="bg-white border border-border">
-              <CardContent className="p-4">
-                <div className="animate-pulse space-y-2">
-                  <div className="h-4 bg-muted rounded w-1/3" />
-                  <div className="h-3 bg-muted rounded w-1/2" />
-                  <div className="h-3 bg-muted rounded w-1/4" />
-                </div>
-              </CardContent>
-            </Card>
+            <div key={i} className="bg-white rounded-lg border border-gray-200 p-4">
+              <div className="animate-pulse space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-1/3" />
+                <div className="h-3 bg-gray-100 rounded w-1/2" />
+                <div className="h-3 bg-gray-100 rounded w-1/4" />
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -95,27 +93,25 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Recent Uploads</h2>
-          <Button variant="link" className="p-0 font-medium text-sm">
+          <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+          <Button variant="ghost" size="sm" onClick={onViewAll} className="text-gray-600 hover:text-gray-900 text-sm">
             View All
           </Button>
         </div>
         
-        <Card className="bg-white border border-border">
-          <CardContent className="p-6 text-center">
-            <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <Upload className="w-6 h-6 text-muted-foreground" />
-            </div>
-            <h3 className="font-semibold mb-2">Upload Your First Video</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Start your skateboarding journey by uploading a video of your trick attempt.
-            </p>
-            <Button onClick={onUploadNew} className="w-full">
-              <Upload className="w-4 h-4 mr-2" />
-              Upload Video
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="bg-white rounded-lg border border-gray-200 p-6 text-center">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Upload className="w-6 h-6 text-gray-400" />
+          </div>
+          <h3 className="font-semibold text-gray-900 mb-2">Upload Your First Video</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Start your skateboarding journey by uploading a video of your trick attempt.
+          </p>
+          <Button onClick={onUploadNew} className="w-full bg-gray-900 hover:bg-gray-800 text-white h-10">
+            <Upload className="w-4 h-4 mr-2" />
+            Upload Video
+          </Button>
+        </div>
       </div>
     );
   }
@@ -123,64 +119,62 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Recent Uploads</h2>
-        <Button variant="link" onClick={onViewAll} className="p-0 font-medium text-sm">
+        <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+        <Button variant="ghost" size="sm" onClick={onViewAll} className="text-gray-600 hover:text-gray-900 text-sm">
           View All
         </Button>
       </div>
 
       <div className="space-y-3">
         {attempts.map((attempt) => (
-          <Card key={attempt.id} className="bg-white border border-border">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                  <Play className="w-5 h-5 text-muted-foreground" />
+          <div key={attempt.id} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                <Play className="w-5 h-5 text-gray-400" />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold text-sm text-gray-900 truncate">
+                    {attempt.trick_name || 'Untitled Trick'}
+                  </h3>
+                  {getStatusBadge(attempt.status)}
                 </div>
                 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-sm truncate">
-                      {attempt.trick_name || 'Untitled Trick'}
-                    </h3>
-                    {getStatusBadge(attempt.status)}
-                  </div>
-                  
-                  <p className="text-xs text-muted-foreground mb-2">
-                    {formatDistanceToNow(new Date(attempt.created_at), { addSuffix: true })}
+                <p className="text-xs text-gray-600 mb-2">
+                  {formatDistanceToNow(new Date(attempt.created_at), { addSuffix: true })}
+                </p>
+                
+                {attempt.status === 'completed' && (
+                  <p className="text-sm text-gray-600 mb-3">
+                    Great progress on your {attempt.trick_name?.toLowerCase()}! Focus on keeping your shoulders aligned.
                   </p>
-                  
-                  {attempt.status === 'Completed' && (
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Great progress on your {attempt.trick_name?.toLowerCase()}! Focus on keeping your shoulders aligned.
-                    </p>
+                )}
+                
+                {attempt.status === 'processing' && (
+                  <p className="text-sm text-gray-600 mb-3">
+                    We're reviewing your technique
+                  </p>
+                )}
+                
+                <div className="flex items-center justify-between">
+                  {getScore(attempt.analysis_data) && (
+                    <span className="text-sm font-medium text-gray-900">
+                      Score: {getScore(attempt.analysis_data)}
+                    </span>
                   )}
-                  
-                  {attempt.status === 'Processing' && (
-                    <p className="text-sm text-muted-foreground mb-3">
-                      We're reviewing your technique
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    {getScore(attempt.analysis_data) && (
-                      <span className="text-sm font-medium">
-                        Score: {getScore(attempt.analysis_data)}
-                      </span>
-                    )}
-                    <Button 
-                      variant="link" 
-                      size="sm" 
-                      onClick={() => onViewDetails(attempt.id)}
-                      className="p-0 h-auto font-medium text-sm ml-auto"
-                    >
-                      View Details
-                    </Button>
-                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => onViewDetails(attempt.id)}
+                    className="p-0 h-auto font-medium text-sm ml-auto text-gray-600 hover:text-gray-900"
+                  >
+                    View Details
+                  </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>

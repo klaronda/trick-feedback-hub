@@ -220,7 +220,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <Header userPlan={userPlan} />
 
@@ -233,20 +233,19 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-6 py-6">
+      <main className="max-w-sm mx-auto px-4 py-6">
         {currentView === 'home' && (
           <div className="space-y-6">
             {/* Welcome Section */}
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold">Welcome back, Alex!</h1>
-              <p className="text-muted-foreground">Ready to improve your skating today?</p>
+              <h1 className="text-2xl font-semibold text-gray-900">Welcome back, Alex!</h1>
+              <p className="text-gray-600">Ready to improve your skating today?</p>
             </div>
 
             {/* Upload Button */}
             <Button 
               onClick={handleUploadNew}
-              className="w-full py-4 text-base font-medium"
-              size="lg"
+              className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
             >
               <Upload className="w-5 h-5 mr-2" />
               Upload Video

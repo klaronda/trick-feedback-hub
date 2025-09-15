@@ -83,30 +83,28 @@ export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Daily Trick Tips</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Daily Trick Tips</h2>
         <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={prevTip} className="p-2">
+          <Button variant="ghost" size="sm" onClick={prevTip} className="p-2 text-gray-600 hover:text-gray-900">
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Button variant="ghost" size="sm" onClick={nextTip} className="p-2">
+          <Button variant="ghost" size="sm" onClick={nextTip} className="p-2 text-gray-600 hover:text-gray-900">
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      <Card className="bg-white border border-border">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-muted-foreground">{tip.category}</span>
-            <span className="text-sm text-muted-foreground">{tip.number}</span>
-          </div>
-          <h3 className="font-semibold mb-2">{tip.title}</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">{tip.description}</p>
-          <Button variant="link" className="p-0 h-auto font-medium text-sm mt-2">
-            Learn More
-          </Button>
-        </CardContent>
-      </Card>
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-gray-700">{tip.category}</span>
+          <span className="text-sm text-gray-500">{tip.number}</span>
+        </div>
+        <h3 className="font-semibold text-gray-900 mb-2">{tip.title}</h3>
+        <p className="text-sm text-gray-600 leading-relaxed">{tip.description}</p>
+        <Button variant="ghost" className="p-0 h-auto font-medium text-sm mt-2 text-gray-600 hover:text-gray-900">
+          Learn More
+        </Button>
+      </div>
     </div>
   );
 };

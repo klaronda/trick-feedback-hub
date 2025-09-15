@@ -8,14 +8,14 @@ interface NavigationProps {
 
 export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-border">
-      <div className="flex items-center justify-around py-2 px-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
+      <div className="flex items-center justify-around py-2 px-4 max-w-sm mx-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('home')}
           className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'home' ? 'text-primary' : 'text-muted-foreground'
+            currentView === 'home' ? 'text-gray-900' : 'text-gray-400'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -27,7 +27,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           size="sm"
           onClick={() => onNavigate('videos')}
           className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'videos' ? 'text-primary' : 'text-muted-foreground'
+            currentView === 'videos' ? 'text-gray-900' : 'text-gray-400'
           }`}
         >
           <Video className="w-5 h-5" />
@@ -39,7 +39,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           size="sm"
           onClick={() => onNavigate('coach')}
           className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'coach' ? 'text-primary' : 'text-muted-foreground'
+            currentView === 'coach' ? 'text-gray-900' : 'text-gray-400'
           }`}
           disabled
         >
@@ -52,7 +52,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           size="sm"
           onClick={() => onNavigate('profile')}
           className={`flex flex-col items-center gap-1 p-3 ${
-            currentView === 'profile' ? 'text-primary' : 'text-muted-foreground'
+            currentView === 'profile' ? 'text-gray-900' : 'text-gray-400'
           }`}
           disabled
         >

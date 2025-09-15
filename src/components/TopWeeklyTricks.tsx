@@ -87,11 +87,9 @@ export const TopWeeklyTricks = () => {
   const maxCount = Math.max(...topTricks.map(t => t.count));
 
   return (
-    <Card className="bg-white border border-border">
-      <CardHeader>
-        <CardTitle className="text-lg">Top Weekly Tricks</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold text-gray-900">Top Weekly Tricks</h2>
+      <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
         {topTricks.map((trick, index) => {
           const percentage = (trick.count / maxCount) * 100;
           const colors = [
@@ -105,10 +103,10 @@ export const TopWeeklyTricks = () => {
           return (
             <div key={trick.trick_name} className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="font-medium">{trick.trick_name}</span>
-                <span className="text-muted-foreground">{trick.count}</span>
+                <span className="font-medium text-gray-900">{trick.trick_name}</span>
+                <span className="text-gray-600">{trick.count}</span>
               </div>
-              <div className="w-full bg-muted rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
                   className={`h-2 rounded-full transition-all duration-500 ${colors[index]}`}
                   style={{ width: `${percentage}%` }}
@@ -117,7 +115,7 @@ export const TopWeeklyTricks = () => {
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
