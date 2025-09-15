@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UploadAttempt } from "@/components/UploadAttempt";
+import { UploadModal } from "@/components/UploadModal";
 import { AttemptsList } from "@/components/AttemptsList";
 import { AttemptDetails } from "@/components/AttemptDetails";
 import { Header } from "@/components/Header";
@@ -26,6 +26,7 @@ const Index = () => {
   const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
@@ -159,7 +160,7 @@ const Index = () => {
   };
 
   const handleUploadNew = async () => {
-    const canNavigate = await checkAndNavigate(() => setCurrentView('upload'));
+    const canNavigate = await checkAndNavigate(() => setShowUploadModal(true));
     if (!canNavigate) {
       setShowUploadLimitModal(true);
     }
@@ -266,12 +267,13 @@ const Index = () => {
           </div>
         )}
 
-        {currentView === 'upload' && (
-          <UploadAttempt 
-            onUploadSuccess={handleUploadSuccess} 
-            userPlan={userPlan}
-          />
-        )}
+        {/* Upload Modal */}
+        <UploadModal
+          isOpen={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          onUploadSuccess={handleUploadSuccess}
+          userPlan={userPlan}
+        />
         
         {currentView === 'videos' && (
           <AttemptsList 
