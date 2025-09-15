@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,6 +24,72 @@ serve(async (req) => {
 
     console.log('Coach chat request:', { question, selectedTags, trickName });
 
+    // Get the authorization header
+    const authHeader = req.headers.get('Authorization');
+    let userProfile = null;
+    let personalizationContext = '';
+
+    // Try to get user profile for personalization
+    if (authHeader) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseKey, {
+          global: { headers: { Authorization: authHeader } },
+        });
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+
+          if (profile) {
+            userProfile = profile;
+            
+            // Calculate age and reading level
+            let age = 16;
+            let readingLevel = '10th grade';
+            
+            if (profile.birthday) {
+              const birthDate = new Date(profile.birthday);
+              const today = new Date();
+              age = today.getFullYear() - birthDate.getFullYear();
+              const monthDiff = today.getMonth() - birthDate.getMonth();
+              if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              
+              if (age < 16) {
+                readingLevel = '10th grade';
+              } else if (age >= 16 && age <= 18) {
+                readingLevel = 'high school';
+              } else {
+                readingLevel = 'adult';
+              }
+            }
+
+            // Build personalization context
+            const name = profile.first_name || 'there';
+            personalizationContext = `The user ${name} is ${age} years old. Use ${readingLevel} level language. `;
+            
+            if (profile.stance) {
+              personalizationContext += `Their stance is ${profile.stance}. `;
+            }
+            
+            if (profile.started_skating_year) {
+              const yearsSkating = new Date().getFullYear() - profile.started_skating_year;
+              personalizationContext += `They have ${yearsSkating} years of skating experience. `;
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Could not fetch user profile for personalization:', error.message);
+      }
+    }
+
     // Create context based on selected improvement areas
     const improvementContext = selectedTags.length > 0 
       ? `The user wants to improve on: ${selectedTags.join(', ')}. `
@@ -34,9 +101,19 @@ serve(async (req) => {
 
     const systemPrompt = `You are a friendly skateboarding coach helping skaters get better. 
 
-${improvementContext}${feedbackContext}
+${personalizationContext}${improvementContext}${feedbackContext}
 
-Give short, simple advice that's easy to follow. Use everyday words and keep it to 1-2 sentences. Focus on one clear tip they can try right away for their ${trickName || 'trick'}.`;
+Give short, simple advice that's easy to follow. Use everyday words and keep it to 1-2 sentences. Focus on one clear tip they can try right away for their ${trickName || 'trick'}. ${userProfile?.first_name ? `Address them by their first name (${userProfile.first_name})` : ''}.`;
+
+    // Use appropriate model and parameters
+    const modelConfig = {
+      model: 'gpt-5-mini-2025-08-07',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: question }
+      ],
+      max_completion_tokens: 120,
+    };
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -44,15 +121,7 @@ Give short, simple advice that's easy to follow. Use everyday words and keep it 
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: question }
-        ],
-        max_tokens: 120,
-        temperature: 0.7,
-      }),
+      body: JSON.stringify(modelConfig),
     });
 
     if (!response.ok) {
@@ -64,7 +133,7 @@ Give short, simple advice that's easy to follow. Use everyday words and keep it 
     const data = await response.json();
     const coachResponse = data.choices[0].message.content;
 
-    console.log('Coach response generated successfully');
+    console.log('Personalized coach response generated successfully');
 
     return new Response(JSON.stringify({ 
       response: coachResponse 
