@@ -103,13 +103,13 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Upload className="w-6 h-6 text-gray-400" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-2">Upload Your First Video</h3>
+          <h3 className="font-semibold text-gray-900 mb-2">Upload your first video.</h3>
           <p className="text-sm text-gray-600 mb-4">
             Start your skateboarding journey by uploading a video of your trick attempt.
           </p>
           <Button onClick={onUploadNew} className="w-full bg-gray-900 hover:bg-gray-800 text-white h-10">
             <Upload className="w-4 h-4 mr-2" />
-            Upload Video
+            Let's Go!
           </Button>
         </div>
       </div>
