@@ -47,18 +47,18 @@ export const ResultScreen = ({ videoFile, videoPath, onUploadAnother, onBack }: 
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6">
+    <div className="min-h-screen bg-gray-50 px-4 py-6">
       <div className="max-w-2xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={onBack} className="border-border hover:bg-muted">
+          <Button variant="outline" size="sm" onClick={onBack} className="border-gray-300 hover:bg-gray-100 text-gray-700">
             <ArrowLeft className="w-4 h-4" />
           </Button>
-          <h1 className="text-2xl font-semibold text-foreground">Trick Analysis</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">Trick Analysis</h1>
         </div>
 
         {/* Video Player */}
-        <Card className="p-6 bg-card border-border">
+        <Card className="p-6 bg-white border-gray-200">
           <div className="relative bg-black rounded-lg overflow-hidden">
             <video
               src={videoUrl}
@@ -71,26 +71,26 @@ export const ResultScreen = ({ videoFile, videoPath, onUploadAnother, onBack }: 
         </Card>
 
         {/* Feedback Card */}
-        <Card className="p-6 space-y-6 bg-card border-border">
+        <Card className="p-6 space-y-6 bg-white border-gray-200">
           <div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">{DUMMY_FEEDBACK.title}</h2>
-            <p className="text-muted-foreground">{DUMMY_FEEDBACK.overall}</p>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{DUMMY_FEEDBACK.title}</h2>
+            <p className="text-gray-600">{DUMMY_FEEDBACK.overall}</p>
           </div>
 
           {/* Breakdown Scores */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground">Technique Breakdown</h3>
+            <h3 className="font-semibold text-gray-900">Technique Breakdown</h3>
             <div className="grid gap-4">
               {DUMMY_FEEDBACK.breakdown.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border">
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="font-medium text-foreground">{item.aspect}</span>
+                      <span className="font-medium text-gray-900">{item.aspect}</span>
                       <Badge variant="secondary" className={getScoreColor(item.score)}>
                         {item.score}/100
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{item.feedback}</p>
+                    <p className="text-sm text-gray-600">{item.feedback}</p>
                   </div>
                 </div>
               ))}
@@ -99,14 +99,14 @@ export const ResultScreen = ({ videoFile, videoPath, onUploadAnother, onBack }: 
 
           {/* Next Steps */}
           <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Next Steps</h3>
+            <h3 className="font-semibold text-gray-900">Next Steps</h3>
             <ul className="space-y-2">
               {DUMMY_FEEDBACK.nextSteps.map((step, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm">
-                  <span className="flex-shrink-0 w-5 h-5 bg-foreground text-background rounded-full text-xs flex items-center justify-center mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 bg-gray-900 text-white rounded-full text-xs flex items-center justify-center mt-0.5">
                     {index + 1}
                   </span>
-                  <span className="text-foreground">{step}</span>
+                  <span className="text-gray-900">{step}</span>
                 </li>
               ))}
             </ul>
@@ -115,11 +115,11 @@ export const ResultScreen = ({ videoFile, videoPath, onUploadAnother, onBack }: 
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Button onClick={onUploadAnother} className="flex-1 bg-foreground hover:bg-foreground/90 text-background font-medium">
+          <Button onClick={onUploadAnother} className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-medium">
             <RotateCcw className="w-4 h-4 mr-2" />
             Upload Another
           </Button>
-          <Button variant="outline" className="flex-1 border-border hover:bg-muted" disabled>
+          <Button variant="outline" className="flex-1 border-gray-300 hover:bg-gray-100 text-gray-700" disabled>
             Save to My Clips
           </Button>
         </div>

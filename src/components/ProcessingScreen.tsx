@@ -44,33 +44,33 @@ export const ProcessingScreen = ({ onProcessingComplete }: ProcessingScreenProps
   }, [onProcessingComplete]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="max-w-md w-full p-8 text-center space-y-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <Card className="max-w-md w-full p-8 text-center space-y-6 bg-white border-gray-200">
         <div className="space-y-4">
           <div className="flex justify-center">
-            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-12 h-12 border-4 border-gray-900 border-t-transparent rounded-full" />
           </div>
           
-          <h2 className="text-2xl font-bold">Analyzing your clip...</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Analyzing your clip...</h2>
           
           <Progress value={progress} className="w-full" />
           
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             {progress}% complete
           </p>
         </div>
 
-        <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+        <div className="p-4 bg-gray-100 rounded-lg border border-gray-200">
           <div className="flex items-center gap-2 mb-2">
-            <Lightbulb className="w-4 h-4 text-accent" />
-            <span className="text-sm font-semibold text-accent-foreground">Quick Tip</span>
+            <Lightbulb className="w-4 h-4 text-gray-900" />
+            <span className="text-sm font-semibold text-gray-900">Quick Tip</span>
           </div>
-          <p className="text-sm text-foreground">
+          <p className="text-sm text-gray-700">
             {DUMMY_TIPS[currentTip]}
           </p>
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-500">
           AI feedback coming soon. For now, here's sample feedback.
         </p>
       </Card>

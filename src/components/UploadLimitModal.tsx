@@ -24,13 +24,13 @@ export const UploadLimitModal = ({
 }: UploadLimitModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white border-gray-200">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-amber-600" />
-            <DialogTitle className="text-amber-800">Monthly upload limit reached</DialogTitle>
+            <Crown className="h-5 w-5 text-gray-900" />
+            <DialogTitle className="text-gray-900">Monthly upload limit reached</DialogTitle>
           </div>
-          <DialogDescription className="text-amber-700 pt-2">
+          <DialogDescription className="text-gray-600 pt-2">
             You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.
           </DialogDescription>
         </DialogHeader>
@@ -39,14 +39,14 @@ export const UploadLimitModal = ({
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="border-amber-300 text-amber-700 hover:bg-amber-100"
+            className="border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             Maybe later
           </Button>
           <Button 
             onClick={onUpgrade}
             disabled={isUpgrading}
-            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+            className="bg-gray-900 hover:bg-gray-800 text-white"
           >
             {isUpgrading ? "Processing..." : "Go Pro"}
           </Button>

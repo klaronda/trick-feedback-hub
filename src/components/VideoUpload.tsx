@@ -85,10 +85,10 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
 
   return (
     <Card 
-      className={`p-8 border-2 border-dashed transition-all bg-card ${
+      className={`p-8 border-2 border-dashed transition-all bg-white ${
         isDragging 
-          ? 'border-foreground bg-muted/50' 
-          : 'border-border hover:border-foreground/50'
+          ? 'border-gray-900 bg-gray-50' 
+          : 'border-gray-300 hover:border-gray-400'
       }`}
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
@@ -96,19 +96,19 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
       onDragLeave={() => setIsDragging(false)}
     >
       <div className="flex flex-col items-center justify-center text-center space-y-4">
-        <div className="p-4 rounded-full bg-muted">
+        <div className="p-4 rounded-full bg-gray-100">
           {isUploading ? (
-            <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full" />
           ) : (
-            <VideoIcon className="w-8 h-8 text-foreground" />
+            <VideoIcon className="w-8 h-8 text-gray-900" />
           )}
         </div>
         
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-foreground">
+          <h3 className="text-lg font-semibold text-gray-900">
             {isUploading ? 'Uploading...' : 'Upload Your Trick Attempt'}
           </h3>
-          <p className="text-muted-foreground">
+          <p className="text-gray-600">
             Drag and drop your video here, or click to browse
           </p>
         </div>
@@ -117,9 +117,9 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
           <Button 
             disabled={isUploading}
             onClick={() => document.getElementById('video-input')?.click()}
-            className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+            className="bg-gray-900 hover:bg-gray-800 text-white font-medium"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="w-4 h-4 mr-2" />
             Choose Video
           </Button>
         </div>
