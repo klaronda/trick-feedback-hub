@@ -8,23 +8,26 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // Status badges (24px height)
-        completed: "h-6 px-2 text-xs font-medium rounded-md border border-[#bbf7d0] bg-[#dcfce7] text-[#15803d]",
-        processing: "h-6 px-2 text-xs font-medium rounded-md border border-[#fed7aa] bg-[#ffedd5] text-[#c2410c]",
-        pending: "h-6 px-2 text-xs font-medium rounded-md border border-[#e5e7eb] bg-[#f3f4f6] text-[#374151]",
+        // Status badges (24px height) - Using design system colors
+        completed: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
+        processing: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--warning-border)] bg-[var(--warning-bg)] text-[var(--warning-text)]",
+        pending: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--neutral-border)] bg-[var(--neutral-bg)] text-[var(--neutral-text)]",
         
         // Plan badges (20px height)
-        pro: "h-5 px-1.5 text-[11px] font-medium rounded-md border border-[#bfdbfe] bg-[#dbeafe] text-[#1d4ed8]",
+        pro: "h-5 px-1.5 text-[11px] font-medium rounded-md border border-[var(--premium-border)] bg-[var(--premium-bg)] text-[var(--premium-text)]",
         
         // Standard badges (24px height)
-        active: "h-6 px-2 text-xs font-medium rounded-md border border-[#bfdbfe] bg-[#dbeafe] text-[#1d4ed8]",
-        category: "h-[22px] px-2 text-[11px] font-medium rounded-md border border-[#d1d5db] bg-[#f3f4f6] text-[#374151]",
+        active: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--premium-border)] bg-[var(--premium-bg)] text-[var(--premium-text)]",
+        category: "h-[22px] px-2 text-[11px] font-medium rounded-md border border-[var(--neutral-border)] bg-[var(--neutral-bg)] text-[var(--neutral-text)]",
         
         // Large interactive badges (28px height)
-        improvement: "h-7 px-2.5 text-xs font-medium rounded-md border border-[#fed7aa] bg-[#fff7ed] text-[#c2410c]",
+        improvement: "h-7 px-2.5 text-xs font-medium rounded-md border border-[var(--warning-border)] bg-[var(--warning-bg)] text-[var(--warning-text)]",
         
         // Score badge (24px height, semibold)
-        score: "h-6 px-2 text-xs font-semibold rounded-md border border-[#bbf7d0] bg-[#dcfce7] text-[#15803d]",
+        score: "h-6 px-2 text-xs font-semibold rounded-md border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
+        
+        // Error/destructive badge
+        error: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--error-border)] bg-[var(--error-bg)] text-[var(--error-text)]",
         
         // Legacy variants
         default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",

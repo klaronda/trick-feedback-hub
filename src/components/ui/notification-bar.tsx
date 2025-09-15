@@ -22,10 +22,10 @@ export function NotificationBar({ message, type, isVisible, onHide }: Notificati
   return (
     <div
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 px-4 py-3 text-center font-medium transition-transform duration-300 ease-in-out',
+        'fixed top-0 left-0 right-0 z-50 px-4 py-3 text-center font-medium transition-transform duration-300 ease-in-out border-l-4',
         type === 'success' 
-          ? 'bg-[var(--green-soft)] text-white' 
-          : 'bg-[var(--red-soft)] text-white',
+          ? 'bg-[var(--success-bg)] text-[var(--success-text)] border-l-[var(--success-text)]' 
+          : 'bg-[var(--error-bg)] text-[var(--error-text)] border-l-[var(--error-text)]',
         isVisible 
           ? 'transform translate-y-0' 
           : 'transform -translate-y-full'

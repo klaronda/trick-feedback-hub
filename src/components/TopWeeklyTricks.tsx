@@ -93,11 +93,11 @@ export const TopWeeklyTricks = () => {
         {topTricks.map((trick, index) => {
           const percentage = (trick.count / maxCount) * 100;
           const colors = [
-            "bg-[#3b82f6]", // Blue (matches badge blue)
-            "bg-[#22c55e]", // Green (matches badge green)
-            "bg-[#eab308]", // Yellow (matches badge yellow)
-            "bg-[#9333ea]", // Purple (matches badge purple)
-            "bg-[#f97316]" // Red-Orange (matches badge orange)
+            "var(--chart-blue)", // Blue (#60a5fa)
+            "var(--chart-green)", // Green (#22c55e)
+            "var(--chart-yellow)", // Yellow (#facc15)
+            "var(--chart-purple)", // Purple (#a855f7)
+            "var(--chart-orange)" // Orange (#fb923c)
           ];
           
           return (
@@ -108,8 +108,11 @@ export const TopWeeklyTricks = () => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className={`h-2 rounded-full transition-all duration-500 ${colors[index]}`}
-                  style={{ width: `${percentage}%` }}
+                  className="h-2 rounded-full transition-all duration-500"
+                  style={{ 
+                    width: `${percentage}%`,
+                    backgroundColor: colors[index]
+                  }}
                 />
               </div>
             </div>
