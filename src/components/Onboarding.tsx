@@ -234,8 +234,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
               <div className="space-y-2">
                 <Label>Birthday</Label>
-                <div className="grid grid-cols-6 gap-2">
-                  <div className="col-span-3">
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="col-span-2">
                     <Select value={formData.birthdayMonth} onValueChange={(value) => handleInputChange('birthdayMonth', value)}>
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Month" />
