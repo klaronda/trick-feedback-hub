@@ -76,7 +76,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
         </div>
         <div className="space-y-3">
           {Array(3).fill(0).map((_, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-200 p-4">
+            <div key={i} className="bg-white rounded-[8px] border border-gray-200 p-4">
               <div className="animate-pulse space-y-2">
                 <div className="h-4 bg-gray-200 rounded w-1/3" />
                 <div className="h-3 bg-gray-100 rounded w-1/2" />
@@ -99,7 +99,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
           </Button>
         </div>
         
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-[8px] border border-gray-200 p-6">
           <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Upload className="w-6 h-6 text-gray-400" />
           </div>
@@ -127,7 +127,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
 
       <div className="space-y-3">
         {attempts.map((attempt) => (
-          <div key={attempt.id} className="bg-white rounded-lg border border-gray-200 p-4">
+          <div key={attempt.id} className="bg-white rounded-[8px] border border-gray-200 p-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                 <Play className="w-5 h-5 text-gray-400" />
