@@ -22,12 +22,7 @@ export const Header = ({ userPlan }: HeaderProps) => {
 
         {/* Right - Plan Badge, Notifications & Profile */}
         <div className="flex items-center gap-2">
-          <Badge 
-            className={isPro 
-              ? "bg-blue-500 text-white hover:bg-blue-600 text-xs px-2 py-1" 
-              : "bg-green-500 text-white hover:bg-green-600 text-xs px-2 py-1"
-            }
-          >
+          <Badge variant={isPro ? "pro" : "category"}>
             {isPro ? "Pro" : "Free"}
           </Badge>
           <Button variant="ghost" size="sm" className="p-1.5 text-gray-600 hover:text-gray-900">

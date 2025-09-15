@@ -48,13 +48,13 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Badge className="bg-green-500 text-white hover:bg-green-600">Completed</Badge>;
+        return <Badge variant="completed">Completed</Badge>;
       case 'processing':
-        return <Badge className="bg-orange-500 text-white hover:bg-orange-600">Processing</Badge>;
+        return <Badge variant="processing">Processing</Badge>;
       case 'pending':
-        return <Badge variant="outline">Pending</Badge>;
+        return <Badge variant="pending">Pending</Badge>;
       default:
-        return <Badge variant="outline">{status}</Badge>;
+        return <Badge variant="pending">{status}</Badge>;
     }
   };
 

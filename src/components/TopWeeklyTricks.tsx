@@ -93,11 +93,11 @@ export const TopWeeklyTricks = () => {
         {topTricks.map((trick, index) => {
           const percentage = (trick.count / maxCount) * 100;
           const colors = [
-            "bg-blue-500", // Primary
-            "bg-green-500", // Success
-            "bg-yellow-500", // Warning
-            "bg-purple-500", // Purple
-            "bg-orange-500" // Orange
+            "bg-[#3b82f6]", // Blue (matches badge blue)
+            "bg-[#22c55e]", // Green (matches badge green)
+            "bg-[#eab308]", // Yellow (matches badge yellow)
+            "bg-[#9333ea]", // Purple (matches badge purple)
+            "bg-[#f97316]" // Red-Orange (matches badge orange)
           ];
           
           return (

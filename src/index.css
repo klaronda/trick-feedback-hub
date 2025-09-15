@@ -101,7 +101,19 @@
   --red-700: #b91c1c;
   
   --purple-50: #faf5ff;
+  --purple-100: #f3e8ff;
+  --purple-200: #e9d5ff;
+  --purple-300: #d8b4fe;
   --purple-600: #9333ea;
+  --purple-700: #7c3aed;
+  
+  --yellow-50: #fefce8;
+  --yellow-100: #fef3c7;
+  --yellow-200: #fed7aa;
+  --yellow-300: #fcd34d;
+  --yellow-500: #eab308;
+  --yellow-600: #ca8a04;
+  --yellow-700: #a16207;
   
   /* Typography scale */
   --text-xs: 0.75rem;
@@ -252,7 +264,7 @@
   
   /* Rounded corners only for module/card backgrounds, not form elements */
   .card, [class*="card"]:not(input):not(button):not(textarea):not(select) {
-    border-radius: 1rem !important;
+    border-radius: 8px !important;
   }
   
   /* Keep header, navigation, and form elements square */
