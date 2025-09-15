@@ -71,34 +71,37 @@ const Index = () => {
 
   const fetchUserPlan = async (userId: string) => {
     try {
-      // Fetch user plan from users table
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('plan_name, is_subscribed, onboarding_completed')
-        .eq('id', userId)
-        .single();
-      
-      // Fetch user profile from profiles table
+      // Prefer profiles table for plan/subscription + name
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('first_name')
+        .select('first_name, plan_name, is_subscribed, onboarding_completed')
         .eq('user_id', userId)
         .single();
 
-      if (userError) {
-        console.error('Error fetching user plan:', userError);
-        // Set default values if user record doesn't exist - this means new user
+      // Fallback to users table if needed
+      const { data: userData } = await supabase
+        .from('users')
+        .select('plan_name, is_subscribed, onboarding_completed')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (profileError && !profileData && !userData) {
+        console.error('Error fetching user plan from profiles:', profileError);
         setUserPlan({ plan_name: 'free', is_subscribed: false });
         setIsNewUser(true);
         setShowOnboarding(true);
         return;
       }
 
-      setUserPlan(userData || { plan_name: 'free', is_subscribed: false });
-      setUserProfile(profileData || { first_name: null });
-      
-      // Check if this is a new user who hasn't completed onboarding
-      if (!userData?.onboarding_completed) {
+      const resolvedPlan = profileData
+        ? { plan_name: profileData.plan_name ?? 'free', is_subscribed: !!profileData.is_subscribed }
+        : (userData || { plan_name: 'free', is_subscribed: false });
+
+      setUserPlan(resolvedPlan);
+      setUserProfile({ first_name: profileData?.first_name ?? null });
+
+      const onboardingCompleted = profileData?.onboarding_completed ?? userData?.onboarding_completed;
+      if (!onboardingCompleted) {
         setIsNewUser(true);
         setShowOnboarding(true);
       }
@@ -225,12 +228,17 @@ const Index = () => {
   }
 
   const handleNavigate = (view: 'home' | 'videos' | 'coach' | 'profile') => {
+    const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
     if (view === 'videos') {
       setCurrentView('videos');
     } else if (view === 'home') {
       setCurrentView('home');
     } else if (view === 'coach') {
-      setCurrentView('coach');
+      if (isPro) {
+        setCurrentView('coach');
+      } else {
+        setShowUploadLimitModal(true);
+      }
     }
     // Profile will be implemented later
   };
