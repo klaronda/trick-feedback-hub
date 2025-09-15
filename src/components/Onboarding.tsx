@@ -260,7 +260,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                     </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-4">
                     <Select value={formData.birthdayYear} onValueChange={(value) => handleInputChange('birthdayYear', value)}>
                     <SelectTrigger className="bg-white">
                       <SelectValue placeholder="Year" />
