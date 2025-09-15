@@ -373,7 +373,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Body content with gray background */}
-      <div className="p-4 pt-8">
+      <div className="p-4 pt-8 pb-32">
         <div className="w-full max-w-sm mx-auto">
           {/* Step Content */}
           {renderStep()}
