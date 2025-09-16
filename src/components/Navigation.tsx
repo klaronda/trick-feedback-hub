@@ -9,7 +9,7 @@ interface NavigationProps {
 export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white">
-      <div className="flex items-center justify-around py-2 px-4 max-w-sm mx-auto">
+      <div className="flex items-center justify-around py-4 px-4 max-w-sm mx-auto">
         <Button
           variant="ghost"
           size="sm"
