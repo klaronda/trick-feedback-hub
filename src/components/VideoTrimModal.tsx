@@ -53,8 +53,8 @@ export const VideoTrimModal = ({ isOpen, onClose, file, onTrimComplete }: VideoT
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-sm bg-white rounded-2xl p-6 space-y-6">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center px-4">
+      <Card className="w-[calc(100vw-32px)] max-w-sm bg-white rounded-2xl p-6 space-y-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Trim Your Video</h2>
           <p className="text-gray-600 text-sm">

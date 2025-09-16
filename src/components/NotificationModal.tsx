@@ -131,8 +131,8 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center px-4">
+      <div className="w-[calc(100vw-32px)] max-w-sm bg-white rounded-2xl max-h-[80vh] flex flex-col">
         {/* Sticky header */}
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
           <div className="flex items-center justify-between mb-2">

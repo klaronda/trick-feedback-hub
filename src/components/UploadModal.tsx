@@ -241,8 +241,8 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
-        <Card className="w-full max-w-sm bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center px-4">
+        <Card className="w-[calc(100vw-32px)] max-w-sm bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">Upload Video</h2>
