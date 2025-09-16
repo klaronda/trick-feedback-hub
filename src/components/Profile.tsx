@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Switch } from "@/components/ui/switch";
-import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2 } from "lucide-react";
+import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 interface ProfileProps {
@@ -176,8 +176,40 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
             </div>
           ) : (
             <div className="space-y-3 pt-4 border-t border-gray-100">
+              <h4 className="font-medium text-gray-900">Features</h4>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-gray-600">5 video uploads per month</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-gray-600">Coaching feedback on uploaded videos</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-gray-600">Access to top weekly tricks</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <X className="h-4 w-4 text-red-400" />
+                  <span className="text-sm text-gray-600">Unlimited video uploads</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <X className="h-4 w-4 text-red-400" />
+                  <span className="text-sm text-gray-600">Advanced trick analysis</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <X className="h-4 w-4 text-red-400" />
+                  <span className="text-sm text-gray-600">Personalized coaching</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <X className="h-4 w-4 text-red-400" />
+                  <span className="text-sm text-gray-600">Daily trick tips</span>
+                </div>
+              </div>
+              
               {/* Usage Stats */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
                   <p className="text-sm text-gray-900 mt-1">0</p>
@@ -186,13 +218,6 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Monthly Upload Limit</p>
                   <p className="text-sm text-gray-900 mt-1">0/5</p>
                 </div>
-              </div>
-              
-              <div className="pt-4 border-t border-gray-100">
-                <p className="text-sm text-gray-600">Upgrade to Pro for unlimited uploads and advanced features</p>
-                <Button onClick={onUpgrade} className="w-full mt-3">
-                  Upgrade to Pro
-                </Button>
               </div>
             </div>
           )}
