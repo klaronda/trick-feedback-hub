@@ -117,7 +117,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 </p>
               ) : (
                 <p className="text-xs text-gray-600 mt-1">
-                  Upgrade to Pro for just $5/month
+                  Upgrade to Pro for just $5/month and get unlimited uploads and advanced features.
                 </p>
               )}
             </div>
