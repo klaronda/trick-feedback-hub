@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanBadge } from "@/components/ui/PlanBadge";
@@ -111,25 +112,16 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 <PlanBadge plan={userPlan?.plan_name || 'free'} />
               </div>
             </div>
+            {isPro && (
+              <Badge className="bg-blue-600 text-white hover:bg-blue-700">
+                Active
+              </Badge>
+            )}
           </div>
           
-          {/* Usage Stats */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
-              <p className="text-sm text-gray-900 mt-1">0</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                {isPro ? 'Coach Chats' : 'Monthly Upload Limit'}
-              </p>
-              <p className="text-sm text-gray-900 mt-1">{isPro ? 'Unlimited' : '0/5'}</p>
-            </div>
-          </div>
-
           {isPro ? (
-            <div className="space-y-3">
-              <h4 className="font-medium text-gray-900">Pro Features</h4>
+            <div className="space-y-3 pt-4 border-t border-gray-100">
+              <h4 className="font-medium text-gray-900">Features</h4>
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-4 w-4 text-green-600" />
@@ -148,13 +140,39 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                   <span className="text-sm text-gray-600">Daily trick tips</span>
                 </div>
               </div>
+              
+              {/* Usage Stats */}
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
+                  <p className="text-sm text-gray-900 mt-1">0</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Coach Chats</p>
+                  <p className="text-sm text-gray-900 mt-1">Unlimited</p>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600">Upgrade to Pro for unlimited uploads and advanced features</p>
-              <Button onClick={onUpgrade} className="w-full">
-                Upgrade to Pro
-              </Button>
+            <div className="space-y-3 pt-4 border-t border-gray-100">
+              {/* Usage Stats */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
+                  <p className="text-sm text-gray-900 mt-1">0</p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Monthly Upload Limit</p>
+                  <p className="text-sm text-gray-900 mt-1">0/5</p>
+                </div>
+              </div>
+              
+              <div className="pt-4 border-t border-gray-100">
+                <p className="text-sm text-gray-600">Upgrade to Pro for unlimited uploads and advanced features</p>
+                <Button onClick={onUpgrade} className="w-full mt-3">
+                  Upgrade to Pro
+                </Button>
+              </div>
             </div>
           )}
           </CardContent>
