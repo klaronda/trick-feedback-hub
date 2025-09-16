@@ -39,19 +39,18 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       </div>
 
       {/* Account Section */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Account</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src="" />
-              <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
-                {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
+      <div className="space-y-3">
+        <h2 className="text-lg font-medium text-gray-900">Account</h2>
+        <Card>
+          <CardContent className="space-y-4 pt-6">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
+                  {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
               <h3 className="font-medium text-gray-900">
                 {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
               </h3>
@@ -59,8 +58,9 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               <p className="text-sm text-gray-500">Skating since 2020</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Stats Section */}
       <div className="grid grid-cols-2 gap-4">
@@ -89,12 +89,13 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       </div>
 
       {/* Subscription Section */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
-          <CardTitle className="text-lg">Subscription</CardTitle>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-gray-900">Subscription</h2>
           <Settings className="h-5 w-5 text-gray-600" />
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </div>
+        <Card>
+          <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
@@ -138,28 +139,28 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
           <div className="pt-2 border-t">
             <p className="text-sm text-gray-600">Monthly Usage: 0/5 uploads</p>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Saved Tips Section */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Saved Tips</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="space-y-3">
+        <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
+        <Card>
+          <CardContent className="pt-6">
           <div className="text-center py-8">
             <p className="text-gray-500">No saved tips yet</p>
             <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Preferences Section */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Preferences</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="space-y-3">
+        <h2 className="text-lg font-medium text-gray-900">Preferences</h2>
+        <Card>
+          <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Push Notifications</h4>
@@ -181,8 +182,9 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
             </div>
             <Switch defaultChecked />
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Account Actions */}
       <div className="space-y-3">
