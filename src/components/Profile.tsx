@@ -117,11 +117,21 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 </p>
               )}
             </div>
-            {isPro && (
+            {isPro ? (
               <div className="flex-shrink-0">
                 <Badge variant="pro">
                   Active
                 </Badge>
+              </div>
+            ) : (
+              <div className="flex-shrink-0">
+                <Button 
+                  onClick={onUpgrade}
+                  size="sm"
+                  className="h-5 px-1.5 text-[11px] font-medium bg-gray-900 hover:bg-gray-800 text-white border-0"
+                >
+                  Go Pro
+                </Button>
               </div>
             )}
           </div>
