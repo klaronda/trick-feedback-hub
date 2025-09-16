@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { PlanBadge } from "@/components/ui/PlanBadge";
-import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown } from "lucide-react";
+import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar";
 import { useNavigate } from "react-router-dom";
@@ -15,6 +16,7 @@ interface TrickAttempt {
   status: string;
   created_at: string;
   feedback: string | null;
+  analysis_data?: any;
 }
 
 interface AttemptsListProps {
@@ -30,6 +32,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [attempts, setAttempts] = useState<TrickAttempt[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('freePlanBannerDismissed') === 'true';
   });
@@ -44,7 +47,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
     try {
       const { data, error } = await supabase
         .from('trick_attempts')
-        .select('id, trick_name, status, created_at, feedback')
+        .select('id, trick_name, status, created_at, feedback, analysis_data')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -89,6 +92,50 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       minute: '2-digit',
       hour12: true
     }).replace(',', ' •');
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 172800) return 'Yesterday';
+    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+  };
+
+  const getScore = (analysisData: any) => {
+    if (!analysisData || typeof analysisData !== 'object') return null;
+    return analysisData.score || analysisData.overall_score || null;
+  };
+
+  const groupAttemptsByMonth = (attempts: TrickAttempt[]) => {
+    const filteredAttempts = attempts.filter(attempt => 
+      !searchQuery || 
+      attempt.trick_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const grouped = filteredAttempts.reduce((acc, attempt) => {
+      const date = new Date(attempt.created_at);
+      const monthYear = date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+      acc[monthYear].push(attempt);
+      return acc;
+    }, {} as Record<string, TrickAttempt[]>);
+
+    return Object.entries(grouped).sort(([a], [b]) => {
+      const dateA = new Date(a + ' 1');
+      const dateB = new Date(b + ' 1');
+      return dateB.getTime() - dateA.getTime();
+    });
   };
 
   const handleDelete = async (attemptId: string) => {
@@ -175,22 +222,34 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       />
       <div className="min-h-screen bg-background px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold text-foreground">My Trick Attempts</h1>
-            <div className="flex gap-2">
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </Button>
-              <Button 
-                onClick={onUploadNew} 
-                disabled={checking}
-                className="bg-foreground hover:bg-foreground/90 text-background font-medium"
-              >
-                <Plus className="w-4 h-4" />
-                {checking ? "Checking..." : "Upload New"}
-              </Button>
+          {/* Header */}
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">My Uploaded Tricks</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Review your uploaded videos and coaching feedback
+              </p>
             </div>
+            <Button 
+              onClick={onUploadNew} 
+              disabled={checking}
+              className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              {checking ? "Checking..." : "Upload New"}
+            </Button>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search your tricks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
 
           {uploadBlocked && userPlan?.plan_name === 'free' && (
@@ -287,59 +346,77 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
               </div>
             </Card>
           ) : (
-            <div className="space-y-4">
-              {attempts.map((attempt) => (
-                <Card key={attempt.id} className="p-6 bg-card border-border hover:bg-muted/50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-semibold text-foreground">
-                          {attempt.trick_name || 'Unnamed Trick'}
-                        </h3>
-                        <Badge 
-                          variant="secondary"
-                          className={`px-3 py-1 text-sm font-medium ${
-                            attempt.status.toLowerCase() === 'reviewed' 
-                              ? 'bg-success/10 text-success border-success/20' 
-                              : 'bg-warning/10 text-warning border-warning/20'
-                          }`}
-                        >
-                          {attempt.status}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{formatDate(attempt.created_at)}</span>
-                        {attempt.feedback && (
-                          <div className="flex items-center gap-1">
-                            <MessageCircle className="w-4 h-4" />
-                            <span>Feedback available</span>
+            <div className="space-y-6">
+              {groupAttemptsByMonth(attempts).map(([monthYear, monthAttempts]) => (
+                <div key={monthYear} className="space-y-4">
+                  {/* Month/Year Header */}
+                  <h2 className="text-lg font-medium text-foreground">
+                    {monthYear}
+                  </h2>
+                  
+                  {/* Video Cards for this month */}
+                  <div className="space-y-3">
+                    {monthAttempts.map((attempt) => (
+                      <Card key={attempt.id} className="p-4 bg-card border-border hover:bg-muted/20 transition-colors">
+                        <div className="flex items-start gap-4">
+                          {/* Video Thumbnail/Icon */}
+                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                            <VideoIcon className="w-6 h-6 text-muted-foreground" />
                           </div>
-                        )}
-                      </div>
-                    </div>
 
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => onViewDetails(attempt.id)}
-                        className="text-sm border-border hover:bg-muted"
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDelete(attempt.id)}
-                        disabled={deletingId === attempt.id}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10 border-border"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-medium text-foreground truncate">
+                                    {attempt.trick_name || 'Unnamed Trick'}
+                                  </h3>
+                                  <Badge 
+                                    variant="secondary"
+                                    className={`px-2 py-0.5 text-xs font-medium flex-shrink-0 ${
+                                      attempt.status.toLowerCase() === 'completed' || attempt.status.toLowerCase() === 'reviewed'
+                                        ? 'bg-success/10 text-success border-success/20' 
+                                        : 'bg-warning/10 text-warning border-warning/20'
+                                    }`}
+                                  >
+                                    {attempt.status.toLowerCase() === 'reviewed' ? 'Completed' : attempt.status}
+                                  </Badge>
+                                </div>
+                                
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {formatTimeAgo(attempt.created_at)}
+                                </p>
+
+                                {attempt.feedback && (
+                                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                                    {attempt.feedback}
+                                  </p>
+                                )}
+
+                                <div className="flex items-center justify-between">
+                                  {getScore(attempt.analysis_data) && (
+                                    <p className="text-sm font-medium text-foreground">
+                                      Score: {getScore(attempt.analysis_data)}/10
+                                    </p>
+                                  )}
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => onViewDetails(attempt.id)}
+                                    className="text-xs ml-auto"
+                                  >
+                                    View Details
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           )}
