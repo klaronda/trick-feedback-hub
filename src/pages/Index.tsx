@@ -10,6 +10,7 @@ import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
 import { NotificationModal } from "@/components/NotificationModal";
+import { Profile } from "@/components/Profile";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
 import { useUploadGuard } from "@/hooks/useUploadGuard";
@@ -18,7 +19,7 @@ import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
 
- type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach';
+ type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach' | 'profile';
 
 const Index = () => {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -239,8 +240,9 @@ const Index = () => {
       } else {
         setShowUploadLimitModal(true);
       }
+    } else if (view === 'profile') {
+      setCurrentView('profile');
     }
-    // Profile will be implemented later
   };
 
   return (
@@ -325,6 +327,15 @@ const Index = () => {
             attemptId={selectedAttemptId}
             onBack={handleBackToList}
             userPlan={userPlan}
+          />
+        )}
+        
+        {currentView === 'profile' && (
+          <Profile 
+            user={user}
+            userProfile={userProfile}
+            userPlan={userPlan}
+            onUpgrade={handleUpgrade}
           />
         )}
       </main>

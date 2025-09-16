@@ -61,7 +61,6 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
               ? 'text-black bg-gray-100 border-gray-300 hover:bg-gray-100 hover:border-gray-400' 
               : 'text-gray-600 border-transparent hover:text-black hover:bg-gray-50 hover:border-gray-300'
           }`}
-          disabled
         >
           <User className="w-5 h-5" />
           <span className="text-xs font-medium">Profile</span>
