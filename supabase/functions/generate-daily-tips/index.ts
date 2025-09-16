@@ -175,13 +175,55 @@ Make the tip specific, actionable, and appropriate for their skill level. Refere
       }),
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${data.error?.message || 'Unknown error'}`);
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
-    const tipResponse = JSON.parse(data.choices[0].message.content);
+    const data = await response.json();
+    console.log('OpenAI response:', JSON.stringify(data, null, 2));
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from OpenAI API');
+    }
+
+    const aiResponseContent = data.choices[0].message.content.trim();
+    console.log('AI response content:', aiResponseContent);
+
+    if (!aiResponseContent) {
+      throw new Error('Empty response from OpenAI API');
+    }
+
+    let tipResponse;
+    try {
+      tipResponse = JSON.parse(aiResponseContent);
+    } catch (parseError) {
+      console.error('Failed to parse AI response as JSON:', aiResponseContent);
+      // Generate a fallback tip if AI response isn't valid JSON
+      tipResponse = {
+        result: "ok",
+        user_id: user.id,
+        tip: {
+          id: `tt-${new Date().toISOString().split('T')[0]}-01`,
+          greeting: profile?.first_name ? `Hey ${profile.first_name}!` : null,
+          tip_text: "Focus on your stance and balance today. Keep your knees slightly bent and your weight centered over the board.",
+          actionable_step: "Practice riding for 10 minutes, focusing on maintaining a stable stance.",
+          safety_note: "Always wear protective gear and practice in a safe area.",
+          difficulty: determineSkillLevel(experienceYears, formattedAttempts),
+          tags: ["balance", "basics", "stance"],
+          estimated_time_min: 10,
+          saved_from: null,
+          generated_at: new Date().toISOString()
+        },
+        metadata: {
+          source_model: "lovable-v1-fallback",
+          confidence: 0.7,
+          reason: "Generated fallback tip due to AI parsing error"
+        }
+      };
+    }
     
     // Store the generated tip in user_daily_tips
     const { error: insertError } = await supabase
