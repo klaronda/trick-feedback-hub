@@ -40,27 +40,27 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
 
       {/* Account Section */}
       <div className="space-y-3">
-        <h2 className="text-lg font-medium text-gray-900">Account</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-gray-900">Account</h2>
+          <Settings className="h-5 w-5 text-gray-600" />
+        </div>
         <Card className="bg-white border-gray-200">
           <CardContent className="space-y-6 pt-6">
             {/* Profile Info */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage src="" />
-                  <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
-                    {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">
-                    {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
-                  </h3>
-                  <p className="text-sm text-gray-600">{user?.email}</p>
-                  <p className="text-sm text-gray-500">Skating since 2020</p>
-                </div>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src="" />
+                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
+                  {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <h3 className="font-medium text-gray-900">
+                  {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
+                </h3>
+                <p className="text-sm text-gray-600">{user?.email}</p>
+                <p className="text-sm text-gray-500">Skating since 2020</p>
               </div>
-              <Settings className="h-5 w-5 text-gray-600 cursor-pointer" />
             </div>
             
             {/* Stats Grid */}
@@ -150,7 +150,10 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
 
       {/* Preferences Section */}
       <div className="space-y-3">
-        <h2 className="text-lg font-medium text-gray-900">Preferences</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium text-gray-900">Preferences</h2>
+          <Settings className="h-5 w-5 text-gray-600" />
+        </div>
           <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
