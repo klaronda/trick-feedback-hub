@@ -46,6 +46,7 @@ export type Database = {
           birthday: string | null
           created_at: string | null
           first_name: string | null
+          focus: string | null
           free_uploads_exhausted: boolean | null
           gender: string | null
           id: string
@@ -54,8 +55,10 @@ export type Database = {
           learning_goals: string | null
           onboarding_completed: boolean | null
           plan_name: string | null
+          preferences_updated_at: string | null
           stance: string | null
           started_skating_year: number | null
+          tone_pref: string | null
           updated_at: string | null
           user_id: string
         }
@@ -63,6 +66,7 @@ export type Database = {
           birthday?: string | null
           created_at?: string | null
           first_name?: string | null
+          focus?: string | null
           free_uploads_exhausted?: boolean | null
           gender?: string | null
           id?: string
@@ -71,8 +75,10 @@ export type Database = {
           learning_goals?: string | null
           onboarding_completed?: boolean | null
           plan_name?: string | null
+          preferences_updated_at?: string | null
           stance?: string | null
           started_skating_year?: number | null
+          tone_pref?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -80,6 +86,7 @@ export type Database = {
           birthday?: string | null
           created_at?: string | null
           first_name?: string | null
+          focus?: string | null
           free_uploads_exhausted?: boolean | null
           gender?: string | null
           id?: string
@@ -88,9 +95,35 @@ export type Database = {
           learning_goals?: string | null
           onboarding_completed?: boolean | null
           plan_name?: string | null
+          preferences_updated_at?: string | null
           stance?: string | null
           started_skating_year?: number | null
+          tone_pref?: string | null
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      saved_trick_tips: {
+        Row: {
+          created_at: string | null
+          id: number
+          saved_from: string | null
+          tip: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          saved_from?: string | null
+          tip: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          saved_from?: string | null
+          tip?: Json
           user_id?: string
         }
         Relationships: []
@@ -153,6 +186,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_daily_tips: {
+        Row: {
+          generated_at: string
+          id: number
+          last_shown_at: string | null
+          slot: number
+          tip: Json
+          user_id: string
+        }
+        Insert: {
+          generated_at?: string
+          id?: never
+          last_shown_at?: string | null
+          slot: number
+          tip: Json
+          user_id: string
+        }
+        Update: {
+          generated_at?: string
+          id?: never
+          last_shown_at?: string | null
+          slot?: number
+          tip?: Json
+          user_id?: string
+        }
+        Relationships: []
       }
       users: {
         Row: {
@@ -250,6 +310,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      generate_trick_tip: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
       get_monthly_trick_attempt_count: {
         Args: Record<PropertyKey, never>
         Returns: number
@@ -276,6 +340,17 @@ export type Database = {
         Returns: {
           id: number
         }[]
+      }
+      rotate_and_refill_daily_tips: {
+        Args: { p_seen_slots: number[]; p_user_id: string }
+        Returns: {
+          slot: number
+          tip: Json
+        }[]
+      }
+      save_trick_tip: {
+        Args: { source?: string; tip_data: Json }
+        Returns: undefined
       }
     }
     Enums: {
