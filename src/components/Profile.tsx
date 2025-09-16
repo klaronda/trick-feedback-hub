@@ -143,18 +143,20 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
         </Card>
       </div>
 
-      {/* Saved Tips Section */}
-      <div className="space-y-3">
-        <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
-        <Card>
-          <CardContent className="pt-6">
-          <div className="text-center py-8">
-            <p className="text-gray-500">No saved tips yet</p>
-            <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
-          </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Saved Tips Section - Pro Only */}
+      {isPro && (
+        <div className="space-y-3">
+          <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-8">
+                <p className="text-gray-500">No saved tips yet</p>
+                <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Preferences Section */}
       <div className="space-y-3">
