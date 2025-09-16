@@ -111,9 +111,13 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               <div className="flex items-center gap-2">
                 <PlanBadge plan={userPlan?.plan_name || 'free'} />
               </div>
-              {isPro && (
+              {isPro ? (
                 <p className="text-xs text-gray-600 mt-1">
                   $5.00/month | Renews October 16, 2025
+                </p>
+              ) : (
+                <p className="text-xs text-gray-600 mt-1">
+                  Upgrade to Pro for just $5/month and get unlimited uploads and advanced features.
                 </p>
               )}
             </div>
