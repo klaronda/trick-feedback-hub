@@ -106,7 +106,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
         </div>
         <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
-          <div className="flex justify-between">
+          <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <PlanBadge plan={userPlan?.plan_name || 'free'} />
@@ -118,9 +118,11 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               )}
             </div>
             {isPro && (
-              <Badge variant="pro">
-                Active
-              </Badge>
+              <div className="flex-shrink-0">
+                <Badge variant="pro">
+                  Active
+                </Badge>
+              </div>
             )}
           </div>
           
