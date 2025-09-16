@@ -70,9 +70,8 @@ export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
 
   const saveTip = async (tip: TrickTip) => {
     try {
-      // Use direct SQL approach since saved_trick_tips may not be in generated types yet
       const { error } = await supabase.rpc('save_trick_tip', {
-        tip_data: tip,
+        tip_data: tip as any,
         source: 'daily-tips'
       });
 
