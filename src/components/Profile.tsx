@@ -6,6 +6,7 @@ import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Switch } from "@/components/ui/switch";
 import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
+import { useProfileStats } from "@/hooks/useProfileStats";
 
 interface ProfileProps {
   user: User | null;
@@ -19,6 +20,7 @@ interface ProfileProps {
 }
 
 export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps) => {
+  const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
       return firstName.charAt(0).toUpperCase();
@@ -170,11 +172,11 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
-                  <p className="text-sm text-gray-900 mt-1">0</p>
+                  <p className="text-sm text-gray-900 mt-1">{loading ? "..." : totalUploads}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Coach Chats</p>
-                  <p className="text-sm text-gray-900 mt-1">Unlimited</p>
+                  <p className="text-sm text-gray-900 mt-1">{loading ? "..." : coachChats}</p>
                 </div>
               </div>
             </div>
@@ -216,11 +218,11 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
-                  <p className="text-sm text-gray-900 mt-1">0</p>
+                  <p className="text-sm text-gray-900 mt-1">{loading ? "..." : totalUploads}</p>
                 </div>
                 <div>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Monthly Upload Limit</p>
-                  <p className="text-sm text-gray-900 mt-1">0/5</p>
+                  <p className="text-sm text-gray-900 mt-1">{loading ? "..." : `${monthlyUploads}/5`}</p>
                 </div>
               </div>
             </div>
