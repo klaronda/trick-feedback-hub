@@ -88,7 +88,7 @@ export const TopWeeklyTricks = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-medium text-gray-900">Top Weekly Tricks</h2>
+      <h2 className="text-lg font-semibold text-gray-900">Top Weekly Tricks</h2>
       <div className="bg-white rounded-[8px] border border-gray-200 p-4 space-y-4">
         {topTricks.map((trick, index) => {
           const percentage = (trick.count / maxCount) * 100;
