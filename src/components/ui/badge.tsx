@@ -8,10 +8,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // Status badges (24px height) - Using design system colors
-        completed: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
-        processing: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--warning-border)] bg-[var(--warning-bg)] text-[var(--warning-text)]",
-        pending: "h-6 px-2 text-xs font-medium rounded-md border border-[var(--neutral-border)] bg-[var(--neutral-bg)] text-[var(--neutral-text)]",
+        // Status badges (24px height) - Using design system colors with 4px rounded corners
+        completed: "h-6 px-2 text-xs font-medium rounded border border-[var(--success-border)] bg-[var(--success-bg)] text-[var(--success-text)]",
+        processing: "h-6 px-2 text-xs font-medium rounded border border-[var(--warning-border)] bg-[var(--warning-bg)] text-[var(--warning-text)]",
+        pending: "h-6 px-2 text-xs font-medium rounded border border-[var(--neutral-border)] bg-[var(--neutral-bg)] text-[var(--neutral-text)]",
         
         // Plan badges (20px height)
         pro: "h-5 px-1.5 text-[11px] font-medium rounded-md border border-[var(--premium-border)] bg-[var(--premium-bg)] text-[var(--premium-text)]",
