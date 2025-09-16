@@ -64,18 +64,14 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
             </div>
             
             {/* Stats Grid */}
-            <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-              <div className="text-center">
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <div className="text-center bg-gray-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-gray-900">0</p>
                 <p className="text-sm text-gray-600">Videos Uploaded</p>
               </div>
-              <div className="text-center">
+              <div className="text-center bg-gray-50 rounded-lg p-4">
                 <p className="text-2xl font-bold text-gray-900">{isPro ? '-' : '0/5'}</p>
                 <p className="text-sm text-gray-600">{isPro ? 'Coach Chats' : 'Monthly Upload Limit'}</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">-</p>
-                <p className="text-sm text-gray-600">Score</p>
               </div>
             </div>
           </CardContent>
