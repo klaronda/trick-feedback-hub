@@ -373,7 +373,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                               </h3>
                               <Badge 
                                 variant="secondary"
-                                className={`px-2 py-0.5 text-xs font-medium flex-shrink-0 ${
+                                className={`px-2 py-0.5 text-xs font-medium flex-shrink-0 pointer-events-none ${
                                   attempt.status.toLowerCase() === 'completed' || attempt.status.toLowerCase() === 'reviewed'
                                     ? 'bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success-border)]' 
                                     : 'bg-[var(--warning-bg)] text-[var(--warning-text)] border-[var(--warning-border)]'
