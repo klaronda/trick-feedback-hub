@@ -272,16 +272,16 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
           )}
 
           {userPlan && !userPlan.is_subscribed && userPlan.plan_name === 'free' && !uploadBlocked && !bannerDismissed && (
-            <Card className="p-4 bg-muted/50 border-border">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-foreground">Free Plan - Limited Features</h3>
-                  <p className="text-sm text-muted-foreground">Unlock unlimited uploads and advanced features</p>
+            <Card className="p-4 bg-muted/50 border-border relative">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground mb-1">Get unlimited video reviews.</h3>
+                  <p className="text-sm text-muted-foreground">And chat with a Coach whenever you want about trick tips, learning plans, and drills. Just $5/month.</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-3">
                   <Button 
                     size="sm" 
-                    className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
                     onClick={async () => {
                       try {
                         const user = (await supabase.auth.getUser()).data.user;
@@ -311,12 +311,12 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                   </Button>
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => {
                       setBannerDismissed(true);
                       localStorage.setItem('freePlanBannerDismissed', 'true');
                     }}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-background/50 -mt-1 -mr-1"
                   >
                     <X className="w-4 h-4" />
                   </Button>
