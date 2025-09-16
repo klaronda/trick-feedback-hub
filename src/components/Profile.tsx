@@ -113,7 +113,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               </div>
             </div>
             {isPro && (
-              <Badge className="bg-blue-600 text-white hover:bg-blue-700">
+              <Badge variant="pro">
                 Active
               </Badge>
             )}
