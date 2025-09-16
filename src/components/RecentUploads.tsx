@@ -76,7 +76,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+          <h2 className="font-medium text-gray-900">Recent Uploads</h2>
           <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 text-sm">
             View All
           </Button>
@@ -100,7 +100,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+          <h2 className="font-medium text-gray-900">Recent Uploads</h2>
           <Button variant="ghost" size="sm" onClick={onViewAll} className="text-gray-600 hover:text-gray-900 text-sm">
             View All
           </Button>
@@ -125,7 +125,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Recent Uploads</h2>
+        <h2 className="font-medium text-gray-900">Recent Uploads</h2>
         <Button variant="ghost" size="sm" onClick={onViewAll} className="text-gray-600 hover:text-gray-900 text-sm">
           View All
         </Button>
