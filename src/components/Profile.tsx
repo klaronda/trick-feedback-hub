@@ -102,7 +102,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">Subscription</h2>
-          <Settings className="h-5 w-5 text-gray-600" />
+          {isPro && <Settings className="h-5 w-5 text-gray-600" />}
         </div>
         <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
