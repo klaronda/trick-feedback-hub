@@ -14,7 +14,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('home')}
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-full transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full transition-all ${
             currentView === 'home' 
               ? 'text-black bg-gray-100' 
               : 'text-gray-600 hover:text-black hover:bg-gray-50'
@@ -28,7 +28,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('videos')}
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-full transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full transition-all ${
             currentView === 'videos' 
               ? 'text-black bg-gray-100' 
               : 'text-gray-600 hover:text-black hover:bg-gray-50'
@@ -42,7 +42,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('coach')}
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-full transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full transition-all ${
             currentView === 'coach' 
               ? 'text-black bg-gray-100' 
               : 'text-gray-600 hover:text-black hover:bg-gray-50'
@@ -56,7 +56,7 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('profile')}
-          className={`flex flex-col items-center gap-1 px-4 py-2 rounded-full transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full transition-all ${
             currentView === 'profile' 
               ? 'text-black bg-gray-100' 
               : 'text-gray-600 hover:text-black hover:bg-gray-50'
