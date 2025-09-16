@@ -166,12 +166,12 @@ Make the tip specific, actionable, and appropriate for their skill level. Refere
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: 'Generate a personalized daily trick tip for this user.' }
         ],
-        max_completion_tokens: 500,
+        max_tokens: 500,
       }),
     });
 
