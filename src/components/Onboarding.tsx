@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Disclaimer } from '@/components/ui/Disclaimer';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
@@ -422,9 +423,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               >
                 Maybe Later
               </Button>
-              <p className="text-xs text-gray-500">
+              <Disclaimer className="mt-4">
                 Your videos are stored in the cloud for up to 180 days.
-              </p>
+              </Disclaimer>
             </div>
           )}
 

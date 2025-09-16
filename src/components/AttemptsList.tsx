@@ -7,6 +7,7 @@ import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar";
+import { Disclaimer } from "@/components/ui/Disclaimer";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -430,9 +431,9 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
           )}
           
           {/* Disclaimer */}
-          <div className="text-center text-sm text-muted-foreground mt-8">
+          <Disclaimer className="mt-6">
             Your videos are stored in the cloud for up to 180 days.
-          </div>
+          </Disclaimer>
         </div>
       </div>
     </>
