@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Upload, Bell, BookmarkPlus, MessageSquare } from "lucide-react";
+import { Upload, Bell, BookmarkPlus, MessageSquare, Megaphone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface NotificationModalProps {
@@ -13,7 +13,7 @@ interface NotificationModalProps {
 
 interface ActivityItem {
   id: string;
-  type: 'upload' | 'feedback' | 'tip_saved' | 'notification';
+  type: 'upload' | 'coach_reviewed' | 'tip_saved' | 'notification';
   title: string;
   description: string;
   timestamp: string;
@@ -55,15 +55,15 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
           icon: <Upload className="w-4 h-4" />
         });
 
-        // Feedback activity (if processed)
+        // Coach Reviewed activity (if processed)
         if (attempt.status === 'completed' && attempt.processed_at) {
           activityItems.push({
-            id: `feedback-${attempt.id}`,
-            type: 'feedback',
-            title: 'Coach feedback ready',
+            id: `coach-reviewed-${attempt.id}`,
+            type: 'coach_reviewed',
+            title: 'Coach Reviewed',
             description: `Your ${attempt.trick_name || 'trick'} analysis is complete with coaching tips`,
             timestamp: formatTimestamp(attempt.processed_at),
-            icon: <MessageSquare className="w-4 h-4" />
+            icon: <Megaphone className="w-4 h-4" />
           });
         }
       });
@@ -171,9 +171,13 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
           ) : activities.length > 0 ? (
             <div className="space-y-3 pt-4">
               {activities.map((activity) => (
-                <div key={activity.id} className="bg-gray-50 rounded-xl p-4">
+                <div key={activity.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      activity.type === 'coach_reviewed' 
+                        ? 'bg-green-100 text-green-600' 
+                        : 'bg-blue-100 text-blue-600'
+                    }`}>
                       {activity.icon}
                     </div>
                     <div className="flex-1 min-w-0">
