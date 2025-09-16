@@ -12,6 +12,7 @@ interface TrickAttempt {
   created_at: string;
   status: string;
   analysis_data: any;
+  coach_notes: string | null;
 }
 
 interface RecentUploadsProps {
@@ -32,9 +33,9 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     try {
       const { data, error } = await supabase
         .from('trick_attempts')
-        .select('id, trick_name, created_at, status, analysis_data')
+        .select('id, trick_name, created_at, status, analysis_data, coach_notes')
         .order('created_at', { ascending: false })
-        .limit(3);
+        .limit(5);
 
       if (error) throw error;
       setAttempts(data || []);
@@ -48,7 +49,7 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
       case 'completed':
-        return <Badge variant="completed">Completed</Badge>;
+        return <Badge variant="completed">Reviewed</Badge>;
       case 'processing':
         return <Badge variant="processing">Processing</Badge>;
       case 'pending':
@@ -56,6 +57,12 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
       default:
         return <Badge variant="pending">{status}</Badge>;
     }
+  };
+
+  const truncateText = (text: string, maxLength: number = 90) => {
+    if (!text) return null;
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
   };
 
   const getScore = (analysisData: any) => {
@@ -144,7 +151,13 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
                   {formatDistanceToNow(new Date(attempt.created_at), { addSuffix: true })}
                 </p>
                 
-                {attempt.status === 'completed' && (
+                {attempt.status === 'completed' && attempt.coach_notes && (
+                  <p className="text-sm text-gray-600 mb-3">
+                    {truncateText(attempt.coach_notes)}
+                  </p>
+                )}
+                
+                {attempt.status === 'completed' && !attempt.coach_notes && (
                   <p className="text-sm text-gray-600 mb-3">
                     Great progress on your {attempt.trick_name?.toLowerCase()}! Focus on keeping your shoulders aligned.
                   </p>
