@@ -179,14 +179,14 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       </div>
 
       {/* Account Actions */}
-      <div className="space-y-3">
-        <Button variant="outline" className="w-full justify-start text-red-600 border-red-200 hover:bg-red-50">
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete Account
-        </Button>
-        <Button variant="outline" className="w-full justify-start">
+      <div className="space-y-2">
+        <Button variant="ghost" className="w-full justify-start text-gray-500 hover:text-gray-700 hover:bg-gray-50">
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
+        </Button>
+        <Button variant="ghost" className="w-full justify-start text-gray-400 hover:text-red-600 hover:bg-red-50">
+          <Trash2 className="w-4 h-4 mr-2" />
+          Delete Account
         </Button>
       </div>
     </div>
