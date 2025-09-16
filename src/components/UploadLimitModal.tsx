@@ -24,7 +24,7 @@ export const UploadLimitModal = ({
 }: UploadLimitModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-sm md:max-w-4xl bg-white border border-gray-200 rounded-[8px] p-4">
+      <DialogContent className="sm:max-w-sm bg-white border-gray-200">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <Crown className="h-5 w-5 text-gray-900" />
