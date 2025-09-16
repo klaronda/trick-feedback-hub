@@ -42,46 +42,40 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       <div className="space-y-3">
         <h2 className="text-lg font-medium text-gray-900">Account</h2>
         <Card>
-          <CardContent className="space-y-4 pt-6">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src="" />
-                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
-                  {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-              <h3 className="font-medium text-gray-900">
-                {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
-              </h3>
-              <p className="text-sm text-gray-600">{user?.email}</p>
-              <p className="text-sm text-gray-500">Skating since 2020</p>
+          <CardContent className="space-y-6 pt-6">
+            {/* Profile Info */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Avatar className="h-16 w-16">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
+                    {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <h3 className="font-medium text-gray-900">
+                    {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
+                  </h3>
+                  <p className="text-sm text-gray-600">{user?.email}</p>
+                  <p className="text-sm text-gray-500">Skating since 2020</p>
+                </div>
+              </div>
+              <Settings className="h-5 w-5 text-gray-600 cursor-pointer" />
             </div>
-          </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Stats Section */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-2">
-              <Upload className="h-5 w-5 text-gray-600" />
-              <div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+              <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">0</p>
                 <p className="text-sm text-gray-600">Videos Uploaded</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-2">
-              <TrendingUp className="h-5 w-5 text-gray-600" />
-              <div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-gray-900">{isPro ? '-' : '0/5'}</p>
+                <p className="text-sm text-gray-600">{isPro ? 'Coach Chats' : 'Monthly Upload Limit'}</p>
+              </div>
+              <div className="text-center">
                 <p className="text-2xl font-bold text-gray-900">-</p>
-                <p className="text-sm text-gray-600">Avg Score</p>
+                <p className="text-sm text-gray-600">Score</p>
               </div>
             </div>
           </CardContent>
