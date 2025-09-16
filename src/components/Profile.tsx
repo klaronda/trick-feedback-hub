@@ -118,7 +118,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               )}
             </div>
             {isPro && (
-              <Badge variant="pro" className="h-5 px-1.5 text-[11px] font-medium rounded-md">
+              <Badge variant="pro">
                 Active
               </Badge>
             )}
