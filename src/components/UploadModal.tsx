@@ -242,8 +242,8 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
-        <Card className="w-full max-w-sm bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
-          <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
+        <Card className="w-full max-w-sm md:max-w-4xl bg-white rounded-[8px] border border-gray-200 max-h-[90vh] overflow-y-auto">
+          <div className="sticky top-0 bg-white rounded-t-[8px] border-b border-gray-100 p-4 pb-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">Upload Video</h2>
               <Button
@@ -258,7 +258,7 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
             <p className="text-gray-600 text-sm mt-1">Tell us what trick you're working on.</p>
           </div>
 
-          <div className="p-6 pt-4 space-y-6">
+          <div className="p-4 pt-3 space-y-6">
             <div className="space-y-2 relative">
               <Label htmlFor="trick-name" className="text-gray-900 font-medium">
                 What trick are you practicing?

@@ -132,9 +132,9 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm mx-auto bg-white rounded-2xl max-h-[80vh] flex flex-col">
+      <div className="w-full max-w-sm md:max-w-4xl mx-auto bg-white rounded-[8px] border border-gray-200 max-h-[80vh] flex flex-col">
         {/* Sticky header */}
-        <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
+        <div className="sticky top-0 bg-white rounded-t-[8px] border-b border-gray-100 p-4 pb-3">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-semibold text-gray-900">
               {userFirstName}'s Activity
@@ -152,7 +152,7 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 px-6 pb-6">
+        <ScrollArea className="flex-1 px-4 pb-4">
           {loading ? (
             <div className="space-y-4 pt-4">
               {[...Array(3)].map((_, i) => (
