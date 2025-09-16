@@ -41,7 +41,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       {/* Account Section */}
       <div className="space-y-3">
         <h2 className="text-lg font-medium text-gray-900">Account</h2>
-        <Card className="bg-white">
+        <Card className="bg-white border-gray-200">
           <CardContent className="space-y-6 pt-6">
             {/* Profile Info */}
             <div className="flex items-center justify-between">
@@ -84,7 +84,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
           <h2 className="text-lg font-medium text-gray-900">Subscription</h2>
           <Settings className="h-5 w-5 text-gray-600" />
         </div>
-        <Card className="bg-white">
+        <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
             <div>
@@ -137,7 +137,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       {isPro && (
         <div className="space-y-3">
           <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
-          <Card className="bg-white">
+          <Card className="bg-white border-gray-200">
             <CardContent className="pt-6">
               <div className="text-center py-8">
                 <p className="text-gray-500">No saved tips yet</p>
@@ -151,7 +151,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       {/* Preferences Section */}
       <div className="space-y-3">
         <h2 className="text-lg font-medium text-gray-900">Preferences</h2>
-          <Card className="bg-white">
+          <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
             <div>
