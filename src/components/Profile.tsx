@@ -70,9 +70,9 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h3 className="font-medium text-gray-900">
+                <p className="font-medium text-gray-900">
                   {user?.email ? getName(user.email, userProfile?.first_name) : "User"}
-                </h3>
+                </p>
                 <p className="text-sm text-gray-600">{user?.email}</p>
                 <p className="text-sm text-gray-500">Skating since 2020</p>
               </div>
