@@ -233,7 +233,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
             <Button 
               onClick={onUploadNew} 
               disabled={checking}
-              className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+              className="bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white font-medium"
             >
               <Plus className="w-4 h-4 mr-2" />
               {checking ? "Checking..." : "Upload New"}
@@ -339,7 +339,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                 <Button 
                   onClick={onUploadNew} 
                   disabled={checking}
-                  className="bg-foreground hover:bg-foreground/90 text-background font-medium"
+                  className="bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white font-medium"
                 >
                   {checking ? "Checking..." : "Upload First Attempt"}
                 </Button>
@@ -357,63 +357,71 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                   {/* Video Cards for this month */}
                   <div className="space-y-3">
                     {monthAttempts.map((attempt) => (
-                      <Card key={attempt.id} className="p-4 bg-card border-border hover:bg-muted/20 transition-colors">
-                        <div className="flex items-start gap-4">
+                      <div key={attempt.id} className="bg-white rounded-[8px] border border-gray-200 p-4 hover:bg-gray-50/50 transition-colors">
+                        <div className="flex items-start gap-3">
                           {/* Video Thumbnail/Icon */}
-                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                            <VideoIcon className="w-6 h-6 text-muted-foreground" />
+                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <VideoIcon className="w-5 h-5 text-gray-400" />
                           </div>
 
                           {/* Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-medium text-foreground truncate">
-                                    {attempt.trick_name || 'Unnamed Trick'}
-                                  </h3>
-                                  <Badge 
-                                    variant="secondary"
-                                    className={`px-2 py-0.5 text-xs font-medium flex-shrink-0 ${
-                                      attempt.status.toLowerCase() === 'completed' || attempt.status.toLowerCase() === 'reviewed'
-                                        ? 'bg-success/10 text-success border-success/20' 
-                                        : 'bg-warning/10 text-warning border-warning/20'
-                                    }`}
-                                  >
-                                    {attempt.status.toLowerCase() === 'reviewed' ? 'Completed' : attempt.status}
-                                  </Badge>
-                                </div>
-                                
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  {formatTimeAgo(attempt.created_at)}
-                                </p>
+                            <div className="flex items-center justify-between mb-1">
+                              <h3 className="font-semibold text-sm text-gray-900 truncate">
+                                {attempt.trick_name || 'Untitled Trick'}
+                              </h3>
+                              <Badge 
+                                variant="secondary"
+                                className={`px-2 py-0.5 text-xs font-medium flex-shrink-0 ${
+                                  attempt.status.toLowerCase() === 'completed' || attempt.status.toLowerCase() === 'reviewed'
+                                    ? 'bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success-border)]' 
+                                    : 'bg-[var(--warning-bg)] text-[var(--warning-text)] border-[var(--warning-border)]'
+                                }`}
+                              >
+                                {attempt.status.toLowerCase() === 'reviewed' ? 'Completed' : attempt.status}
+                              </Badge>
+                            </div>
+                            
+                            <p className="text-xs text-gray-600 mb-2">
+                              {formatTimeAgo(attempt.created_at)}
+                            </p>
 
-                                {attempt.feedback && (
-                                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                                    {attempt.feedback}
-                                  </p>
-                                )}
+                            {attempt.status === 'completed' && attempt.feedback && (
+                              <p className="text-sm text-gray-600 mb-3">
+                                {attempt.feedback.length > 90 ? attempt.feedback.substring(0, 90) + "..." : attempt.feedback}
+                              </p>
+                            )}
 
-                                <div className="flex items-center justify-between">
-                                  {getScore(attempt.analysis_data) && (
-                                    <p className="text-sm font-medium text-foreground">
-                                      Score: {getScore(attempt.analysis_data)}/10
-                                    </p>
-                                  )}
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={() => onViewDetails(attempt.id)}
-                                    className="text-xs ml-auto"
-                                  >
-                                    View Details
-                                  </Button>
-                                </div>
-                              </div>
+                            {attempt.status === 'completed' && !attempt.feedback && (
+                              <p className="text-sm text-gray-600 mb-3">
+                                Great progress on your {attempt.trick_name?.toLowerCase()}! Focus on keeping your shoulders aligned.
+                              </p>
+                            )}
+
+                            {attempt.status === 'processing' && (
+                              <p className="text-sm text-gray-600 mb-3">
+                                We're reviewing your technique
+                              </p>
+                            )}
+
+                            <div className="flex items-center justify-between">
+                              {getScore(attempt.analysis_data) && (
+                                <span className="text-sm font-medium text-gray-900">
+                                  Score: {getScore(attempt.analysis_data)}/10
+                                </span>
+                              )}
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => onViewDetails(attempt.id)}
+                                className="p-0 h-auto font-medium text-sm ml-auto text-gray-600 hover:text-gray-900"
+                              >
+                                View Details
+                              </Button>
                             </div>
                           </div>
                         </div>
-                      </Card>
+                      </div>
                     ))}
                   </div>
                 </div>
