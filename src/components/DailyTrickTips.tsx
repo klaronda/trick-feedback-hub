@@ -83,7 +83,7 @@ export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-gray-600">Daily Trick Tips</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Daily Trick Tips</h2>
         <div className="flex gap-2">
           <Button variant="ghost" size="sm" onClick={prevTip} className="p-2 text-gray-600 hover:text-gray-900">
             <ChevronLeft className="w-4 h-4" />
