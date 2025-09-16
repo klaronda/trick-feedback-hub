@@ -62,18 +62,6 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 <p className="text-sm text-gray-500">Skating since 2020</p>
               </div>
             </div>
-            
-            {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div className="text-center bg-gray-50 rounded-xl p-4">
-                <p className="text-2xl font-bold text-gray-900">0</p>
-                <p className="text-sm text-gray-600">Videos Uploaded</p>
-              </div>
-              <div className="text-center bg-gray-50 rounded-xl p-4">
-                <p className="text-2xl font-bold text-gray-900">{isPro ? '-' : '0/5'}</p>
-                <p className="text-sm text-gray-600">{isPro ? 'Coach Chats' : 'Monthly Upload Limit'}</p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
@@ -95,6 +83,18 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
             </div>
           </div>
           
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center bg-gray-50 rounded-xl p-4">
+              <p className="text-2xl font-bold text-gray-900">0</p>
+              <p className="text-sm text-gray-600">Videos Uploaded</p>
+            </div>
+            <div className="text-center bg-gray-50 rounded-xl p-4">
+              <p className="text-2xl font-bold text-gray-900">{isPro ? '-' : '0/5'}</p>
+              <p className="text-sm text-gray-600">{isPro ? 'Coach Chats' : 'Monthly Upload Limit'}</p>
+            </div>
+          </div>
+
           {isPro ? (
             <div className="space-y-3">
               <h4 className="font-medium text-gray-900">Pro Features</h4>
@@ -125,10 +125,6 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
               </Button>
             </div>
           )}
-          
-          <div className="pt-2 border-t">
-            <p className="text-sm text-gray-600">Monthly Usage: 0/5 uploads</p>
-          </div>
           </CardContent>
         </Card>
       </div>
