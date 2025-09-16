@@ -108,7 +108,6 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-medium text-gray-900 capitalize">{userPlan?.plan_name || 'Free'}</h3>
                 <PlanBadge plan={userPlan?.plan_name || 'free'} />
               </div>
             </div>
