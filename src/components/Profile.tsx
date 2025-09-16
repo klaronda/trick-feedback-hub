@@ -107,10 +107,15 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
         <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex-1">
               <div className="flex items-center gap-2">
                 <PlanBadge plan={userPlan?.plan_name || 'free'} />
               </div>
+              {isPro && (
+                <p className="text-xs text-gray-600 mt-1">
+                  $5.00/month | Renews October 16, 2025
+                </p>
+              )}
             </div>
             {isPro && (
               <Badge className="h-5 px-1.5 text-[11px] font-medium rounded-md bg-blue-600 text-white border-0">
