@@ -8,7 +8,11 @@ import type { User } from "@supabase/supabase-js";
 
 interface ProfileProps {
   user: User | null;
-  userProfile: { first_name: string | null } | null;
+  userProfile: { 
+    first_name: string | null;
+    stance: string | null;
+    learning_goals: string | null;
+  } | null;
   userPlan: { plan_name: string | null; is_subscribed: boolean } | null;
   onUpgrade: () => void;
 }
@@ -26,6 +30,17 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
       return firstName;
     }
     return email.split('@')[0];
+  };
+
+  const summarizeGoals = (goals?: string | null) => {
+    if (!goals) return null;
+    // Extract first 2-3 meaningful words
+    const words = goals.toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .split(/\s+/)
+      .filter(word => word.length > 2)
+      .slice(0, 3);
+    return words.join(' ');
   };
 
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
@@ -60,6 +75,22 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                 </h3>
                 <p className="text-sm text-gray-600">{user?.email}</p>
                 <p className="text-sm text-gray-500">Skating since 2020</p>
+              </div>
+            </div>
+            
+            {/* Stance and Goals */}
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Stance</p>
+                <p className="text-sm text-gray-900 mt-1 capitalize">
+                  {userProfile?.stance || 'Not set'}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Goals</p>
+                <p className="text-sm text-gray-900 mt-1 capitalize">
+                  {summarizeGoals(userProfile?.learning_goals) || 'Not set'}
+                </p>
               </div>
             </div>
           </CardContent>

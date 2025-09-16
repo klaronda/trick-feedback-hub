@@ -27,7 +27,7 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userPlan, setUserPlan] = useState<{ plan_name: string | null; is_subscribed: boolean } | null>(null);
-  const [userProfile, setUserProfile] = useState<{ first_name: string | null } | null>(null);
+  const [userProfile, setUserProfile] = useState<{ first_name: string | null; stance: string | null; learning_goals: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -75,7 +75,7 @@ const Index = () => {
       // Prefer profiles table for plan/subscription + name
       const { data: profileData, error: profileError } = await supabase
         .from('profiles')
-        .select('first_name, plan_name, is_subscribed, onboarding_completed')
+        .select('first_name, plan_name, is_subscribed, onboarding_completed, stance, learning_goals')
         .eq('user_id', userId)
         .single();
 
@@ -99,7 +99,11 @@ const Index = () => {
         : (userData || { plan_name: 'free', is_subscribed: false });
 
       setUserPlan(resolvedPlan);
-      setUserProfile({ first_name: profileData?.first_name ?? null });
+      setUserProfile({ 
+        first_name: profileData?.first_name ?? null,
+        stance: profileData?.stance ?? null,
+        learning_goals: profileData?.learning_goals ?? null
+      });
 
       const onboardingCompleted = profileData?.onboarding_completed ?? userData?.onboarding_completed;
       if (!onboardingCompleted) {
