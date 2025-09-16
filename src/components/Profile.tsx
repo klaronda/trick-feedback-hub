@@ -160,6 +160,10 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
                   <CheckCircle className="h-4 w-4 text-green-600" />
                   <span className="text-sm text-gray-600">Daily trick tips</span>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <span className="text-sm text-gray-600">Access to top weekly tricks</span>
+                </div>
               </div>
               
               {/* Usage Stats */}
