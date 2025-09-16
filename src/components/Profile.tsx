@@ -114,15 +114,17 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
             </div>
           </div>
           
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center bg-gray-50 rounded-xl p-4">
-              <p className="text-2xl font-bold text-gray-900">0</p>
-              <p className="text-sm text-gray-600">Videos Uploaded</p>
+          {/* Usage Stats */}
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Videos Uploaded</p>
+              <p className="text-sm text-gray-900 mt-1">0</p>
             </div>
-            <div className="text-center bg-gray-50 rounded-xl p-4">
-              <p className="text-2xl font-bold text-gray-900">{isPro ? '-' : '0/5'}</p>
-              <p className="text-sm text-gray-600">{isPro ? 'Coach Chats' : 'Monthly Upload Limit'}</p>
+            <div>
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                {isPro ? 'Coach Chats' : 'Monthly Upload Limit'}
+              </p>
+              <p className="text-sm text-gray-900 mt-1">{isPro ? 'Unlimited' : '0/5'}</p>
             </div>
           </div>
 
