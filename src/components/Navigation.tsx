@@ -8,7 +8,7 @@ interface NavigationProps {
 
 export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-muted">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white">
       <div className="flex items-center justify-around py-2 px-4 max-w-sm mx-auto">
         <Button
           variant="ghost"
@@ -16,8 +16,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           onClick={() => onNavigate('home')}
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'home' 
-              ? 'text-primary bg-primary/10' 
-              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
+              ? 'text-black bg-gray-100' 
+              : 'text-gray-600 hover:text-black hover:bg-gray-50'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -30,8 +30,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           onClick={() => onNavigate('videos')}
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'videos' 
-              ? 'text-primary bg-primary/10' 
-              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
+              ? 'text-black bg-gray-100' 
+              : 'text-gray-600 hover:text-black hover:bg-gray-50'
           }`}
         >
           <Video className="w-5 h-5" />
@@ -44,8 +44,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           onClick={() => onNavigate('coach')}
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'coach' 
-              ? 'text-primary bg-primary/10' 
-              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
+              ? 'text-black bg-gray-100' 
+              : 'text-gray-600 hover:text-black hover:bg-gray-50'
           }`}
         >
           <MessageCircle className="w-5 h-5" />
@@ -58,8 +58,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
           onClick={() => onNavigate('profile')}
           className={`flex flex-col items-center gap-1 p-3 transition-all ${
             currentView === 'profile' 
-              ? 'text-primary bg-primary/10' 
-              : 'text-muted-foreground hover:text-foreground/80 hover:bg-muted'
+              ? 'text-black bg-gray-100' 
+              : 'text-gray-600 hover:text-black hover:bg-gray-50'
           }`}
           disabled
         >
