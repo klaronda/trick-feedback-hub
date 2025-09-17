@@ -293,18 +293,18 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       case 1:
         return (
           <div className="space-y-6">
-            <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
-              <img 
-                src={onboardingUploadImage} 
-                alt="Camera setup for video recording"
-                className="w-full h-full object-cover"
-              />
-            </div>
             <div className="space-y-2">
               <h2 className="text-2xl font-extralight text-gray-900">Just upload your video.</h2>
               <p className="text-gray-600 max-w-md mx-auto">
                 And a coach will drop in notes for landing your trick right on the bolts.
               </p>
+            </div>
+            <div className="w-full aspect-video rounded-xl overflow-hidden">
+              <img 
+                src={onboardingUploadImage} 
+                alt="Camera setup for video recording"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         );
@@ -312,13 +312,6 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       case 2:
         return (
           <div className="space-y-6">
-            <div className="w-64 h-64 mx-auto rounded-xl overflow-hidden">
-              <img 
-                src={onboardingUpgradeImage} 
-                alt="Graffiti wall skateboarding scene"
-                className="w-full h-full object-cover"
-              />
-            </div>
             <div className="space-y-4">
               <div className="space-y-1">
                 <h2 className="text-2xl font-extralight text-gray-900">5 free uploads a month.</h2>
@@ -328,6 +321,13 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
                 <p>Upload all the videos you want for just $5/month, plus chat with a coach to get tips on the fly.</p>
                 <p>For the price of a coffee, you can learn to skate so much faster.</p>
               </div>
+            </div>
+            <div className="w-full aspect-video rounded-xl overflow-hidden">
+              <img 
+                src={onboardingUpgradeImage} 
+                alt="Graffiti wall skateboarding scene"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         );
