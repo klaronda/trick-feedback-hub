@@ -10,7 +10,6 @@ import { NotificationBar, useNotificationBar } from "@/components/ui/notificatio
 import { Disclaimer } from "@/components/ui/Disclaimer";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ConfirmationModal } from "./ConfirmationModal";
 
 interface TrickAttempt {
   id: string;
@@ -38,8 +37,6 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('freePlanBannerDismissed') === 'true';
   });
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [attemptToDelete, setAttemptToDelete] = useState<TrickAttempt | null>(null);
   const { notification, showNotification, hideNotification } = useNotificationBar();
   const navigate = useNavigate();
 
@@ -140,37 +137,6 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       const dateB = new Date(b + ' 1');
       return dateB.getTime() - dateA.getTime();
     });
-  };
-
-  const handleDeleteClick = (attempt: TrickAttempt) => {
-    setAttemptToDelete(attempt);
-    setShowDeleteModal(true);
-  };
-
-  const handleDelete = async () => {
-    if (!attemptToDelete) return;
-
-    setDeletingId(attemptToDelete.id);
-    try {
-      const { error } = await supabase
-        .from('trick_attempts')
-        .delete()
-        .eq('id', attemptToDelete.id);
-
-      if (error) throw error;
-
-      showNotification('The attempt has been removed successfully.', 'success');
-
-      // Refresh the list
-      fetchAttempts();
-    } catch (error) {
-      console.error('Error deleting attempt:', error);
-      showNotification('Failed to delete the attempt. Please try again.', 'error');
-    } finally {
-      setDeletingId(null);
-      setShowDeleteModal(false);
-      setAttemptToDelete(null);
-    }
   };
 
   const handleLogout = async () => {
@@ -446,25 +412,14 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
                                   Score: {getScore(attempt.analysis_data)}/10
                                 </span>
                               )}
-                              <div className="flex items-center gap-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => onViewDetails(attempt.id)}
-                                  className="p-0 h-auto font-medium text-sm text-gray-600 hover:text-gray-900"
-                                >
-                                  View Details
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  onClick={() => handleDeleteClick(attempt)}
-                                  disabled={deletingId === attempt.id}
-                                  className="text-gray-400 hover:text-red-500 p-2"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => onViewDetails(attempt.id)}
+                                className="p-0 h-auto font-medium text-sm ml-auto text-gray-600 hover:text-gray-900"
+                              >
+                                View Details
+                              </Button>
                             </div>
                           </div>
                         </div>
@@ -480,21 +435,6 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
           <Disclaimer className="mt-6">
             Your videos are stored in the cloud for up to 180 days.
           </Disclaimer>
-
-          {/* Delete Confirmation Modal */}
-          <ConfirmationModal
-            isOpen={showDeleteModal}
-            onClose={() => {
-              setShowDeleteModal(false);
-              setAttemptToDelete(null);
-            }}
-            onConfirm={handleDelete}
-            title="Are you sure?"
-            message={`This will permanently delete your ${attemptToDelete?.trick_name || 'trick'} attempt and all its data. This will not reset your monthly upload count.`}
-            confirmText="Yes"
-            cancelText="No"
-            isDestructive={true}
-          />
         </div>
     </>
   );
