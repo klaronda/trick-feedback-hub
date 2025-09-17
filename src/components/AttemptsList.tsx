@@ -200,15 +200,42 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
+        {/* Header Skeleton */}
+        <div className="space-y-1">
+          <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
+          <div className="h-5 w-80 bg-gray-100 rounded animate-pulse" />
         </div>
-        <div className="space-y-6">
-          {/* Header */}
-          <div className="space-y-1">
-            <h1 className="text-2xl font-extralight text-gray-900">Videos</h1>
-            <p className="text-gray-600">Review your uploaded videos and coaching feedback</p>
-          </div>
+
+        {/* Upload Button Skeleton */}
+        <div className="h-12 w-full bg-gray-200 rounded animate-pulse" />
+
+        {/* Search Bar Skeleton */}
+        <div className="h-10 w-full bg-gray-100 rounded animate-pulse" />
+
+        {/* Month Header Skeleton */}
+        <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+
+        {/* Video Cards Skeleton */}
+        <div className="space-y-3">
+          {Array(4).fill(0).map((_, i) => (
+            <div key={i} className="bg-white rounded-[8px] border border-gray-200 p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+                    <div className="h-6 w-16 bg-gray-100 rounded-full animate-pulse" />
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded w-20 animate-pulse" />
+                  <div className="h-3 bg-gray-100 rounded w-3/4 animate-pulse" />
+                  <div className="flex items-center justify-between">
+                    <div className="h-3 bg-gray-100 rounded w-16 animate-pulse" />
+                    <div className="h-3 bg-gray-100 rounded w-20 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
