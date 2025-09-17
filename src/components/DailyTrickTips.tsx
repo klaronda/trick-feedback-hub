@@ -156,7 +156,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
 
       <div className="bg-white rounded-[8px] border border-gray-200 p-4">
         <div className="flex items-start justify-between mb-2">
-          <Badge variant="completed" className="text-xs text-gray-500 bg-gray-100">
+          <Badge variant="pending" className="text-xs">
             {tip.tags[0] || tip.difficulty}
           </Badge>
           <span className="text-xs text-gray-600">
