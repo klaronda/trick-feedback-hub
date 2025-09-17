@@ -17,31 +17,16 @@ export const TopWeeklyTricks = () => {
 
   const fetchTopTricks = async () => {
     try {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-      const { data, error } = await supabase
-        .from('trick_attempts')
-        .select('trick_name')
-        .gte('created_at', oneWeekAgo.toISOString())
-        .not('trick_name', 'is', null);
+      const { data, error } = await supabase.rpc('get_top_tricks_last_7_days', {
+        limit_count: 5
+      });
 
       if (error) throw error;
 
-      // Count occurrences of each trick
-      const trickCounts: { [key: string]: number } = {};
-      data?.forEach((attempt) => {
-        if (attempt.trick_name) {
-          trickCounts[attempt.trick_name] = (trickCounts[attempt.trick_name] || 0) + 1;
-        }
-      });
-
-      // Convert to array and sort by count
-      const sortedTricks = Object.entries(trickCounts)
-        .map(([trick_name, count]) => ({ trick_name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
+      const topFiveTricks: TrickData[] = (data ?? []).map((row: any) => ({
+        trick_name: row.trick_name,
+        count: row.attempt_count
+      }));
       // Fill with mock data if not enough real data
       const mockTricks = [
         { trick_name: "Ollie", count: 12 },
@@ -51,7 +36,7 @@ export const TopWeeklyTricks = () => {
         { trick_name: "Heelflip", count: 3 }
       ];
 
-      setTopTricks(sortedTricks.length > 0 ? sortedTricks : mockTricks);
+      setTopTricks(topFiveTricks.length > 0 ? topFiveTricks : mockTricks);
     } catch (error) {
       console.error('Error fetching top tricks:', error);
       // Use mock data on error

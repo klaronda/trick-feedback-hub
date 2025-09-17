@@ -318,6 +318,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      get_top_tricks_last_7_days: {
+        Args: { limit_count?: number }
+        Returns: {
+          attempt_count: number
+          trick_name: string
+        }[]
+      }
       get_upload_status_for_current_user: {
         Args: Record<PropertyKey, never>
         Returns: {
