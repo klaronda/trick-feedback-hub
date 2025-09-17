@@ -203,9 +203,12 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
         </div>
-        <div className="text-center py-12">
-          <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
-          <p className="text-muted-foreground mt-4">Loading your attempts...</p>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="space-y-1">
+            <h1 className="text-2xl font-extralight text-gray-900">Videos</h1>
+            <p className="text-gray-600">Review your uploaded videos and coaching feedback</p>
+          </div>
         </div>
       </div>
     );
