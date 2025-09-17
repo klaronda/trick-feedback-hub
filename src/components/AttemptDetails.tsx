@@ -7,6 +7,7 @@ import { ChevronLeft, RotateCcw, Trash2, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { usePersonalizedCoach } from "@/hooks/usePersonalizedCoach";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 interface TrickAttempt {
   id: string;
@@ -34,6 +35,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const [isDeleting, setIsDeleting] = useState(false);
   const [coachQuestion, setCoachQuestion] = useState<string>("");
   const [coachMessages, setCoachMessages] = useState<Array<{role: 'user' | 'coach', text: string, timestamp: Date}>>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { sendMessage: sendCoachMessage, loading: coachLoading } = usePersonalizedCoach();
   const { toast } = useToast();
 
@@ -149,10 +151,6 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this attempt? This action cannot be undone.')) {
-      return;
-    }
-
     setIsDeleting(true);
     try {
       const { error } = await supabase
@@ -362,7 +360,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
               <RotateCcw className="w-5 h-5 text-gray-600" />
             </button>
             <button
-              onClick={handleDelete}
+              onClick={() => setShowDeleteModal(true)}
               disabled={isDeleting}
               className="p-2 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors text-gray-600"
             >
@@ -517,6 +515,18 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
             </CardContent>
           </Card>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmationModal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+          title="Are you sure?"
+          message={`This will permanently delete your ${attempt?.trick_name || 'trick'} attempt and all its data. This will not reset your monthly upload count.`}
+          confirmText="Yes"
+          cancelText="No"
+          isDestructive={true}
+        />
     </div>
   );
 };

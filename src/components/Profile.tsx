@@ -8,6 +8,10 @@ import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X, Heart } f
 import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
+import { ConfirmationModal } from "./ConfirmationModal";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ProfileProps {
   user: User | null;
@@ -24,6 +28,11 @@ interface ProfileProps {
 export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
   const { savedTips, loading: tipsLoading, unsaveTip, canUnsaveFromHomepage } = useSavedTips();
+  const [showDeleteTipModal, setShowDeleteTipModal] = useState(false);
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [tipToDelete, setTipToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
       return firstName.charAt(0).toUpperCase();
@@ -50,6 +59,67 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   };
 
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+
+  const handleDeleteTipClick = (savedTip: any) => {
+    setTipToDelete(savedTip);
+    setShowDeleteTipModal(true);
+  };
+
+  const handleDeleteTip = async () => {
+    if (!tipToDelete) return;
+    await unsaveTip(tipToDelete.id);
+    setShowDeleteTipModal(false);
+    setTipToDelete(null);
+  };
+
+  const handleDeleteAccount = () => {
+    setShowDeleteAccountModal(false);
+    setShowConfirmDeleteModal(true);
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    if (!user) return;
+    
+    setIsDeleting(true);
+    try {
+      // Delete user's trick attempts
+      await supabase
+        .from('trick_attempts')
+        .delete()
+        .eq('user_id', user.id);
+
+      // Delete user's saved tips
+      await supabase
+        .from('saved_trick_tips')
+        .delete()
+        .eq('user_id', user.id);
+
+      // Delete user profile
+      await supabase
+        .from('profiles')
+        .delete()
+        .eq('user_id', user.id);
+
+      // Delete user record
+      await supabase
+        .from('users')
+        .delete()
+        .eq('id', user.id);
+
+      // Sign out user
+      await supabase.auth.signOut();
+      
+      toast.success('Account deleted successfully');
+      
+      // Redirect will happen via auth state change
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      toast.error('Failed to delete account. Please try again.');
+    } finally {
+      setIsDeleting(false);
+      setShowConfirmDeleteModal(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -279,7 +349,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => unsaveTip(savedTip.id)}
+                          onClick={() => handleDeleteTipClick(savedTip)}
                           className="text-gray-400 hover:text-red-500 p-2"
                         >
                           <X className="w-4 h-4" />
@@ -337,11 +407,57 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-gray-400 hover:text-red-600 hover:bg-red-50">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-gray-400 hover:text-red-600 hover:bg-red-50"
+          onClick={() => setShowDeleteAccountModal(true)}
+          disabled={isDeleting}
+        >
           <Trash2 className="w-4 h-4 mr-2" />
           Delete Account
         </Button>
       </div>
+
+      {/* Delete Saved Tip Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteTipModal}
+        onClose={() => {
+          setShowDeleteTipModal(false);
+          setTipToDelete(null);
+        }}
+        onConfirm={handleDeleteTip}
+        title="Are you sure?"
+        message={`This will remove "${tipToDelete?.tip?.headline || tipToDelete?.tip?.tip_text?.substring(0, 30) + '...' || 'this tip'}" from your saved tips.`}
+        confirmText="Yes"
+        cancelText="No"
+        isDestructive={true}
+      />
+
+      {/* Delete Account Initial Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteAccountModal}
+        onClose={() => setShowDeleteAccountModal(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account?"
+        message="Are you sure you want to delete your SkateCoach account?"
+        confirmText="Yes"
+        cancelText="No"
+        isDestructive={true}
+      />
+
+      {/* Confirm Account Deletion Modal */}
+      <ConfirmationModal
+        isOpen={showConfirmDeleteModal}
+        onClose={() => setShowConfirmDeleteModal(false)}
+        onConfirm={handleConfirmDeleteAccount}
+        title="Confirm Account Deletion"
+        message={`Confirm you want to delete your SkateCoach account.
+
+This action will permanently delete all your uploaded videos, coaching feedback, saved tips, activity history, and account information. This cannot be undone.`}
+        confirmText="Confirm Delete"
+        cancelText="No"
+        isDestructive={true}
+      />
     </div>
   );
 };

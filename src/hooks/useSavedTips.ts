@@ -97,7 +97,12 @@ export function useSavedTips() {
     }
   };
 
-  const unsaveTip = async (tipId: number) => {
+  const unsaveTip = async (tipId: number, onConfirm?: () => void) => {
+    if (onConfirm) {
+      onConfirm();
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('saved_trick_tips')
