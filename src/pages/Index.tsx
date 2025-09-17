@@ -238,27 +238,6 @@ const Index = () => {
     await saveTip(tip, 'daily-tips');
   };
 
-  
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to auth
-  }
-
-  // Show onboarding for new users
-  if (showOnboarding) {
-    return <Onboarding onComplete={handleOnboardingComplete} />;
-  }
-
   const handleNavigate = useCallback((view: 'home' | 'videos' | 'coach' | 'profile') => {
     const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
     if (view === 'videos') {
@@ -280,11 +259,31 @@ const Index = () => {
   const handleNotificationClick = useCallback(() => {
     setShowNotificationModal(true);
   }, []);
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
+
+  // Show onboarding for new users
+  if (showOnboarding) {
+    return <Onboarding onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <Header userPlan={userPlan} onNotificationClick={() => setShowNotificationModal(true)} />
+      <Header userPlan={userPlan} onNotificationClick={handleNotificationClick} />
 
       {/* Upload Limit Modal */}
       <UploadLimitModal 
