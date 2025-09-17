@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 
 interface DailyTrickTipsProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
@@ -33,44 +34,47 @@ interface TipSlot {
 
 export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [tips, setTips] = useState<TipSlot[]>([]);
-  const [loading, setLoading] = useState(false);
   const [seenSlots, setSeenSlots] = useState<number[]>([]);
   const { toast } = useToast();
   
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
-  useEffect(() => {
-    if (isPro) {
-      loadDailyTips();
-    }
-  }, [isPro]);
-
-  const loadDailyTips = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-daily-tips');
+  // Use React Query for caching daily tips
+  const { data: tips = [], isLoading: loading, error } = useQuery({
+    queryKey: ['daily-tips', isPro],
+    queryFn: async () => {
+      if (!isPro) return [];
+      
+      const { data, error } = await supabase.functions.invoke('generate-daily-tips', {
+        body: { seenSlots }
+      });
 
       if (error) throw error;
-
+      
       if (data.success && data.tips) {
-        setTips(data.tips);
         // Mark first tip as seen when loaded
         if (data.tips.length > 0 && !seenSlots.includes(1)) {
           setSeenSlots(prev => [...prev, 1]);
         }
+        return data.tips;
       }
-    } catch (error) {
+      return [];
+    },
+    enabled: isPro,
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    gcTime: 1000 * 60 * 60 * 24, // Keep in cache for 24 hours
+  });
+
+  useEffect(() => {
+    if (error) {
       console.error('Error loading daily tips:', error);
       toast({
         title: "Error loading tips",
         description: "Failed to load your daily trick tips. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [error, toast]);
 
   const handleLearnMore = (tip: TrickTip) => {
     if (onTipClick) {

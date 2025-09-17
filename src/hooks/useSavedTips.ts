@@ -56,6 +56,23 @@ export function useSavedTips() {
 
   const saveTip = async (tip: TrickTip, source: string = 'daily-tips') => {
     try {
+      // Check for duplicates before saving
+      const { data: existingTips, error: checkError } = await supabase
+        .from('saved_trick_tips')
+        .select('id')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .contains('tip', { id: tip.id });
+
+      if (checkError) throw checkError;
+
+      if (existingTips && existingTips.length > 0) {
+        toast({
+          title: "Tip already saved",
+          description: "This tip is already in your saved tips.",
+        });
+        return;
+      }
+
       const { error } = await supabase.rpc('save_trick_tip', {
         tip_data: tip as any,
         source: source

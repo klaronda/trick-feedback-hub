@@ -96,8 +96,17 @@ serve(async (req) => {
       });
     }
 
-    // Generate new tips if none exist
-    return await generateFreshTips(user, profile, recentAttempts, openaiKey, supabase);
+    // Generate 3 new tips if none exist
+    const tip1 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 1);
+    const tip2 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 2);
+    const tip3 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 3);
+    
+    return new Response(JSON.stringify({
+      success: true,
+      tips: [tip1, tip2, tip3]
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
 
   } catch (error) {
     console.error('Error in generate-daily-tips function:', error);
@@ -111,7 +120,7 @@ serve(async (req) => {
   }
 });
 
-async function generateFreshTips(user: any, profile: any, recentAttempts: any[], openaiKey: string, supabase: any) {
+async function generateSingleTip(user: any, profile: any, recentAttempts: any[], openaiKey: string, supabase: any, slot: number) {
   // Calculate user age and experience
   const age = profile?.birthday ? 
     new Date().getFullYear() - new Date(profile.birthday).getFullYear() : null;
@@ -149,11 +158,10 @@ async function generateFreshTips(user: any, profile: any, recentAttempts: any[],
     };
   });
 
-  // Create enhanced prompt for OpenAI
-  const systemPrompt = `You are Lovable, a skateboarding coach that generates personalized Daily Trick Tips. Generate a single tip with the new enhanced structure following EXACT specifications.
+  // Create enhanced prompt for OpenAI following the 5-step protocol
+  const systemPrompt = `You are Lovable, a skateboarding coach that generates personalized Daily Trick Tips. Follow the 5-step generation protocol EXACTLY.
 
 USER PROFILE:
-- ID: ${user.id}
 - Name: ${profile?.first_name || 'Skater'}
 - Age: ${age || 'unknown'}
 - Experience: ${experienceYears} years
@@ -163,18 +171,27 @@ USER PROFILE:
 - Recent Tricks: ${JSON.stringify(formattedAttempts)}
 - Previously Saved Topics: ${JSON.stringify(savedTopics)}
 
-CONTENT REQUIREMENTS:
-- HEADLINE: Max 6 words, punchy and descriptive
-- TEASER: Max 3 lines on mobile (about 120 chars), engaging preview
-- DETAILED_CONTENT: Expanded explanation with numbered steps or bullets
-- BADGE_CATEGORY: Short category (Basics, Flip Tricks, Mindset, Etiquette, etc.)
+GENERATION PROTOCOL (Follow these 5 steps):
+1. Generate an idea that benefits user's skateboarding progression (subtle personalization, don't be blatant about data usage)
+2. Create Tip Body: 1-3 short paragraphs with actionable content (can use bullets/numbers)
+3. Generate Teaser: ONE sentence, max 20 words, summarizes the tip body
+4. Generate Title: Max 4 words, encapsulates the tip specifically
+5. Generate Category: Max 2 words for badge (Basics, Flip Tricks, Mindset, etc.)
 
 WRITING STYLE:
-- Vary opening words - don't start every teaser with "Place" or "Position"
-- Use diverse action words: Master, Improve, Focus, Practice, Build, etc.
-- Match user's experience level and goals
-- Reference their recent attempts when relevant
-- DON'T repeat topics from saved tips
+- Keep sentences short and readable
+- NO semicolons, max 1 exclamation point or none
+- Vary opening words - don't always start with "Place" or "Position"
+- Use action words: Master, Improve, Focus, Practice, Build, etc.
+- Be subtle about personalization - don't say "because you uploaded X"
+- Make it feel natural and progressive
+
+CONTENT REQUIREMENTS:
+- Title: 4 words max, specific (NOT "Practice Tip")
+- Teaser: 20 words max, one sentence
+- Body: 1-3 short paragraphs, actionable
+- Category: 2 words max for badge
+- Consistent data across card and modal
 
 Generate EXACTLY this JSON structure:
 {
@@ -182,20 +199,20 @@ Generate EXACTLY this JSON structure:
   "user_id": "${user.id}",
   "tip": {
     "id": "tt-${new Date().toISOString().split('T')[0]}-${Math.floor(Math.random() * 1000)}",
-    "headline": "6 words max headline here",
-    "teaser_text": "Engaging 2-3 line preview that hooks the user and fits mobile display",
-    "detailed_content": "Comprehensive explanation with numbered steps:\n1. First detailed step\n2. Second step\n3. Continue as needed\n\nAdditional tips and context for mastery.",
-    "badge_category": "Category Name",
+    "headline": "Specific 4 Word Title",
+    "teaser_text": "One engaging sentence under 20 words that summarizes the tip body.",
+    "detailed_content": "Short paragraph 1 with actionable content.\n\nOptional paragraph 2 with additional context.\n\nOptional paragraph 3 if needed for completeness.",
+    "badge_category": "Two Words",
     "actionable_step": "Single clear imperative sentence for immediate action",
     "safety_note": "Safety reminder if applicable" or null,
     "difficulty": "${determineSkillLevel(experienceYears, formattedAttempts)}",
     "tags": ["tag1", "tag2", "tag3"],
-    "estimated_time_min": 5-15,
+    "estimated_time_min": 5,
     "generated_at": "${new Date().toISOString()}"
   }
 }
 
-Focus on natural progression based on their skill level and recent activity. Make it personal and actionable.`;
+Focus on natural progression. Be subtle with personalization.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -205,12 +222,12 @@ Focus on natural progression based on their skill level and recent activity. Mak
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: 'Generate a personalized daily trick tip for this user with the enhanced content structure.' }
+          { role: 'user', content: 'Generate a personalized daily trick tip following the 5-step protocol. Be subtle with personalization.' }
         ],
-        max_tokens: 800,
+        max_completion_tokens: 600,
       }),
     });
 
@@ -265,7 +282,7 @@ Focus on natural progression based on their skill level and recent activity. Mak
       .from('user_daily_tips')
       .insert({
         user_id: user.id,
-        slot: 1,
+        slot: slot,
         tip: tipResponse.tip
       });
 
@@ -273,15 +290,10 @@ Focus on natural progression based on their skill level and recent activity. Mak
       console.error('Error storing tip:', insertError);
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      tips: [{
-        slot: 1,
-        tip: tipResponse.tip
-      }]
-    }), {
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
+    return {
+      slot: slot,
+      tip: tipResponse.tip
+    };
 
   } catch (error) {
     console.error('Error generating tip with AI:', error);
