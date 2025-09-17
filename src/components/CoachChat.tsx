@@ -88,8 +88,8 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
   return (
     <div className="space-y-6">
       <section className="space-y-1">
-        <h1 className="text-2xl font-extralight text-foreground">Coach Chat</h1>
-        <p className="text-muted-foreground">Get advice to help improve your skating.</p>
+        <h1 className="text-2xl font-extralight text-gray-900">Coach</h1>
+        <p className="text-gray-600">Chat with your personalized skating coach</p>
       </section>
 
       <article className="rounded-lg border border-border bg-card p-4 flex gap-3">
@@ -141,7 +141,7 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
       </section>
 
       <div className="fixed left-4 right-4 bottom-20">
-        <div className="mx-auto max-w-sm rounded-xl border border-border bg-background shadow-sm p-1.5 flex items-center gap-2">
+        <div className="mx-auto max-w-sm rounded-xl border border-border bg-background shadow-sm p-1.5 flex items-center gap-2" style={{ maxWidth: 'calc(384px - 2rem)' }}>
           <Input
             placeholder="Ask Coach something..."
             value={input}

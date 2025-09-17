@@ -12,7 +12,7 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className="flex items-center justify-between px-4 py-4 max-w-sm mx-auto">
+      <div className="flex items-center justify-between px-4 py-4">
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <div className="bg-gray-900 text-white rounded p-2 flex items-center justify-center">
