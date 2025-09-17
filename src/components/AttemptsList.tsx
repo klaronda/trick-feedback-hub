@@ -222,8 +222,8 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       <div className="space-y-6">
           {/* Header */}
           <div className="space-y-1">
-            <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
-            <p className="text-muted-foreground">Review your uploaded videos and coaching feedback</p>
+            <h1 className="text-2xl font-extralight text-gray-900">Videos</h1>
+            <p className="text-gray-600">Review your uploaded videos and coaching feedback</p>
           </div>
 
           {/* Upload Button */}
