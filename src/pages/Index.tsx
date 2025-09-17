@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadModal } from "@/components/UploadModal";
 import { AttemptsList } from "@/components/AttemptsList";
@@ -259,7 +259,7 @@ const Index = () => {
     return <Onboarding onComplete={handleOnboardingComplete} />;
   }
 
-  const handleNavigate = (view: 'home' | 'videos' | 'coach' | 'profile') => {
+  const handleNavigate = useCallback((view: 'home' | 'videos' | 'coach' | 'profile') => {
     const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
     if (view === 'videos') {
       setCurrentView('videos');
@@ -274,7 +274,12 @@ const Index = () => {
     } else if (view === 'profile') {
       setCurrentView('profile');
     }
-  };
+    setSelectedAttemptId(null);
+  }, [userPlan]);
+
+  const handleNotificationClick = useCallback(() => {
+    setShowNotificationModal(true);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">

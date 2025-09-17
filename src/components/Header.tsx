@@ -1,13 +1,14 @@
 import { Bell, User, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { memo } from "react";
 
 interface HeaderProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
   onNotificationClick?: () => void;
 }
 
-export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
+const Header = memo(({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
   return (
@@ -38,4 +39,8 @@ export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
       </div>
     </header>
   );
-};
+});
+
+Header.displayName = "Header";
+
+export { Header };

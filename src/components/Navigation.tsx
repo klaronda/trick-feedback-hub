@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Home, Video, MessageCircle, User } from "lucide-react";
+import { memo } from "react";
 
 interface NavigationProps {
   currentView: 'home' | 'videos' | 'coach' | 'profile';
   onNavigate: (view: 'home' | 'videos' | 'coach' | 'profile') => void;
 }
 
-export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
+const Navigation = memo(({ currentView, onNavigate }: NavigationProps) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
       <div className="flex items-center justify-around py-[11px] px-4 max-w-sm mx-auto">
@@ -68,4 +69,8 @@ export const Navigation = ({ currentView, onNavigate }: NavigationProps) => {
       </div>
     </nav>
   );
-};
+});
+
+Navigation.displayName = "Navigation";
+
+export { Navigation };
