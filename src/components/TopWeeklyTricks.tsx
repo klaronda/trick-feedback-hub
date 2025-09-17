@@ -44,11 +44,11 @@ export const TopWeeklyTricks = () => {
 
       // Fill with mock data if not enough real data
       const mockTricks = [
-        { trick_name: "Kickflip", count: 45 },
-        { trick_name: "Ollie", count: 38 },
-        { trick_name: "360 Flip", count: 28 },
-        { trick_name: "Frontside Shuvit", count: 24 },
-        { trick_name: "Heelflip", count: 18 }
+        { trick_name: "Ollie", count: 12 },
+        { trick_name: "Kickflip", count: 9 },
+        { trick_name: "Shuvit", count: 7 },
+        { trick_name: "Frontside 180", count: 5 },
+        { trick_name: "Heelflip", count: 3 }
       ];
 
       setTopTricks(sortedTricks.length > 0 ? sortedTricks : mockTricks);
@@ -56,11 +56,11 @@ export const TopWeeklyTricks = () => {
       console.error('Error fetching top tricks:', error);
       // Use mock data on error
       setTopTricks([
-        { trick_name: "Kickflip", count: 45 },
-        { trick_name: "Ollie", count: 38 },
-        { trick_name: "360 Flip", count: 28 },
-        { trick_name: "Frontside Shuvit", count: 24 },
-        { trick_name: "Heelflip", count: 18 }
+        { trick_name: "Ollie", count: 12 },
+        { trick_name: "Kickflip", count: 9 },
+        { trick_name: "Shuvit", count: 7 },
+        { trick_name: "Frontside 180", count: 5 },
+        { trick_name: "Heelflip", count: 3 }
       ]);
     } finally {
       setLoading(false);
@@ -102,9 +102,8 @@ export const TopWeeklyTricks = () => {
           
           return (
             <div key={trick.trick_name} className="space-y-2">
-              <div className="flex justify-between text-sm">
+              <div className="text-sm">
                 <span className="font-medium text-gray-900">{trick.trick_name}</span>
-                <span className="text-gray-600">{trick.count}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
