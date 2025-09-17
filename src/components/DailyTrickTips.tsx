@@ -168,8 +168,8 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
           Kickflip Foot Positioning
         </h3>
         
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-          Master the proper foot placement for kickflips. Your back foot should be on the tail with the ball centered, while your front foot goes sideways across the board just behind the front bolts.
+        <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+          Place your front foot at a 45-degree angle near the edge of the board for better flick control.
         </p>
         
         <div className="flex justify-end">
