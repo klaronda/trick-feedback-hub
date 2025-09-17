@@ -41,7 +41,7 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
   };
 
   const handleSave = () => {
-    setIsSaved(true);
+    setIsSaved(!isSaved);
     onSave(tip);
   };
 
@@ -107,13 +107,12 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
                 onClick={handleSave}
                 className={`w-full gap-2 transition-all duration-200 ${
                   isSaved 
-                    ? "bg-gray-900 hover:bg-gray-800 text-white" 
+                    ? "bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white" 
                     : "hover:bg-gray-50 hover:border-gray-300"
                 }`}
-                disabled={isSaved}
               >
                 <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
-                {isSaved ? "Tip Saved!" : "Save Tip"}
+                {isSaved ? "Tip Saved" : "Save Tip"}
               </Button>
             </div>
           </div>
