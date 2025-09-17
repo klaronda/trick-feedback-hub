@@ -41,6 +41,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_trick_tips: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          slot: number
+          tip_data: Json
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          slot: number
+          tip_data: Json
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          slot?: number
+          tip_data?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           birthday: string | null
@@ -306,6 +333,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_expired_daily_tips: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       delete_expired_trick_attempts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -349,7 +380,9 @@ export type Database = {
         }[]
       }
       rotate_and_refill_daily_tips: {
-        Args: { p_seen_slots: number[]; p_user_id: string }
+        Args:
+          | { p_seen_slots: number[]; p_user_id: string }
+          | { p_user_id: string }
         Returns: {
           slot: number
           tip: Json
