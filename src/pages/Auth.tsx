@@ -41,18 +41,44 @@ export default function Auth() {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        showNotification('You successfully signed in.', 'success');
-        // Delay navigation to show notification
-        setTimeout(() => {
+        // Check if user has completed onboarding to determine if they're new
+        try {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('onboarding_completed')
+            .eq('user_id', session.user.id)
+            .single();
+          
+          const { data: userData } = await supabase
+            .from('users')
+            .select('onboarding_completed')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          const onboardingCompleted = profileData?.onboarding_completed ?? userData?.onboarding_completed;
+          
+          // Only show success toast for existing users (not new signups)
+          if (onboardingCompleted) {
+            showNotification('You successfully signed in.', 'success');
+            // Delay navigation to show notification
+            setTimeout(() => {
+              navigate('/');
+            }, 500);
+          } else {
+            // New user - navigate immediately without toast
+            navigate('/');
+          }
+        } catch (error) {
+          // If there's an error checking onboarding status, assume new user
           navigate('/');
-        }, 500);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, showNotification]);
 
   const validateField = (name: string, value: string) => {
     switch (name) {
