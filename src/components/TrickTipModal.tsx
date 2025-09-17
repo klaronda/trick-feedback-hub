@@ -43,8 +43,6 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
   const handleSave = () => {
     setIsSaved(true);
     onSave(tip);
-    // Reset saved state after 2 seconds
-    setTimeout(() => setIsSaved(false), 2000);
   };
 
   return (
@@ -109,7 +107,7 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
                 onClick={handleSave}
                 className={`w-full gap-2 transition-all duration-200 ${
                   isSaved 
-                    ? "bg-gray-900 text-white hover:bg-gray-800" 
+                    ? "bg-gray-900 hover:bg-gray-800 text-white" 
                     : "hover:bg-gray-50 hover:border-gray-300"
                 }`}
                 disabled={isSaved}
