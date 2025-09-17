@@ -305,7 +305,8 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="max-w-sm mx-auto px-4 py-6">
+      <main className="max-w-sm mx-auto">
+        <div className="px-4 py-6">
         {currentView === 'home' && (
           <div className="space-y-6">
             {/* Welcome Section */}
@@ -378,6 +379,7 @@ const Index = () => {
             onSignOut={handleSignOut}
           />
         )}
+        </div>
       </main>
 
       {/* Bottom Navigation */}
