@@ -46,16 +46,16 @@ export const ConfirmationModal = ({
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex flex-row gap-3 sm:gap-3 justify-between">
+        <AlertDialogFooter className="flex flex-row gap-3 mt-6">
           <AlertDialogCancel 
             onClick={onClose}
-            className="flex-1 bg-white border border-gray-200 text-gray-900 hover:bg-gray-50 hover:text-gray-900"
+            className="flex-1 bg-white border border-gray-200 text-gray-900 hover:bg-gray-50 hover:text-gray-900 mt-0"
           >
             {cancelText}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
-            className={`flex-1 ${
+            className={`flex-1 mt-0 ${
               isDestructive
                 ? "bg-red-500 text-white hover:bg-red-600 border-red-500 hover:border-red-600"
                 : "bg-gray-900 text-white hover:bg-gray-800 border-gray-900 hover:border-gray-800"
