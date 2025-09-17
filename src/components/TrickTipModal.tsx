@@ -48,7 +48,7 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-semibold text-gray-900 pr-8">
-              {tip.tip_text}
+              Kickflip Foot Positioning
             </h2>
             <Button 
               onClick={onClose}
@@ -97,20 +97,20 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
               </div>
             )}
             
-            {tip.estimated_time_min > 0 && (
-              <p className="text-xs text-gray-500">
-                Estimated time: {tip.estimated_time_min} minutes
-              </p>
-            )}
-            
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="flex gap-3 pt-4 border-t border-gray-200">
               <Button 
                 variant="outline" 
                 onClick={handleSave}
-                className="flex-1 gap-2"
+                className="flex-[2] gap-2"
               >
                 <Heart className="w-4 h-4" />
                 Save Tip
+              </Button>
+              <Button 
+                onClick={onClose}
+                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white"
+              >
+                Done
               </Button>
             </div>
           </div>
