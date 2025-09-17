@@ -279,7 +279,11 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <Header userPlan={userPlan} onNotificationClick={() => setShowNotificationModal(true)} />
+      <Header 
+        userPlan={userPlan} 
+        onNotificationClick={() => setShowNotificationModal(true)} 
+        layout={currentView === 'videos' || currentView === 'details' ? 'wide' : 'narrow'}
+      />
 
       {/* Upload Limit Modal */}
       <UploadLimitModal 
@@ -305,7 +309,7 @@ const Index = () => {
       />
 
       {/* Main Content */}
-      <main className="max-w-sm mx-auto px-4 py-6">
+      <main className={`mx-auto px-4 py-6 ${currentView === 'videos' || currentView === 'details' ? 'max-w-4xl' : 'max-w-sm'}`}>
         {currentView === 'home' && (
           <div className="space-y-6">
             {/* Welcome Section */}
