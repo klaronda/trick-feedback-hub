@@ -38,15 +38,15 @@ export const ConfirmationModal = ({
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent className="max-w-md bg-white border-gray-200">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-gray-900 text-lg">
+        <AlertDialogHeader className="text-left">
+          <AlertDialogTitle className="text-gray-900 text-lg text-left">
             {title}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-600 whitespace-pre-line">
+          <AlertDialogDescription className="text-gray-600 whitespace-pre-line text-left">
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="flex gap-3 sm:gap-3">
+        <AlertDialogFooter className="flex flex-row gap-3 sm:gap-3 justify-between">
           <AlertDialogCancel 
             onClick={onClose}
             className="flex-1 bg-white border border-gray-200 text-gray-900 hover:bg-gray-50 hover:text-gray-900"
