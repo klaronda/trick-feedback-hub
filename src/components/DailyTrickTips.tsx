@@ -164,7 +164,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
           </span>
         </div>
         
-        <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-1">
+        <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-1 mt-3">
           Kickflip Foot Positioning
         </h3>
         
