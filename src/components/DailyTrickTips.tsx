@@ -102,7 +102,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Daily Trick Tips</h2>
+          <h2 className="text-lg font-medium">Daily Trick Tips</h2>
           <div className="flex gap-2">
             <Button variant="ghost" size="sm" disabled className="p-2">
               <ChevronLeft className="w-4 h-4" />
@@ -133,7 +133,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Daily Trick Tips</h2>
+        <h2 className="text-lg font-medium">Daily Trick Tips</h2>
         <div className="flex gap-2">
           <Button 
             variant="ghost" 
