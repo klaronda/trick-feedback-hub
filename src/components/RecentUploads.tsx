@@ -76,18 +76,26 @@ export const RecentUploads = ({ onViewDetails, onUploadNew, onViewAll }: RecentU
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-medium text-gray-900">Recent Uploads</h2>
-          <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 text-sm">
-            View All
-          </Button>
+          <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+          <div className="h-8 w-16 bg-gray-100 rounded animate-pulse" />
         </div>
         <div className="space-y-3">
           {Array(3).fill(0).map((_, i) => (
             <div key={i} className="bg-white rounded-[8px] border border-gray-200 p-4">
-              <div className="animate-pulse space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-1/3" />
-                <div className="h-3 bg-gray-100 rounded w-1/2" />
-                <div className="h-3 bg-gray-100 rounded w-1/4" />
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg animate-pulse" />
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse" />
+                    <div className="h-6 w-16 bg-gray-100 rounded-full animate-pulse" />
+                  </div>
+                  <div className="h-3 bg-gray-100 rounded w-1/2 animate-pulse" />
+                  <div className="h-3 bg-gray-100 rounded w-3/4 animate-pulse" />
+                  <div className="flex items-center justify-between">
+                    <div className="h-3 bg-gray-100 rounded w-16 animate-pulse" />
+                    <div className="h-3 bg-gray-100 rounded w-20 animate-pulse" />
+                  </div>
+                </div>
               </div>
             </div>
           ))}

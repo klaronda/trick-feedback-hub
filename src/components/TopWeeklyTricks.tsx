@@ -54,18 +54,17 @@ export const TopWeeklyTricks = () => {
 
   if (loading) {
     return (
-      <Card className="bg-white border border-border">
-        <CardHeader>
-          <CardTitle className="text-lg">Top Weekly Tricks</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {Array(5).fill(0).map((_, i) => (
-              <div key={i} className="h-4 bg-muted rounded animate-pulse" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        <div className="h-6 w-40 bg-gray-200 rounded animate-pulse" />
+        <div className="bg-white rounded-[8px] border border-gray-200 p-4 space-y-4">
+          {Array(5).fill(0).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+              <div className="h-2 w-full bg-gray-100 rounded-full animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
