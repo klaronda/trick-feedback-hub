@@ -291,9 +291,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="max-w-sm mx-auto">
-          <div className="px-4 py-6 space-y-6">
+      <div className="space-y-6">
           <div className="flex items-center justify-between">
             <button 
               onClick={onBack} 
@@ -309,17 +307,13 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
             <div className="animate-spin w-8 h-8 border-2 border-gray-900 border-t-transparent rounded-full mx-auto" />
             <p className="text-gray-600 mt-4">Loading attempt details...</p>
           </div>
-          </div>
-        </div>
       </div>
     );
   }
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-gray-50 pb-20">
-        <div className="max-w-sm mx-auto">
-          <div className="px-4 py-6 space-y-6">
+      <div className="space-y-6">
           <div className="flex items-center justify-between">
             <button 
               onClick={onBack} 
@@ -334,8 +328,6 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
           <Card className="p-12 text-center bg-white border-gray-200">
             <p className="text-gray-600">This attempt could not be found.</p>
           </Card>
-          </div>
-        </div>
       </div>
     );
   }
@@ -343,9 +335,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const focusAreas = generateFocusAreas(attempt.feedback);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="max-w-sm mx-auto">
-        <div className="px-4 py-6 space-y-6">
+    <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <button 
@@ -527,8 +517,6 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
             </CardContent>
           </Card>
         )}
-        </div>
-      </div>
     </div>
   );
 };
