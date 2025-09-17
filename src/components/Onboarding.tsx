@@ -130,7 +130,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
       case 0:
         return (
           <div className="space-y-6">
-            <div className="text-center space-y-2">
+            <div className="text-left space-y-2">
               <h2 className="text-2xl font-semibold">Tell us about yourself.</h2>
               <p className="text-gray-600">It lets us know how we should coach you.</p>
             </div>
