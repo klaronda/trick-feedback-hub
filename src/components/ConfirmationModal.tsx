@@ -37,7 +37,7 @@ export const ConfirmationModal = ({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md bg-white border-gray-200">
+      <AlertDialogContent className="max-w-md bg-white border-gray-200 rounded-lg">
         <AlertDialogHeader className="text-left">
           <AlertDialogTitle className="text-gray-900 text-lg text-left">
             {title}
