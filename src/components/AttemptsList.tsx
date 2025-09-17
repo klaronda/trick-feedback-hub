@@ -224,7 +224,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       <div className="min-h-screen bg-background px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
             <p className="text-muted-foreground">Review your uploaded videos and coaching feedback</p>
           </div>
