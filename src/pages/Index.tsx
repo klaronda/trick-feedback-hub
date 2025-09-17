@@ -6,6 +6,7 @@ import { AttemptDetails } from "@/components/AttemptDetails";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
 import { DailyTrickTips } from "@/components/DailyTrickTips";
+import { TrickTipModal } from "@/components/TrickTipModal";
 import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
@@ -18,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
+import { useToast } from "@/components/ui/use-toast";
 
  type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach' | 'profile';
 
@@ -35,8 +37,11 @@ const Index = () => {
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
+  const [selectedTrickTip, setSelectedTrickTip] = useState<any>(null);
+  const [trickTipModalOpen, setTrickTipModalOpen] = useState(false);
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -221,6 +226,35 @@ const Index = () => {
       navigate('/auth');
     }
   };
+
+  const handleTrickTipClick = (tip: any) => {
+    setSelectedTrickTip(tip);
+    setTrickTipModalOpen(true);
+  };
+
+  const handleSaveTrickTip = async (tip: any) => {
+    try {
+      const { error } = await supabase.rpc('save_trick_tip', {
+        tip_data: tip as any,
+        source: 'daily-tips'
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Tip saved!",
+        description: "The tip has been saved to your profile.",
+      });
+    } catch (error) {
+      console.error('Error saving tip:', error);
+      toast({
+        title: "Error saving tip", 
+        description: "Failed to save the tip. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   
   if (loading) {
     return (
@@ -279,6 +313,14 @@ const Index = () => {
         userFirstName={userProfile?.first_name || "User"}
       />
 
+      {/* Trick Tip Modal */}
+      <TrickTipModal
+        tip={selectedTrickTip}
+        isOpen={trickTipModalOpen}
+        onClose={() => setTrickTipModalOpen(false)}
+        onSave={handleSaveTrickTip}
+      />
+
       {/* Main Content */}
       <main className="max-w-sm mx-auto px-4 py-6">
         {currentView === 'home' && (
@@ -299,7 +341,7 @@ const Index = () => {
             </Button>
 
             {/* Daily Trick Tips - Pro Only */}
-            <DailyTrickTips userPlan={userPlan} />
+            <DailyTrickTips userPlan={userPlan} onTipClick={handleTrickTipClick} />
 
             {/* Top Weekly Tricks */}
             <TopWeeklyTricks />

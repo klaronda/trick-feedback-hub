@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Bookmark } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 
 interface DailyTrickTipsProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
+  onTipClick?: (tip: TrickTip) => void;
 }
 
 interface TrickTip {
@@ -25,7 +27,7 @@ interface TipSlot {
   tip: TrickTip;
 }
 
-export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
+export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [tips, setTips] = useState<TipSlot[]>([]);
   const [loading, setLoading] = useState(false);
@@ -68,26 +70,9 @@ export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
     }
   };
 
-  const saveTip = async (tip: TrickTip) => {
-    try {
-      const { error } = await supabase.rpc('save_trick_tip', {
-        tip_data: tip as any,
-        source: 'daily-tips'
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Tip saved!",
-        description: "The tip has been saved to your profile.",
-      });
-    } catch (error) {
-      console.error('Error saving tip:', error);
-      toast({
-        title: "Error saving tip", 
-        description: "Failed to save the tip. Please try again.",
-        variant: "destructive",
-      });
+  const handleLearnMore = (tip: TrickTip) => {
+    if (onTipClick) {
+      onTipClick(tip);
     }
   };
 
@@ -169,62 +154,32 @@ export const DailyTrickTips = ({ userPlan }: DailyTrickTipsProps) => {
         </div>
       </div>
 
-      <div className="bg-card rounded-lg border p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-muted-foreground capitalize">
+      <div className="bg-white rounded-[8px] border border-gray-200 p-4">
+        <div className="flex items-start justify-between mb-2">
+          <Badge variant="completed" className="text-xs">
             {tip.tags[0] || tip.difficulty}
-          </span>
-          <span className="text-sm text-muted-foreground">
+          </Badge>
+          <span className="text-sm text-gray-500">
             {currentTip + 1} of {tips.length}
           </span>
         </div>
         
-        {tip.greeting && (
-          <p className="text-sm text-muted-foreground mb-2">{tip.greeting}</p>
-        )}
-        
-        <p className="font-medium text-foreground mb-2 leading-relaxed">
+        <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-1">
           {tip.tip_text}
-        </p>
+        </h3>
         
-        <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+        <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
           {tip.actionable_step}
         </p>
         
-        {tip.safety_note && (
-          <p className="text-xs text-yellow-600 bg-yellow-50 p-2 rounded mb-3 leading-relaxed">
-            ⚠️ {tip.safety_note}
-          </p>
-        )}
-        
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
-            {tip.tags.slice(0, 3).map((tag, index) => (
-              <span 
-                key={index}
-                className="text-xs px-2 py-1 bg-muted rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-          
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => saveTip(tip)}
-            className="text-sm font-medium hover:bg-muted"
+        <div className="flex justify-end">
+          <button 
+            onClick={() => handleLearnMore(tip)}
+            className="p-0 h-auto font-medium text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
-            <Bookmark className="w-4 h-4 mr-1" />
-            Save
-          </Button>
+            Learn More
+          </button>
         </div>
-        
-        {tip.estimated_time_min > 0 && (
-          <p className="text-xs text-muted-foreground mt-2">
-            Estimated time: {tip.estimated_time_min} minutes
-          </p>
-        )}
       </div>
     </div>
   );
