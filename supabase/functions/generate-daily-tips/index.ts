@@ -31,7 +31,19 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const { seenSlots } = await req.json();
+    
+    let seenSlots = [];
+    
+    // Only parse body if it exists
+    if (req.headers.get('content-type')?.includes('application/json')) {
+      try {
+        const body = await req.json();
+        seenSlots = body.seenSlots || [];
+      } catch (e) {
+        // Ignore JSON parsing errors for empty bodies
+        console.log('No valid JSON body provided, using default empty seenSlots');
+      }
+    }
 
     // Get user profile data
     const { data: profile, error: profileError } = await supabase
