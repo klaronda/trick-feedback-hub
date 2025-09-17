@@ -17,9 +17,10 @@ interface ProfileProps {
   } | null;
   userPlan: { plan_name: string | null; is_subscribed: boolean } | null;
   onUpgrade: () => void;
+  onSignOut: () => void;
 }
 
-export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps) => {
+export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
@@ -281,7 +282,11 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade }: ProfileProps
 
       {/* Account Actions */}
       <div className="space-y-2">
-        <Button variant="ghost" className="w-full justify-start text-gray-500 hover:text-gray-700 hover:bg-gray-50">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+          onClick={onSignOut}
+        >
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
         </Button>

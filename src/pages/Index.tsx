@@ -211,7 +211,17 @@ const Index = () => {
       }
     }
   };
-
+  
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    } finally {
+      navigate('/auth');
+    }
+  };
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -340,6 +350,7 @@ const Index = () => {
             userProfile={userProfile}
             userPlan={userPlan}
             onUpgrade={handleUpgrade}
+            onSignOut={handleSignOut}
           />
         )}
       </main>
