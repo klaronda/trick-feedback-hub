@@ -199,13 +199,12 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="space-y-6">
-          <div className="space-y-1 px-4 py-2">
-            <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
-            <p className="text-muted-foreground">Review your uploaded videos and coaching feedback</p>
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-semibold text-foreground">My Trick Attempts</h1>
           </div>
-          <div className="text-center py-12 px-4">
+          <div className="text-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
             <p className="text-muted-foreground mt-4">Loading your attempts...</p>
           </div>
@@ -222,41 +221,38 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
         isVisible={notification.isVisible}
         onHide={hideNotification}
       />
-      <div className="min-h-screen bg-background">
-        <div className="space-y-6">
+      <div className="min-h-screen bg-background px-4 py-6">
+        <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
-          <div className="space-y-1 px-4 py-2">
+          <div className="space-y-1">
             <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
             <p className="text-muted-foreground">Review your uploaded videos and coaching feedback</p>
           </div>
 
-          <div className="px-4 space-y-6">
-            {/* Upload Button */}
-            <Button 
-              onClick={onUploadNew} 
-              disabled={checking}
-              className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              {checking ? "Checking..." : "Upload"}
-            </Button>
+          {/* Upload Button */}
+          <Button 
+            onClick={onUploadNew} 
+            disabled={checking}
+            className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {checking ? "Checking..." : "Upload"}
+          </Button>
 
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-              <Input
-                type="text"
-                placeholder="Search your tricks..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              type="text"
+              placeholder="Search your tricks..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
 
-          <div className="px-4 space-y-6">
-            {uploadBlocked && userPlan?.plan_name === 'free' && (
-              <Alert className="border-warning bg-warning/10">
+          {uploadBlocked && userPlan?.plan_name === 'free' && (
+            <Alert className="border-warning bg-warning/10">
               <Crown className="h-4 w-4 text-warning" />
               <AlertTitle className="text-foreground">You've reached your upload max this month.</AlertTitle>
               <AlertDescription className="text-muted-foreground space-y-3">
@@ -434,11 +430,10 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
             </div>
           )}
           
-            {/* Disclaimer */}
-            <Disclaimer className="mt-6">
-              Your videos are stored in the cloud for up to 180 days.
-            </Disclaimer>
-          </div>
+          {/* Disclaimer */}
+          <Disclaimer className="mt-6">
+            Your videos are stored in the cloud for up to 180 days.
+          </Disclaimer>
         </div>
       </div>
     </>

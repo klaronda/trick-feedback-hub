@@ -5,15 +5,14 @@ import { Badge } from "@/components/ui/badge";
 interface HeaderProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
   onNotificationClick?: () => void;
-  layout?: 'narrow' | 'wide';
 }
 
-export const Header = ({ userPlan, onNotificationClick, layout = 'narrow' }: HeaderProps) => {
+export const Header = ({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
-      <div className={`flex items-center justify-between px-4 py-4 mx-auto ${layout === 'wide' ? 'max-w-4xl' : 'max-w-sm'}`}>
+      <div className="flex items-center justify-between px-4 py-4 max-w-sm mx-auto">
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <div className="bg-gray-900 text-white rounded p-2 flex items-center justify-center">
