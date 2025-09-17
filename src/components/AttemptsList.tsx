@@ -199,15 +199,13 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background px-4 py-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold text-foreground">My Trick Attempts</h1>
-          </div>
-          <div className="text-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
-            <p className="text-muted-foreground mt-4">Loading your attempts...</p>
-          </div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
+        </div>
+        <div className="text-center py-12">
+          <div className="animate-spin w-8 h-8 border-2 border-foreground border-t-transparent rounded-full mx-auto" />
+          <p className="text-muted-foreground mt-4">Loading your attempts...</p>
         </div>
       </div>
     );
@@ -221,8 +219,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
         isVisible={notification.isVisible}
         onHide={hideNotification}
       />
-      <div className="min-h-screen bg-background px-4 py-6">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="space-y-6">
           {/* Header */}
           <div className="space-y-1">
             <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
@@ -435,7 +432,6 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
             Your videos are stored in the cloud for up to 180 days.
           </Disclaimer>
         </div>
-      </div>
     </>
   );
 };
