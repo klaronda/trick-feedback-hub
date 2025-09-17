@@ -242,14 +242,14 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const formatTimestamp = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
-      month: 'long',
+      month: 'numeric',
       day: 'numeric',
-      year: 'numeric'
+      year: '2-digit'
     }) + ' | ' + date.toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
-    });
+    }).toUpperCase();
   };
 
   // Generate focus areas from feedback
@@ -291,7 +291,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f9fafb] px-4 py-6">
+      <div className="min-h-screen bg-[#f9fafb] px-6 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <button 
@@ -301,7 +301,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div className="flex-1 ml-4">
-              <h1 className="text-xl font-light text-gray-900">Loading...</h1>
+              <h1 className="text-lg font-medium text-gray-900">Loading...</h1>
             </div>
           </div>
           <div className="text-center py-12">
@@ -315,7 +315,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-[#f9fafb] px-4 py-6">
+      <div className="min-h-screen bg-[#f9fafb] px-6 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
             <button 
@@ -325,7 +325,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </button>
             <div className="flex-1 ml-4">
-              <h1 className="text-xl font-light text-gray-900">Attempt Not Found</h1>
+              <h1 className="text-lg font-medium text-gray-900">Attempt Not Found</h1>
             </div>
           </div>
           <Card className="p-12 text-center bg-white border-gray-200">
@@ -339,7 +339,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const focusAreas = generateFocusAreas(attempt.feedback);
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] px-4 py-6">
+    <div className="min-h-screen bg-[#f9fafb] px-6 py-6">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -350,9 +350,9 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
             <ChevronLeft className="w-5 h-5 text-gray-600" />
           </button>
           
-          <div className="flex-1 ml-4">
-            <h1 className="text-xl font-light text-gray-900">
-              {attempt.trick_name || 'Unnamed Trick'} Attempt
+          <div className="flex-1 text-center">
+            <h1 className="text-lg font-medium text-gray-900">
+              {attempt.trick_name || 'Unnamed Trick'}
             </h1>
             <p className="text-xs text-gray-600 mt-1">
               {formatTimestamp(attempt.created_at)}
@@ -379,7 +379,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
         {/* Video Card */}
         <Card className="bg-white border-gray-200">
           <CardContent className="p-6">
-            <div className="relative bg-black rounded-lg overflow-hidden mb-6">
+            <div className="relative bg-black rounded overflow-hidden mb-6">
               {videoUrl ? (
                 <video
                   src={videoUrl}
@@ -405,11 +405,12 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
               )}
             </div>
             <div>
-              <Input
+              <textarea
                 placeholder="Any notes you want to add?"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="border-gray-200 text-gray-900"
+                className="w-full text-sm text-gray-600 bg-transparent border-none resize-none outline-none min-h-[40px] placeholder-gray-400"
+                rows={2}
               />
             </div>
           </CardContent>
@@ -434,7 +435,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
               <div className="space-y-4">
                 {attempt.feedback ? (
                   <>
-                    <p className="text-gray-900 leading-relaxed">{attempt.feedback}</p>
+                    <p className="text-sm text-gray-600 leading-relaxed">{attempt.feedback}</p>
                     
                     {focusAreas.length > 0 && (
                       <div className="mt-4">
@@ -443,7 +444,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
                           {focusAreas.map((area, index) => (
                             <Badge 
                               key={index}
-                              className="bg-[#ffedd5] text-[#c2410c] border-[#fed7aa] hover:bg-[#fed7aa]"
+                              variant="improvement"
                             >
                               {area}
                             </Badge>
