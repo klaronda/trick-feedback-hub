@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X } from "lucide-react";
@@ -22,6 +23,8 @@ interface TrickTipModalProps {
 }
 
 export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalProps) => {
+  const [isSaved, setIsSaved] = useState(false);
+  
   if (!tip || !isOpen) return null;
 
   const generateSteps = (actionableStep: string) => {
@@ -38,7 +41,10 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
   };
 
   const handleSave = () => {
+    setIsSaved(true);
     onSave(tip);
+    // Reset saved state after 2 seconds
+    setTimeout(() => setIsSaved(false), 2000);
   };
 
   return (
@@ -99,18 +105,17 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
             
             <div className="flex gap-3 pt-4 border-t border-gray-200">
               <Button 
-                variant="outline" 
+                variant={isSaved ? "default" : "outline"}
                 onClick={handleSave}
-                className="flex-[2] gap-2"
+                className={`w-full gap-2 transition-all duration-200 ${
+                  isSaved 
+                    ? "bg-gray-900 text-white hover:bg-gray-800" 
+                    : "hover:bg-gray-50 hover:border-gray-300"
+                }`}
+                disabled={isSaved}
               >
-                <Heart className="w-4 h-4" />
-                Save Tip
-              </Button>
-              <Button 
-                onClick={onClose}
-                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white"
-              >
-                Done
+                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+                {isSaved ? "Tip Saved!" : "Save Tip"}
               </Button>
             </div>
           </div>
