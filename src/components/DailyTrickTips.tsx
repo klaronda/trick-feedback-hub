@@ -12,6 +12,10 @@ interface DailyTrickTipsProps {
 
 interface TrickTip {
   id: string;
+  headline?: string;
+  teaser_text?: string;
+  detailed_content?: string;
+  badge_category?: string;
   greeting: string | null;
   tip_text: string;
   actionable_step: string;
@@ -155,7 +159,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="bg-white rounded-[8px] border border-gray-200 p-4">
         <div className="flex items-start justify-between mb-2">
           <Badge variant="pending" className="text-xs">
-            Beginner
+            {tip.badge_category || tip.tags?.[0] || tip.difficulty}
           </Badge>
           <span className="text-xs text-gray-600">
             {currentTip + 1} of {tips.length}
@@ -163,11 +167,11 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
         </div>
         
         <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-1 mt-3">
-          Kickflip Foot Positioning
+          {tip.headline || "Practice Tip"}
         </h3>
         
         <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-          Place your front foot at a 45-degree angle near the edge of the board for better flick control.
+          {tip.teaser_text || tip.tip_text}
         </p>
         
         <div className="flex justify-end">

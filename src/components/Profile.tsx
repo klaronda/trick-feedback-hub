@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Switch } from "@/components/ui/switch";
-import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X } from "lucide-react";
+import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X, Heart } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
+import { useSavedTips } from "@/hooks/useSavedTips";
 
 interface ProfileProps {
   user: User | null;
@@ -22,6 +23,7 @@ interface ProfileProps {
 
 export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
+  const { savedTips, loading: tipsLoading, unsaveTip, canUnsaveFromHomepage } = useSavedTips();
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
       return firstName.charAt(0).toUpperCase();
@@ -238,10 +240,55 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
           <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
           <Card className="bg-white border-gray-200">
             <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <p className="text-gray-500">No saved tips yet</p>
-                <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
-              </div>
+              {tipsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : savedTips.length === 0 ? (
+                <div className="text-center py-8">
+                  <Heart className="w-8 h-8 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No saved tips yet</p>
+                  <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {savedTips.map((savedTip) => (
+                    <div key={savedTip.id} className="border border-gray-100 rounded-lg p-4 space-y-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 text-sm">
+                            {savedTip.tip.headline || "Saved Tip"}
+                          </h4>
+                          <p className="text-xs text-gray-600 mt-1">
+                            {savedTip.tip.teaser_text || savedTip.tip.tip_text}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">
+                              {savedTip.tip.badge_category || savedTip.tip.tags?.[0]}
+                            </Badge>
+                            <span className="text-xs text-gray-400">
+                              {new Date(savedTip.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => unsaveTip(savedTip.id)}
+                          className="text-gray-400 hover:text-red-500 p-2"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

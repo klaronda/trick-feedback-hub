@@ -127,48 +127,75 @@ async function generateFreshTips(user: any, profile: any, recentAttempts: any[],
     notes: attempt.feedback || null
   }));
 
-  // Create prompt for OpenAI based on the specification
-  const systemPrompt = `You are Lovable, a helpful product coach that generates a single Daily Trick Tip tailored to a specific user and context. Produce a single tip card and the metadata required by our app in strict JSON (no explanatory text).
+  // Get saved tips for user context and to avoid repetition
+  const { data: savedTips, error: savedTipsError } = await supabase
+    .from('saved_trick_tips')
+    .select('tip')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(10);
 
-User Context:
-- user_id: ${user.id}
-- display_name: ${profile?.first_name || null}
-- age: ${age}
-- experience_years: ${experienceYears}
-- skill_level: ${determineSkillLevel(experienceYears, formattedAttempts)}
-- recent_attempts: ${JSON.stringify(formattedAttempts)}
-- preferences: {
-    tone_pref: ${profile?.tone_pref || 'encouraging'},
-    focus: ${profile?.focus || 'consistency'}
+  if (savedTipsError) {
+    console.log('Error fetching saved tips:', savedTipsError);
   }
-- stance: ${profile?.stance || 'regular'}
-- learning_goals: ${profile?.learning_goals || 'general improvement'}
 
-Generate ONE tip following the exact JSON schema:
+  // Extract topics from saved tips to understand user preferences
+  const savedTopics = (savedTips || []).map(saved => {
+    const tip = saved.tip;
+    return {
+      tags: tip.tags || [],
+      difficulty: tip.difficulty,
+      topic: tip.headline || tip.tip_text?.substring(0, 30)
+    };
+  });
+
+  // Create enhanced prompt for OpenAI
+  const systemPrompt = `You are Lovable, a skateboarding coach that generates personalized Daily Trick Tips. Generate a single tip with the new enhanced structure following EXACT specifications.
+
+USER PROFILE:
+- ID: ${user.id}
+- Name: ${profile?.first_name || 'Skater'}
+- Age: ${age || 'unknown'}
+- Experience: ${experienceYears} years
+- Skill Level: ${determineSkillLevel(experienceYears, formattedAttempts)}
+- Stance: ${profile?.stance || 'regular'}
+- Goals: ${profile?.learning_goals || 'general improvement'}
+- Recent Tricks: ${JSON.stringify(formattedAttempts)}
+- Previously Saved Topics: ${JSON.stringify(savedTopics)}
+
+CONTENT REQUIREMENTS:
+- HEADLINE: Max 6 words, punchy and descriptive
+- TEASER: Max 3 lines on mobile (about 120 chars), engaging preview
+- DETAILED_CONTENT: Expanded explanation with numbered steps or bullets
+- BADGE_CATEGORY: Short category (Basics, Flip Tricks, Mindset, Etiquette, etc.)
+
+WRITING STYLE:
+- Vary opening words - don't start every teaser with "Place" or "Position"
+- Use diverse action words: Master, Improve, Focus, Practice, Build, etc.
+- Match user's experience level and goals
+- Reference their recent attempts when relevant
+- DON'T repeat topics from saved tips
+
+Generate EXACTLY this JSON structure:
 {
   "result": "ok",
   "user_id": "${user.id}",
   "tip": {
-    "id": "tt-${new Date().toISOString().split('T')[0]}-01",
-    "greeting": string | null,
-    "tip_text": string (max 2 sentences),
-    "actionable_step": string (single imperative sentence),
-    "safety_note": string | null,
+    "id": "tt-${new Date().toISOString().split('T')[0]}-${Math.floor(Math.random() * 1000)}",
+    "headline": "6 words max headline here",
+    "teaser_text": "Engaging 2-3 line preview that hooks the user and fits mobile display",
+    "detailed_content": "Comprehensive explanation with numbered steps:\n1. First detailed step\n2. Second step\n3. Continue as needed\n\nAdditional tips and context for mastery.",
+    "badge_category": "Category Name",
+    "actionable_step": "Single clear imperative sentence for immediate action",
+    "safety_note": "Safety reminder if applicable" or null,
     "difficulty": "${determineSkillLevel(experienceYears, formattedAttempts)}",
-    "tags": array of 2-4 short strings,
-    "estimated_time_min": integer,
-    "saved_from": null,
+    "tags": ["tag1", "tag2", "tag3"],
+    "estimated_time_min": 5-15,
     "generated_at": "${new Date().toISOString()}"
-  },
-  "metadata": {
-    "source_model": "lovable-v1",
-    "confidence": number between 0.5-1.0,
-    "reason": "one sentence explaining why this tip fits"
-  },
-  "debug": null
+  }
 }
 
-Make the tip specific, actionable, and appropriate for their skill level. Reference recent attempts if relevant.`;
+Focus on natural progression based on their skill level and recent activity. Make it personal and actionable.`;
 
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -181,9 +208,9 @@ Make the tip specific, actionable, and appropriate for their skill level. Refere
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: 'Generate a personalized daily trick tip for this user.' }
+          { role: 'user', content: 'Generate a personalized daily trick tip for this user with the enhanced content structure.' }
         ],
-        max_tokens: 500,
+        max_tokens: 800,
       }),
     });
 
@@ -218,21 +245,17 @@ Make the tip specific, actionable, and appropriate for their skill level. Refere
         result: "ok",
         user_id: user.id,
         tip: {
-          id: `tt-${new Date().toISOString().split('T')[0]}-01`,
-          greeting: profile?.first_name ? `Hey ${profile.first_name}!` : null,
-          tip_text: "Focus on your stance and balance today. Keep your knees slightly bent and your weight centered over the board.",
+          id: `tt-${new Date().toISOString().split('T')[0]}-fallback`,
+          headline: "Master Balance Fundamentals",
+          teaser_text: "Build core stability for all tricks. Perfect your stance with focused practice sessions.",
+          detailed_content: "1. Position feet shoulder-width apart on the board\n2. Keep knees slightly bent and relaxed\n3. Focus your weight over the center of the board\n4. Practice rolling slowly while maintaining posture\n5. Gradually increase speed as comfort improves\n\nConsistent balance is the foundation for every skateboarding trick.",
+          badge_category: "Basics",
           actionable_step: "Practice riding for 10 minutes, focusing on maintaining a stable stance.",
           safety_note: "Always wear protective gear and practice in a safe area.",
           difficulty: determineSkillLevel(experienceYears, formattedAttempts),
           tags: ["balance", "basics", "stance"],
           estimated_time_min: 10,
-          saved_from: null,
           generated_at: new Date().toISOString()
-        },
-        metadata: {
-          source_model: "lovable-v1-fallback",
-          confidence: 0.7,
-          reason: "Generated fallback tip due to AI parsing error"
         }
       };
     }

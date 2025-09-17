@@ -20,6 +20,7 @@ import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
 import { useToast } from "@/components/ui/use-toast";
+import { useSavedTips } from "@/hooks/useSavedTips";
 
  type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach' | 'profile';
 
@@ -42,6 +43,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
   const { toast } = useToast();
+  const { saveTip } = useSavedTips();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -233,26 +235,7 @@ const Index = () => {
   };
 
   const handleSaveTrickTip = async (tip: any) => {
-    try {
-      const { error } = await supabase.rpc('save_trick_tip', {
-        tip_data: tip as any,
-        source: 'daily-tips'
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Tip saved!",
-        description: "The tip has been saved to your profile.",
-      });
-    } catch (error) {
-      console.error('Error saving tip:', error);
-      toast({
-        title: "Error saving tip", 
-        description: "Failed to save the tip. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await saveTip(tip, 'daily-tips');
   };
 
   
