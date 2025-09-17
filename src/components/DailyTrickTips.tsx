@@ -45,9 +45,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   const loadDailyTips = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('generate-daily-tips', {
-        body: { seenSlots }
-      });
+      const { data, error } = await supabase.functions.invoke('generate-daily-tips');
 
       if (error) throw error;
 
@@ -110,11 +108,11 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
             </Button>
           </div>
         </div>
-        <div className="bg-card rounded-lg border p-4">
+        <div className="bg-white rounded-[8px] border border-gray-200 p-4">
           <div className="animate-pulse space-y-2">
-            <div className="h-4 bg-muted rounded w-1/4"></div>
-            <div className="h-5 bg-muted rounded w-3/4"></div>
-            <div className="h-4 bg-muted rounded w-full"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-full"></div>
           </div>
         </div>
       </div>
