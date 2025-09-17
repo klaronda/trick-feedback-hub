@@ -423,9 +423,9 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               >
                 Maybe Later
               </Button>
-              <Disclaimer className="mt-4">
+              <p className="text-xs text-gray-600 text-center leading-relaxed mt-4">
                 Your videos are stored in the cloud for up to 180 days.
-              </Disclaimer>
+              </p>
             </div>
           )}
 
