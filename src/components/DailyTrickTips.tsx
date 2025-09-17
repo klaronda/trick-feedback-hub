@@ -157,7 +157,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="bg-white rounded-[8px] border border-gray-200 p-4">
         <div className="flex items-start justify-between mb-2">
           <Badge variant="pending" className="text-xs">
-            {tip.tags[0] || tip.difficulty}
+            Beginner
           </Badge>
           <span className="text-xs text-gray-600">
             {currentTip + 1} of {tips.length}
@@ -165,11 +165,11 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
         </div>
         
         <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-1">
-          {tip.tip_text}
+          Kickflip Foot Positioning
         </h3>
         
         <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
-          {tip.actionable_step}
+          Master the proper foot placement for kickflips. Your back foot should be on the tail with the ball centered, while your front foot goes sideways across the board just behind the front bolts.
         </p>
         
         <div className="flex justify-end">
