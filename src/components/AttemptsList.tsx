@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { PlanBadge } from "@/components/ui/PlanBadge";
-import { Eye, Plus, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown, Search } from "lucide-react";
+import { Eye, Upload, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar";
 import { Disclaimer } from "@/components/ui/Disclaimer";
@@ -224,22 +224,20 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       <div className="min-h-screen bg-background px-4 py-6">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-extralight text-foreground">My Uploaded Tricks</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Review your uploaded videos and coaching feedback
-              </p>
-            </div>
-            <Button 
-              onClick={onUploadNew} 
-              disabled={checking}
-              className="bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white font-medium"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {checking ? "Checking..." : "Upload New"}
-            </Button>
+          <div className="space-y-2">
+            <h1 className="text-2xl font-extralight text-foreground">Videos</h1>
+            <p className="text-muted-foreground">Review your uploaded videos and coaching feedback</p>
           </div>
+
+          {/* Upload Button */}
+          <Button 
+            onClick={onUploadNew} 
+            disabled={checking}
+            className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
+          >
+            <Upload className="w-4 h-4 mr-2" />
+            {checking ? "Checking..." : "Upload"}
+          </Button>
 
           {/* Search Bar */}
           <div className="relative">
