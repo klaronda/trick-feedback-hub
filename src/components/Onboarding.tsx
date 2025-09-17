@@ -131,7 +131,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
         return (
           <div className="space-y-6">
             <div className="text-left space-y-2">
-              <h2 className="text-2xl font-semibold">Tell us about yourself.</h2>
+              <h2 className="text-2xl font-medium">Tell us about yourself.</h2>
               <p className="text-gray-600">It lets us know how we should coach you.</p>
             </div>
 
@@ -301,7 +301,7 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
               />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-gray-900">Just upload your video.</h2>
+              <h2 className="text-2xl font-medium text-gray-900">Just upload your video.</h2>
               <p className="text-gray-600 max-w-md mx-auto">
                 And a coach will drop in notes for landing your trick right on the bolts.
               </p>
@@ -321,8 +321,8 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
             </div>
             <div className="space-y-4">
               <div className="space-y-1">
-                <h2 className="text-2xl font-semibold text-gray-900">5 free uploads a month.</h2>
-                <h2 className="text-2xl font-semibold text-gray-900">Or upgrade for unlimited.</h2>
+                <h2 className="text-2xl font-medium text-gray-900">5 free uploads a month.</h2>
+                <h2 className="text-2xl font-medium text-gray-900">Or upgrade for unlimited.</h2>
               </div>
               <div className="space-y-2 text-gray-600">
                 <p>Upload all the videos you want for just $5/month, plus chat with a coach to get tips on the fly.</p>
