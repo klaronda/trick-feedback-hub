@@ -31,6 +31,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   const [showDeleteTipModal, setShowDeleteTipModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [tipToDelete, setTipToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const getInitials = (email: string, firstName?: string | null) => {
@@ -402,7 +403,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
         <Button 
           variant="ghost" 
           className="w-full justify-start text-gray-500 hover:text-gray-700 hover:bg-gray-50"
-          onClick={onSignOut}
+          onClick={() => setShowSignOutModal(true)}
         >
           <LogOut className="w-4 h-4 mr-2" />
           Sign Out
@@ -417,6 +418,18 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
           Delete Account
         </Button>
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showSignOutModal}
+        onClose={() => setShowSignOutModal(false)}
+        onConfirm={onSignOut}
+        title="Sign Out?"
+        message="You'll need to sign in again to use SkateCoach."
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        isDestructive={false}
+      />
 
       {/* Delete Saved Tip Modal */}
       <ConfirmationModal
