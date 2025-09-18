@@ -108,13 +108,6 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
               </div>
             </div>
             
-            {tip.safety_note && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <p className="text-xs text-yellow-700 leading-relaxed">
-                  ⚠️ {tip.safety_note}
-                </p>
-              </div>
-            )}
             
             <div className="flex gap-3 pt-4 border-t border-gray-200">
               <Button 
