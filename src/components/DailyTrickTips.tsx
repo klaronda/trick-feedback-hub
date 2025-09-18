@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +35,7 @@ interface TipSlot {
 export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [seenSlots, setSeenSlots] = useState<number[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -104,32 +104,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
     }
   };
 
-  const refreshTips = async () => {
-    setRefreshing(true);
-    try {
-      const { error } = await supabase.functions.invoke('refresh-user-tips');
-      if (error) throw error;
-      
-      // Invalidate and refetch the tips
-      await queryClient.invalidateQueries({ queryKey: ['daily-tips'] });
-      setCurrentTip(0);
-      setSeenSlots([]);
-      
-      toast({
-        title: "Tips refreshed!",
-        description: "Your daily tips have been updated with fresh content.",
-      });
-    } catch (error) {
-      console.error('Error refreshing tips:', error);
-      toast({
-        title: "Refresh failed",
-        description: "Failed to refresh your tips. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setRefreshing(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -168,16 +142,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Daily Trick Tips</h2>
         <div className="flex gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={refreshTips}
-            disabled={refreshing}
-            className="p-2 hover:bg-muted"
-            title="Refresh tips"
-          >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-          </Button>
           <Button 
             variant="ghost" 
             size="sm" 
