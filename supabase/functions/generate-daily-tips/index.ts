@@ -109,9 +109,11 @@ serve(async (req) => {
 
     // Generate 3 new tips if none exist or when rotation function returns empty
     console.log('Generating fresh tips for user:', user.id);
-    const tip1 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 1);
-    const tip2 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 2);
-    const tip3 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 3);
+    
+    // Generate tips sequentially to ensure variety by passing previous tips
+    const tip1 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 1, []);
+    const tip2 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 2, [tip1.tip]);
+    const tip3 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 3, [tip1.tip, tip2.tip]);
     
     return new Response(JSON.stringify({
       success: true,
@@ -132,7 +134,7 @@ serve(async (req) => {
   }
 });
 
-async function generateSingleTip(user: any, profile: any, recentAttempts: any[], openaiKey: string, supabase: any, slot: number) {
+async function generateSingleTip(user: any, profile: any, recentAttempts: any[], openaiKey: string, supabase: any, slot: number, previousTips: any[] = []) {
   // Calculate user age and experience
   const age = profile?.birthday ? 
     new Date().getFullYear() - new Date(profile.birthday).getFullYear() : null;
@@ -170,6 +172,21 @@ async function generateSingleTip(user: any, profile: any, recentAttempts: any[],
     };
   });
 
+  // Create variation based on slot number and previous tips
+  const focusAreas = [
+    "fundamentals and balance", 
+    "trick progression and technique", 
+    "mindset and practice methods"
+  ];
+  const currentFocus = focusAreas[slot - 1] || "general improvement";
+  
+  // Format previous tips to avoid duplication
+  const previousTipSummaries = previousTips.map(tip => ({
+    headline: tip.headline,
+    category: tip.badge_category,
+    tags: tip.tags
+  }));
+
   // Create enhanced prompt for OpenAI following the 5-step protocol
   const systemPrompt = `You are Lovable, a skateboarding coach that generates personalized Daily Trick Tips. Follow the 5-step generation protocol EXACTLY.
 
@@ -182,6 +199,11 @@ USER PROFILE:
 - Goals: ${profile?.learning_goals || 'general improvement'}
 - Recent Tricks: ${JSON.stringify(formattedAttempts)}
 - Previously Saved Topics: ${JSON.stringify(savedTopics)}
+
+TIP SLOT ${slot} REQUIREMENTS:
+- Focus Area: ${currentFocus}
+- Must be DIFFERENT from these already generated tips: ${JSON.stringify(previousTipSummaries)}
+- Avoid duplicate categories, headlines, or similar content
 
 GENERATION PROTOCOL (Follow these 5 steps):
 1. Generate an idea that benefits user's skateboarding progression (subtle personalization, don't be blatant about data usage)
