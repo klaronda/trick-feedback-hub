@@ -27,27 +27,55 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get all pro users
-    const { data: proUsers, error: usersError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('plan_name', 'pro')
-      .eq('is_subscribed', true);
+    // Check if this is for a specific user or all pro users
+    const { userId } = await req.json().catch(() => ({}));
 
-    if (usersError) {
-      console.error('Error fetching pro users:', usersError);
-      return new Response(JSON.stringify({ error: 'Failed to fetch users' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    let usersToProcess = [];
+    
+    if (userId) {
+      // Single user mode
+      const { data: singleUser, error: singleUserError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .eq('plan_name', 'pro')
+        .eq('is_subscribed', true)
+        .single();
+        
+      if (singleUserError || !singleUser) {
+        return new Response(JSON.stringify({ error: 'User not found or not pro subscriber' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+      
+      usersToProcess = [singleUser];
+      console.log(`Processing single user: ${userId}`);
+    } else {
+      // All pro users mode
+      const { data: proUsers, error: usersError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('plan_name', 'pro')
+        .eq('is_subscribed', true);
+
+      if (usersError) {
+        console.error('Error fetching pro users:', usersError);
+        return new Response(JSON.stringify({ error: 'Failed to fetch users' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+      
+      usersToProcess = proUsers || [];
+      console.log(`Found ${usersToProcess.length} pro users`);
     }
 
-    console.log(`Found ${proUsers?.length || 0} pro users`);
     let processedUsers = 0;
     let totalTipsGenerated = 0;
 
     // Process each pro user
-    for (const user of proUsers || []) {
+    for (const user of usersToProcess) {
       try {
         // Check current tip count for this user
         const { data: currentTips, error: tipsError } = await supabase
@@ -298,10 +326,70 @@ function createFallbackTip(slot: number, focus: string) {
       difficulty: "beginner",
       tags: ["stance", "positioning", "control"],
       estimated_time_min: 15
+    },
+    {
+      headline: "Master Your Push",
+      teaser_text: "Build speed and momentum efficiently",
+      detailed_content: "Practice pushing with your back foot while keeping your front foot stable on the board. Focus on smooth, controlled pushes that maintain your balance and build consistent speed.",
+      badge_category: "Fundamentals",
+      greeting: "Let's improve your pushing technique!",
+      tip_text: "A good push is the foundation of fluid skateboarding",
+      actionable_step: "Practice 20 controlled pushes focusing on balance",
+      safety_note: "Start slow and gradually build up speed",
+      difficulty: "beginner",
+      tags: ["pushing", "speed", "momentum"],
+      estimated_time_min: 12
+    },
+    {
+      headline: "Practice Safe Falling",
+      teaser_text: "Learn to fall safely to build confidence",
+      detailed_content: "Practice controlled falls on grass or padding. Learn to roll with falls rather than catching yourself with your hands. This builds confidence and prevents injuries when attempting new tricks.",
+      badge_category: "Safety",
+      greeting: "Safety first - let's practice falling!",
+      tip_text: "Knowing how to fall safely makes you a more confident skater",
+      actionable_step: "Practice 5 controlled falls on grass or padding",
+      safety_note: "Always practice on soft surfaces when learning to fall",
+      difficulty: "beginner",
+      tags: ["safety", "falling", "confidence"],
+      estimated_time_min: 8
+    },
+    {
+      headline: "Develop Board Feel",
+      teaser_text: "Build connection between you and your board",
+      detailed_content: "Spend time just riding and feeling how your board responds to weight shifts. Practice slight turns, speed control, and getting comfortable with the board's movement beneath your feet.",
+      badge_category: "Technique",
+      greeting: "Time to connect with your board!",
+      tip_text: "Board feel is essential for progressing to advanced tricks",
+      actionable_step: "Ride for 10 minutes focusing only on weight shifts",
+      safety_note: "Practice in an open area away from obstacles",
+      difficulty: "beginner",
+      tags: ["board-feel", "control", "connection"],
+      estimated_time_min: 15
+    },
+    {
+      headline: "Set Daily Goals",
+      teaser_text: "Structure your practice for consistent progress",
+      detailed_content: "Before each session, set one specific, achievable goal. Whether it's landing 5 clean pushes or riding 50 feet without putting your foot down, having a clear target improves focus and motivation.",
+      badge_category: "Mindset",
+      greeting: "Let's set some goals for today!",
+      tip_text: "Clear goals turn practice time into progress time",
+      actionable_step: "Choose one specific skill to focus on for 15 minutes",
+      safety_note: "Set realistic goals to avoid frustration and injury",
+      difficulty: "beginner",
+      tags: ["goals", "practice", "mindset"],
+      estimated_time_min: 5
     }
   ];
   
-  return fallbackTips[slot % 2];
+  // Ensure we have enough fallback tips and use slot number directly
+  const tipIndex = (slot - 1) % fallbackTips.length;
+  const tip = { ...fallbackTips[tipIndex] };
+  
+  // Add unique identifier for each slot
+  tip.id = `fallback-${slot}-${Date.now()}`;
+  tip.generated_at = new Date().toISOString();
+  
+  return tip;
 }
 
 function determineSkillLevel(experience: number | null, recentAttempts: any[]): string {

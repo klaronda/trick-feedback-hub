@@ -52,5 +52,8 @@ verify_jwt = true
 [functions.generate-daily-tips]
 verify_jwt = true
 
+[functions.refresh-user-tips]
+verify_jwt = true
+
 [functions.auto-unsave-tips]
 verify_jwt = false
