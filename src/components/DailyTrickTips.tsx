@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+// Toast removed per user request
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface DailyTrickTipsProps {
@@ -36,7 +36,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   const [currentTip, setCurrentTip] = useState(0);
   const [seenSlots, setSeenSlots] = useState<number[]>([]);
   
-  const { toast } = useToast();
+  // Toast removed per user request
   const queryClient = useQueryClient();
   
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;

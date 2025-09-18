@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
-import { useToast } from "@/components/ui/use-toast";
+// Toast removed per user request
 import { useSavedTips } from "@/hooks/useSavedTips";
 
  type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach' | 'profile';
@@ -42,7 +42,7 @@ const Index = () => {
   const [trickTipModalOpen, setTrickTipModalOpen] = useState(false);
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
-  const { toast } = useToast();
+  // Toast removed per user request
   const { saveTip } = useSavedTips();
 
   useEffect(() => {

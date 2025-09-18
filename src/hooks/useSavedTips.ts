@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+// Toast removed per user request
 
 interface TrickTip {
   id: string;
@@ -29,7 +29,7 @@ interface SavedTip {
 export function useSavedTips() {
   const [savedTips, setSavedTips] = useState<SavedTip[]>([]);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  // Toast removed per user request
 
   const fetchSavedTips = async () => {
     setLoading(true);
@@ -44,11 +44,7 @@ export function useSavedTips() {
       setSavedTips(data || []);
     } catch (error) {
       console.error('Error fetching saved tips:', error);
-      toast({
-        title: "Error loading saved tips",
-        description: "Failed to load your saved tips. Please try again.",
-        variant: "destructive",
-      });
+      // Toast notification removed per user request
     } finally {
       setLoading(false);
     }
@@ -66,10 +62,7 @@ export function useSavedTips() {
       if (checkError) throw checkError;
 
       if (existingTips && existingTips.length > 0) {
-        toast({
-          title: "Tip already saved",
-          description: "This tip is already in your saved tips.",
-        });
+        // Toast notification removed per user request
         return;
       }
 
@@ -83,17 +76,10 @@ export function useSavedTips() {
       // Refresh the list
       fetchSavedTips();
 
-      toast({
-        title: "Tip saved",
-        description: "Tip has been saved to your profile.",
-      });
+      // Toast notification removed per user request
     } catch (error) {
       console.error('Error saving tip:', error);
-      toast({
-        title: "Error saving tip",
-        description: "Failed to save the tip. Please try again.",
-        variant: "destructive",
-      });
+      // Toast notification removed per user request
     }
   };
 
@@ -114,17 +100,10 @@ export function useSavedTips() {
       // Remove from local state
       setSavedTips(prev => prev.filter(tip => tip.id !== tipId));
 
-      toast({
-        title: "Tip removed",
-        description: "Tip has been removed from your saved tips.",
-      });
+      // Toast notification removed per user request
     } catch (error) {
       console.error('Error unsaving tip:', error);
-      toast({
-        title: "Error removing tip",
-        description: "Failed to remove the tip. Please try again.",
-        variant: "destructive",
-      });
+      // Toast notification removed per user request
     }
   };
 
