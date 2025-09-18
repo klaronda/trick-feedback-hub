@@ -11,6 +11,7 @@ import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
 import { ConfirmationModal } from "./ConfirmationModal";
+import { TrickTipModal } from "./TrickTipModal";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 // import { toast } from "sonner"; // Removed to reduce toast notifications
@@ -36,6 +37,8 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [tipToDelete, setTipToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedTrickTip, setSelectedTrickTip] = useState<any>(null);
+  const [showTrickTipModal, setShowTrickTipModal] = useState(false);
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
       return firstName.charAt(0).toUpperCase();
@@ -103,6 +106,15 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   const handleDeleteAccount = () => {
     setShowDeleteAccountModal(false);
     setShowConfirmDeleteModal(true);
+  };
+
+  const handleExpandTrickTip = (tip: any) => {
+    setSelectedTrickTip(tip.tip);
+    setShowTrickTipModal(true);
+  };
+
+  const handleSaveTrickTip = async (tip: any) => {
+    // This will be handled by the modal if needed
   };
 
   const handleConfirmDeleteAccount = async () => {
@@ -335,7 +347,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
       {/* Saved Tips Section - Pro Only */}
       {isPro && (
         <div className="space-y-3">
-          <h2 className="text-lg font-medium text-gray-900">Saved Tips</h2>
+          <h2 className="text-lg font-normal text-gray-900">Saved Tips</h2>
           <Card className="bg-white border-gray-200">
             <CardContent className="pt-6">
               {tipsLoading ? (
@@ -360,13 +372,14 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
                       <h3 className="text-sm font-medium text-gray-600 mb-3">Pinned Tips</h3>
                       <div className="space-y-2">
                         {pinnedTips.map((tip) => (
-                          <SavedTipCard
-                            key={tip.id}
-                            tip={tip}
-                            onDelete={handleDeleteTipClick}
-                            onTogglePin={togglePin}
-                            showPinIcon={true}
-                          />
+                           <SavedTipCard
+                             key={tip.id}
+                             tip={tip}
+                             onDelete={handleDeleteTipClick}
+                             onTogglePin={togglePin}
+                             onExpandClick={handleExpandTrickTip}
+                             showPinIcon={true}
+                           />
                         ))}
                       </div>
                     </div>
@@ -377,21 +390,22 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
                     {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
                       <div key={monthYear}>
                         <h3 className="text-sm font-normal text-gray-700 mb-3">{monthYear}</h3>
-                        <ScrollArea className="h-[400px] pr-4">
-                          <div className="space-y-2">
-                            {tips.slice(0, 6).map((tip, index) => (
-                              <div
-                                key={tip.id}
-                                className={index === 5 ? "opacity-50" : ""}
-                              >
-                                <SavedTipCard
-                                  tip={tip}
-                                  onDelete={handleDeleteTipClick}
-                                  onTogglePin={togglePin}
-                                  showPinIcon={true}
-                                />
-                              </div>
-                            ))}
+                         <ScrollArea className="h-[400px]">
+                           <div className="space-y-2">
+                             {tips.slice(0, 6).map((tip, index) => (
+                               <div
+                                 key={tip.id}
+                                 className={index === 5 ? "opacity-50" : ""}
+                               >
+                                 <SavedTipCard
+                                   tip={tip}
+                                   onDelete={handleDeleteTipClick}
+                                   onTogglePin={togglePin}
+                                   onExpandClick={handleExpandTrickTip}
+                                   showPinIcon={true}
+                                 />
+                               </div>
+                             ))}
                             {tips.length > 6 && (
                               <div className="text-center py-2">
                                 <p className="text-sm text-gray-500">
@@ -517,6 +531,19 @@ This action will permanently delete all your uploaded videos, coaching feedback,
         cancelText="No"
         isDestructive={true}
       />
+
+      {/* Trick Tip Modal */}
+      {selectedTrickTip && (
+        <TrickTipModal
+          tip={selectedTrickTip}
+          isOpen={showTrickTipModal}
+          onClose={() => {
+            setShowTrickTipModal(false);
+            setSelectedTrickTip(null);
+          }}
+          onSave={handleSaveTrickTip}
+        />
+      )}
     </div>
   );
 };

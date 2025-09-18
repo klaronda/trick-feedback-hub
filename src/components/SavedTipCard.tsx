@@ -15,9 +15,10 @@ interface SavedTipCardProps {
   onDelete: (tip: any) => void;
   onTogglePin: (tipId: number) => Promise<boolean>;
   showPinIcon?: boolean;
+  onExpandClick?: (tip: any) => void;
 }
 
-export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true }: SavedTipCardProps) {
+export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true, onExpandClick }: SavedTipCardProps) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isToggling, setIsToggling] = useState(false);
   
@@ -51,7 +52,7 @@ export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true }:
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-gray-200 p-4 w-full">
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
         {/* Title row with pin and expand controls */}
         <div className="flex items-start justify-between mb-2">
           <h3 className="text-sm font-semibold text-gray-900 flex-1 pr-2">
@@ -65,7 +66,7 @@ export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true }:
                 size="sm"
                 onClick={handleTogglePin}
                 disabled={isToggling}
-                className="p-1 h-7 w-7 hover:bg-gray-100 hover:border hover:border-gray-200 rounded"
+                className="p-1 h-7 w-7 hover:bg-gray-100 hover:border-gray-200 rounded"
               >
                 <Pin 
                   className={`h-4 w-4 transition-colors ${
@@ -80,7 +81,8 @@ export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true }:
             <Button
               variant="ghost"
               size="sm"
-              className="p-1 h-7 w-7 text-gray-500 hover:bg-gray-100 hover:border hover:border-gray-200 rounded"
+              onClick={() => onExpandClick?.(tip)}
+              className="p-1 h-7 w-7 text-gray-500 hover:bg-gray-100 hover:border-gray-200 rounded"
             >
               <img src={expandIcon} alt="Expand" className="h-4 w-4" />
             </Button>
