@@ -24,10 +24,12 @@ interface TrickTipModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (tip: TrickTip) => void;
+  isAlreadySaved?: boolean;
+  onUnsave?: (tip: TrickTip) => void;
 }
 
-export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalProps) => {
-  const [isSaved, setIsSaved] = useState(false);
+export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = false, onUnsave }: TrickTipModalProps) => {
+  const [isSaved, setIsSaved] = useState(isAlreadySaved);
   
   if (!tip || !isOpen) return null;
 
@@ -50,8 +52,13 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
   };
 
   const handleSave = () => {
-    setIsSaved(!isSaved);
-    onSave(tip);
+    if (isAlreadySaved && onUnsave) {
+      onUnsave(tip);
+      setIsSaved(false);
+    } else {
+      onSave(tip);
+      setIsSaved(true);
+    }
   };
 
   return (
@@ -111,16 +118,16 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave }: TrickTipModalPro
             
             <div className="flex gap-3 pt-4 border-t border-gray-200">
               <Button 
-                variant={isSaved ? "default" : "outline"}
+                variant={isSaved || isAlreadySaved ? "default" : "outline"}
                 onClick={handleSave}
                 className={`w-full gap-2 transition-all duration-200 ${
-                  isSaved 
+                  isSaved || isAlreadySaved
                     ? "bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white" 
                     : "hover:bg-gray-50 hover:border-gray-300"
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
-                {isSaved ? "Tip Saved" : "Save Tip"}
+                <Heart className={`w-4 h-4 ${isSaved || isAlreadySaved ? "fill-current" : ""}`} />
+                {isAlreadySaved ? "Saved Tip" : (isSaved ? "Tip Saved" : "Save Tip")}
               </Button>
             </div>
           </div>

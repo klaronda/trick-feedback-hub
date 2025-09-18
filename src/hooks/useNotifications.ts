@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'video_upload' | 'coach_review' | 'tip_saved' | 'tip_removed' | 'video_deleted' | 'profile_updated' | 'subscription_upgraded' | 'subscription_downgraded';
+  type: 'video_upload' | 'coach_review' | 'tip_saved' | 'tip_removed' | 'tip_pinned' | 'tip_unpinned' | 'video_deleted' | 'profile_updated' | 'subscription_upgraded' | 'subscription_downgraded';
   title: string;
   description: string;
   metadata: Record<string, any>;

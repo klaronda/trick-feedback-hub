@@ -33,6 +33,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         return <Heart className="w-4 h-4 text-red-400 fill-current" />;
       case 'tip_removed':
         return <Heart className="w-4 h-4 text-gray-600" />;
+      case 'tip_pinned':
+        return <BookOpen className="w-4 h-4 text-blue-600" />;
+      case 'tip_unpinned':
+        return <BookOpen className="w-4 h-4 text-gray-600" />;
       case 'video_deleted':
         return <Trash2 className="w-4 h-4 text-red-600" />;
       case 'profile_updated':
@@ -84,7 +88,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 px-6 max-h-96">
+        <ScrollArea className="flex-1 px-6">
           {loading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (

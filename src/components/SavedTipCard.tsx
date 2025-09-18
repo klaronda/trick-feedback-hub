@@ -52,42 +52,42 @@ export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true, o
 
   return (
     <>
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        {/* Title row with pin and expand controls */}
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-sm font-semibold text-gray-900 flex-1 pr-2">
-            {tipData?.headline || 'Untitled Tip'}
-          </h3>
-          
-          <div className="flex items-center gap-1 shrink-0">
-            {showPinIcon && (
+        <div className="bg-white rounded-lg border border-gray-200 p-4">
+          {/* Title row with pin and expand controls */}
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="text-sm font-semibold text-gray-900 flex-1 pr-2">
+              {tipData?.headline || 'Untitled Tip'}
+            </h3>
+            
+            <div className="flex items-center gap-1 shrink-0">
+              {showPinIcon && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleTogglePin}
+                  disabled={isToggling}
+                  className="p-1 h-7 w-7 hover:bg-gray-100 rounded"
+                >
+                  <Pin 
+                    className={`h-4 w-4 transition-colors ${
+                      tip.is_pinned 
+                        ? 'fill-gray-900' 
+                        : 'text-gray-500'
+                    }`}
+                  />
+                </Button>
+              )}
+              
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={handleTogglePin}
-                disabled={isToggling}
-                className="p-1 h-7 w-7 hover:bg-gray-100 hover:border-gray-200 rounded"
+                onClick={() => onExpandClick?.(tip)}
+                className="p-1 h-7 w-7 text-gray-500 hover:bg-gray-100 rounded"
               >
-                <Pin 
-                  className={`h-4 w-4 transition-colors ${
-                    tip.is_pinned 
-                      ? 'fill-gray-900 text-gray-900' 
-                      : 'text-gray-500'
-                  }`}
-                />
+                <img src={expandIcon} alt="Expand" className="h-4 w-4" />
               </Button>
-            )}
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onExpandClick?.(tip)}
-              className="p-1 h-7 w-7 text-gray-500 hover:bg-gray-100 hover:border-gray-200 rounded"
-            >
-              <img src={expandIcon} alt="Expand" className="h-4 w-4" />
-            </Button>
+            </div>
           </div>
-        </div>
 
         {/* Teaser text */}
         <p className="text-sm text-gray-600 mb-4 leading-relaxed">

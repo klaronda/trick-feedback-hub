@@ -329,7 +329,11 @@ const Index = () => {
             </Button>
 
             {/* Daily Trick Tips - Pro Only */}
-            <DailyTrickTips userPlan={userPlan} onTipClick={handleTrickTipClick} />
+            <DailyTrickTips 
+              userPlan={userPlan} 
+              onTipClick={handleTrickTipClick}
+              onSaveTip={handleSaveTrickTip}
+            />
 
             {/* Top Weekly Tricks */}
             <TopWeeklyTricks />
