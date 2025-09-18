@@ -15,12 +15,22 @@ serve(async (req) => {
   try {
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('No authorization header provided');
       throw new Error('No authorization header');
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const openaiKey = Deno.env.get('OPENAI_API_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY');
+    const openaiKey = Deno.env.get('OPENAI_API_KEY');
+
+    if (!supabaseUrl || !supabaseKey || !openaiKey) {
+      console.error('Missing environment variables:', { 
+        hasSupabaseUrl: !!supabaseUrl, 
+        hasSupabaseKey: !!supabaseKey, 
+        hasOpenaiKey: !!openaiKey 
+      });
+      throw new Error('Missing required environment variables');
+    }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
       global: { headers: { Authorization: authHeader } }
@@ -28,8 +38,11 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
+      console.error('Authentication error:', userError);
       throw new Error('Unauthorized');
     }
+
+    console.log('Authenticated user:', user.id);
 
     
     let seenSlots = [];
@@ -296,7 +309,39 @@ Focus on natural progression. Be subtle with personalization.`;
 
   } catch (error) {
     console.error('Error generating tip with AI:', error);
-    throw error;
+    
+    // Return a fallback tip instead of throwing
+    const fallbackTip = {
+      id: `tt-${new Date().toISOString().split('T')[0]}-fallback-${slot}`,
+      headline: "Build Your Foundation",
+      teaser_text: "Master the basics with consistent practice and proper technique.",
+      detailed_content: "Focus on fundamental skateboarding skills:\n\n1. Perfect your stance and balance\n2. Practice pushing and riding smoothly\n3. Work on stopping safely\n4. Build confidence through repetition\n\nConsistent practice of basics creates a strong foundation for all tricks.",
+      badge_category: "Basics",
+      actionable_step: "Practice riding for 15 minutes focusing on balance and control.",
+      safety_note: "Always wear protective gear and practice in a safe area.",
+      difficulty: determineSkillLevel(experienceYears, formattedAttempts),
+      tags: ["basics", "foundation", "practice"],
+      estimated_time_min: 15,
+      generated_at: new Date().toISOString()
+    };
+
+    // Store the fallback tip
+    try {
+      await supabase
+        .from('user_daily_tips')
+        .insert({
+          user_id: user.id,
+          slot: slot,
+          tip: fallbackTip
+        });
+    } catch (insertError) {
+      console.error('Error storing fallback tip:', insertError);
+    }
+
+    return {
+      slot: slot,
+      tip: fallbackTip
+    };
   }
 }
 
