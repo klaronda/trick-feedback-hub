@@ -384,10 +384,6 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      generate_trick_tip: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
       get_monthly_trick_attempt_count: {
         Args: Record<PropertyKey, never>
         Returns: number

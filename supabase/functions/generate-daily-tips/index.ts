@@ -77,11 +77,9 @@ serve(async (req) => {
 
     if (tipsError) {
       console.log('Tips rotation error:', tipsError);
-      // Fallback: generate fresh tips if rotation fails
-      return await generateFreshTips(user, profile, recentAttempts, openaiKey, supabase);
     }
 
-    // If we have existing tips, return them
+    // If we have existing tips from the function, return them
     if (tipsData && tipsData.length > 0) {
       const formattedTips = tipsData.map((tipData: any) => ({
         slot: tipData.slot,
@@ -96,7 +94,8 @@ serve(async (req) => {
       });
     }
 
-    // Generate 3 new tips if none exist
+    // Generate 3 new tips if none exist or when rotation function returns empty
+    console.log('Generating fresh tips for user:', user.id);
     const tip1 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 1);
     const tip2 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 2);
     const tip3 = await generateSingleTip(user, profile, recentAttempts, openaiKey, supabase, 3);
