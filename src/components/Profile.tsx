@@ -357,7 +357,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
                   {/* Pinned Tips Section */}
                   {pinnedTips.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-gray-700 mb-3">Pinned Tips</h3>
+                      <h3 className="text-sm font-normal text-gray-600 mb-3">Pinned Tips</h3>
                       <div className="space-y-2">
                         {pinnedTips.map((tip) => (
                           <SavedTipCard
