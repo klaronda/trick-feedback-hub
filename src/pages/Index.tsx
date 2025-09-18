@@ -11,7 +11,6 @@ import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
 import { NotificationModal } from "@/components/NotificationModal";
-
 import { Profile } from "@/components/Profile";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
@@ -260,7 +259,6 @@ const Index = () => {
   const handleNotificationClick = useCallback(() => {
     setShowNotificationModal(true);
   }, []);
-
   
   if (loading) {
     return (

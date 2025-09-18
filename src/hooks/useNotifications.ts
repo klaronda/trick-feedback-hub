@@ -3,40 +3,33 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface Notification {
   id: string;
-  type: string;
+  user_id: string;
+  type: 'video_upload' | 'coach_review' | 'tip_saved' | 'tip_removed' | 'video_deleted' | 'profile_updated' | 'subscription_upgraded' | 'subscription_downgraded';
   title: string;
   description: string;
+  metadata: Record<string, any>;
   is_read: boolean;
   created_at: string;
-  user_id: string;
-  metadata?: any;
 }
 
-export const useNotifications = () => {
+export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
   const fetchNotifications = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { data, error } = await supabase
         .from('user_notifications')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
-      setNotifications(data || []);
-      setUnreadCount((data || []).filter(n => !n.is_read).length);
+      const typedData = (data || []) as Notification[];
+      setNotifications(typedData);
+      setUnreadCount(typedData.filter(n => !n.is_read).length);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -44,31 +37,66 @@ export const useNotifications = () => {
     }
   };
 
-  const markAllAsRead = async () => {
+  const markAsRead = async (notificationIds: string[]) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
       const { error } = await supabase
         .from('user_notifications')
         .update({ is_read: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false);
+        .in('id', notificationIds);
 
       if (error) throw error;
 
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-      setUnreadCount(0);
+      // Update local state
+      setNotifications(prev => 
+        prev.map(n => 
+          notificationIds.includes(n.id) ? { ...n, is_read: true } : n
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - notificationIds.length));
     } catch (error) {
       console.error('Error marking notifications as read:', error);
     }
   };
 
+  const markAllAsRead = async () => {
+    const unreadIds = notifications.filter(n => !n.is_read).map(n => n.id);
+    if (unreadIds.length > 0) {
+      await markAsRead(unreadIds);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+
+    // Subscribe to real-time notifications
+    const channel = supabase
+      .channel('notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_notifications',
+        },
+        (payload) => {
+          const newNotification = payload.new as Notification;
+          setNotifications(prev => [newNotification, ...prev.slice(0, 49)]);
+          setUnreadCount(prev => prev + 1);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   return {
     notifications,
     loading,
     unreadCount,
+    markAsRead,
     markAllAsRead,
-    refreshNotifications: fetchNotifications
+    refetch: fetchNotifications
   };
-};
+}
