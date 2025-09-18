@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Upload, MessageSquare, BookOpen, Bell, Trash2, User, Crown, CrownIcon } from 'lucide-react';
+import { X, Upload, MessageSquare, Heart, BookOpen, Bell, Trash2, User, Crown, CrownIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useNotifications, Notification } from '@/hooks/useNotifications';
 
@@ -30,7 +30,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       case 'coach_review':
         return <MessageSquare className="w-4 h-4 text-green-600" />;
       case 'tip_saved':
-        return <BookOpen className="w-4 h-4 text-purple-600" />;
+        return <Heart className="w-4 h-4 text-red-400" />;
       case 'tip_removed':
         return <BookOpen className="w-4 h-4 text-orange-600" />;
       case 'video_deleted':

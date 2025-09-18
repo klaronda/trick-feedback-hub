@@ -37,11 +37,7 @@ const Header = memo(({ userPlan, onNotificationClick }: HeaderProps) => {
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
-                <span className="text-xs text-white font-medium">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              </div>
+              <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-red-500 rounded-full"></div>
             )}
           </Button>
         </div>
