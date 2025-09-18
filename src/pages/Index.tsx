@@ -10,7 +10,7 @@ import { TrickTipModal } from "@/components/TrickTipModal";
 import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
-import { NotificationModal } from "@/components/NotificationModal";
+
 import { Profile } from "@/components/Profile";
 import Onboarding from "@/components/Onboarding";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,7 +34,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  
   const [isUpgrading, setIsUpgrading] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isNewUser, setIsNewUser] = useState(false);
@@ -256,9 +256,6 @@ const Index = () => {
     setSelectedAttemptId(null);
   }, [userPlan]);
 
-  const handleNotificationClick = useCallback(() => {
-    setShowNotificationModal(true);
-  }, []);
   
   if (loading) {
     return (
@@ -283,7 +280,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
-      <Header userPlan={userPlan} onNotificationClick={handleNotificationClick} />
+      <Header userPlan={userPlan} />
 
       {/* Upload Limit Modal */}
       <UploadLimitModal 
@@ -293,12 +290,6 @@ const Index = () => {
         isUpgrading={isUpgrading}
       />
 
-      {/* Notification Modal */}
-      <NotificationModal
-        isOpen={showNotificationModal}
-        onClose={() => setShowNotificationModal(false)}
-        userFirstName={userProfile?.first_name || "User"}
-      />
 
       {/* Trick Tip Modal */}
       <TrickTipModal
