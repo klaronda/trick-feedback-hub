@@ -27,7 +27,7 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Get authenticated user
+    // Get authenticated user from the Authorization header JWT
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'No authorization header' }), {
@@ -36,14 +36,10 @@ serve(async (req) => {
       })
     }
 
-    // Create client with user auth
-    const userSupabase = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY') || '', {
-      global: {
-        headers: { Authorization: authHeader }
-      }
-    })
-
-    const { data: { user }, error: authError } = await userSupabase.auth.getUser()
+    // Extract user from JWT token
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+    
     if (authError || !user) {
       console.error('Auth error:', authError)
       return new Response(JSON.stringify({ error: 'Authentication failed' }), {
@@ -51,6 +47,8 @@ serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
+
+    console.log('Authenticated user:', user.id)
 
     // Check if user is pro
     const { data: userPlan, error: planError } = await supabase
