@@ -209,7 +209,7 @@ export default function Auth() {
         <div className="w-full max-w-sm">
           {/* Logo and Brand */}
           <div className="flex items-left justify-left mb-8">
-            <div className="bg-gray-900 text-white rounded-lg p-2 flex items-left justify-left w-8 h-8 mr-3">
+            <div className="bg-gray-900 text-white rounded p-2 flex items-left justify-left w-8 h-8 mr-3">
               <Zap className="w-4 h-4" />
             </div>
             <h1 className="text-xl font-semibold text-gray-900">SkateCoach</h1>
