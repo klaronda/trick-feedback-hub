@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 interface DailyTrickTipsProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
   onTipClick?: (tip: TrickTip) => void;
-  onSaveTip?: (tip: TrickTip) => void;
 }
 
 interface TrickTip {
@@ -33,7 +32,7 @@ interface TipSlot {
   tip: TrickTip;
 }
 
-export const DailyTrickTips = ({ userPlan, onTipClick, onSaveTip }: DailyTrickTipsProps) => {
+export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [seenSlots, setSeenSlots] = useState<number[]>([]);
   
@@ -182,13 +181,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick, onSaveTip }: DailyTrickTi
           {tip.teaser_text || tip.tip_text}
         </p>
         
-        <div className="flex justify-between items-center">
-          <button 
-            onClick={() => onSaveTip && onSaveTip(tip)}
-            className="p-1 rounded hover:bg-gray-100 transition-colors"
-          >
-            <Heart className="w-4 h-4 text-gray-600 hover:text-gray-900" />
-          </button>
+        <div className="flex justify-end">
           <button 
             onClick={() => handleLearnMore(tip)}
             className="p-0 h-auto font-medium text-sm text-gray-600 hover:text-gray-900 transition-colors"

@@ -20,7 +20,7 @@ import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
 // Toast removed per user request
-import { useSavedTips } from "@/hooks/useSavedTips";
+
 
  type AppView = 'home' | 'videos' | 'upload' | 'details' | 'coach' | 'profile';
 
@@ -43,7 +43,6 @@ const Index = () => {
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
   // Toast removed per user request
-  const { saveTip } = useSavedTips();
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -234,9 +233,6 @@ const Index = () => {
     setTrickTipModalOpen(true);
   };
 
-  const handleSaveTrickTip = async (tip: any) => {
-    await saveTip(tip, 'daily-tips');
-  };
 
   const handleNavigate = useCallback((view: 'home' | 'videos' | 'coach' | 'profile') => {
     const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
@@ -305,7 +301,7 @@ const Index = () => {
         tip={selectedTrickTip}
         isOpen={trickTipModalOpen}
         onClose={() => setTrickTipModalOpen(false)}
-        onSave={handleSaveTrickTip}
+        onSave={(tip) => console.log('Save tip:', tip)}
       />
 
       {/* Main Content */}
@@ -332,7 +328,6 @@ const Index = () => {
             <DailyTrickTips 
               userPlan={userPlan} 
               onTipClick={handleTrickTipClick}
-              onSaveTip={handleSaveTrickTip}
             />
 
             {/* Top Weekly Tricks */}
