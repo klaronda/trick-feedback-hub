@@ -84,7 +84,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 px-6">
+        <ScrollArea className="flex-1 px-6 max-h-96">
           {loading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (

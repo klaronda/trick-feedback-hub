@@ -125,8 +125,8 @@ serve(async (req) => {
         .insert({
           user_id: attempt.user_id,
           type: 'coach_review',
-          title: 'Coach Review Complete',
-          description: `Your ${attempt.trick_name} attempt has been reviewed with personalized feedback.`
+          title: 'Video reviewed by Coach',
+          description: `Your ${attempt.trick_name} has coaching feedback.`
         });
 
       if (notificationError) {
