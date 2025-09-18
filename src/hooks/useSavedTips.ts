@@ -24,6 +24,8 @@ interface SavedTip {
   tip: any; // Using any to match Json type from Supabase
   saved_from: string | null;
   user_id: string;
+  is_pinned?: boolean;
+  pinned_at?: string | null;
 }
 
 export function useSavedTips() {
@@ -37,6 +39,8 @@ export function useSavedTips() {
       const { data, error } = await supabase
         .from('saved_trick_tips')
         .select('*')
+        .order('is_pinned', { ascending: false })
+        .order('pinned_at', { ascending: false })
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -47,6 +51,24 @@ export function useSavedTips() {
       // Toast notification removed per user request
     } finally {
       setLoading(false);
+    }
+  };
+
+  const togglePin = async (tipId: number) => {
+    try {
+      const { data, error } = await supabase.rpc('toggle_tip_pin', {
+        tip_id: tipId
+      });
+
+      if (error) throw error;
+
+      // Refresh the list to reflect changes
+      await fetchSavedTips();
+
+      return data; // Returns true if pinned, false if unpinned
+    } catch (error) {
+      console.error('Error toggling pin:', error);
+      throw error;
     }
   };
 
@@ -90,12 +112,28 @@ export function useSavedTips() {
     }
 
     try {
+      // Get tip data before deletion for notification
+      const tipToDelete = savedTips.find(tip => tip.id === tipId);
+      
       const { error } = await supabase
         .from('saved_trick_tips')
         .delete()
         .eq('id', tipId);
 
       if (error) throw error;
+
+      // Create tip removed notification
+      if (tipToDelete) {
+        const { error: notifError } = await supabase.rpc('create_notification', {
+          p_user_id: (await supabase.auth.getUser()).data.user?.id,
+          p_type: 'tip_removed',
+          p_title: 'Tip removed',
+          p_description: `"${tipToDelete.tip?.headline || 'Tip'}" has been removed from your saved tips`,
+          p_metadata: { tip_id: tipId, tip_headline: tipToDelete.tip?.headline }
+        });
+        
+        if (notifError) console.error('Error creating notification:', notifError);
+      }
 
       // Remove from local state
       setSavedTips(prev => prev.filter(tip => tip.id !== tipId));
@@ -133,6 +171,7 @@ export function useSavedTips() {
     loading,
     saveTip,
     unsaveTip,
+    togglePin,
     canUnsaveFromHomepage,
     refetch: fetchSavedTips
   };

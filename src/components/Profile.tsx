@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Switch } from "@/components/ui/switch";
 import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X, Heart } from "lucide-react";
+import { SavedTipCard } from '@/components/SavedTipCard';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
@@ -27,7 +29,7 @@ interface ProfileProps {
 
 export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
-  const { savedTips, loading: tipsLoading, unsaveTip, canUnsaveFromHomepage } = useSavedTips();
+  const { savedTips, loading: tipsLoading, unsaveTip, togglePin, canUnsaveFromHomepage } = useSavedTips();
   const [showDeleteTipModal, setShowDeleteTipModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
@@ -60,6 +62,31 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   };
 
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+
+  // Helper function to organize tips by sections
+  const organizeTipsBySection = () => {
+    const pinnedTips = savedTips.filter(tip => tip.is_pinned);
+    const unpinnedTips = savedTips.filter(tip => !tip.is_pinned);
+    
+    // Group unpinned tips by month/year
+    const tipsByMonth = unpinnedTips.reduce((acc, tip) => {
+      const date = new Date(tip.created_at);
+      const monthYear = date.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric' 
+      });
+      
+      if (!acc[monthYear]) {
+        acc[monthYear] = [];
+      }
+      acc[monthYear].push(tip);
+      return acc;
+    }, {} as Record<string, typeof savedTips>);
+
+    return { pinnedTips, tipsByMonth };
+  };
+
+  const { pinnedTips, tipsByMonth } = organizeTipsBySection();
 
   const handleDeleteTipClick = (savedTip: any) => {
     setTipToDelete(savedTip);
@@ -313,10 +340,9 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
             <CardContent className="pt-6">
               {tipsLoading ? (
                 <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
+                  {[1, 2, 3, 4, 5].map((i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-16 bg-gray-200 rounded-lg"></div>
                     </div>
                   ))}
                 </div>
@@ -328,36 +354,56 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {savedTips.map((savedTip) => (
-                    <div key={savedTip.id} className="border border-gray-100 rounded-lg p-4 space-y-2">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 text-sm">
-                            {savedTip.tip.headline || "Saved Tip"}
-                          </h4>
-                          <p className="text-xs text-gray-600 mt-1">
-                            {savedTip.tip.teaser_text || savedTip.tip.tip_text}
-                          </p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">
-                              {savedTip.tip.badge_category || savedTip.tip.tags?.[0]}
-                            </Badge>
-                            <span className="text-xs text-gray-400">
-                              {new Date(savedTip.created_at).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteTipClick(savedTip)}
-                          className="text-gray-400 hover:text-red-500 p-2"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
+                  {/* Pinned Tips Section */}
+                  {pinnedTips.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700 mb-3">Pinned Tips</h3>
+                      <div className="space-y-2">
+                        {pinnedTips.map((tip) => (
+                          <SavedTipCard
+                            key={tip.id}
+                            tip={tip}
+                            onDelete={handleDeleteTipClick}
+                            onTogglePin={togglePin}
+                            showPinIcon={true}
+                          />
+                        ))}
                       </div>
                     </div>
-                  ))}
+                  )}
+
+                  {/* Scrollable Tips Container */}
+                  <div className="space-y-4">
+                    {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
+                      <div key={monthYear}>
+                        <h3 className="text-sm font-medium text-gray-700 mb-3">{monthYear}</h3>
+                        <ScrollArea className="h-[400px] pr-4">
+                          <div className="space-y-2">
+                            {tips.slice(0, 6).map((tip, index) => (
+                              <div
+                                key={tip.id}
+                                className={index === 5 ? "opacity-50" : ""}
+                              >
+                                <SavedTipCard
+                                  tip={tip}
+                                  onDelete={handleDeleteTipClick}
+                                  onTogglePin={togglePin}
+                                  showPinIcon={true}
+                                />
+                              </div>
+                            ))}
+                            {tips.length > 6 && (
+                              <div className="text-center py-2">
+                                <p className="text-sm text-gray-500">
+                                  +{tips.length - 6} more tips...
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </ScrollArea>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>

@@ -135,6 +135,8 @@ export type Database = {
         Row: {
           created_at: string | null
           id: number
+          is_pinned: boolean | null
+          pinned_at: string | null
           saved_from: string | null
           tip: Json
           user_id: string
@@ -142,6 +144,8 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: never
+          is_pinned?: boolean | null
+          pinned_at?: string | null
           saved_from?: string | null
           tip: Json
           user_id: string
@@ -149,6 +153,8 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: never
+          is_pinned?: boolean | null
+          pinned_at?: string | null
           saved_from?: string | null
           tip?: Json
           user_id?: string
@@ -434,6 +440,10 @@ export type Database = {
       save_trick_tip: {
         Args: { source?: string; tip_data: Json }
         Returns: undefined
+      }
+      toggle_tip_pin: {
+        Args: { tip_id: number }
+        Returns: boolean
       }
     }
     Enums: {
