@@ -2,6 +2,7 @@ import { Bell, User, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { memo } from "react";
+import { useNotifications } from "@/hooks/useNotifications";
 
 interface HeaderProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 const Header = memo(({ userPlan, onNotificationClick }: HeaderProps) => {
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+  const { unreadCount } = useNotifications();
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
@@ -31,9 +33,16 @@ const Header = memo(({ userPlan, onNotificationClick }: HeaderProps) => {
             variant="ghost" 
             size="sm" 
             onClick={onNotificationClick}
-            className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+            className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors relative"
           >
             <Bell className="w-4 h-4" />
+            {unreadCount > 0 && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-xs text-white font-medium">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              </div>
+            )}
           </Button>
         </div>
       </div>

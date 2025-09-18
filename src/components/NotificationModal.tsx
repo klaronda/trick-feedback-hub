@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Upload, Bell, BookmarkPlus, MessageSquare, Megaphone } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import React from 'react';
+import { X, Upload, MessageSquare, BookOpen, Bell, Trash2, User, Crown, CrownIcon } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useNotifications, Notification } from '@/hooks/useNotifications';
 
 interface NotificationModalProps {
   isOpen: boolean;
@@ -11,109 +9,40 @@ interface NotificationModalProps {
   userFirstName?: string;
 }
 
-interface ActivityItem {
-  id: string;
-  type: 'upload' | 'coach_reviewed' | 'tip_saved' | 'notification';
-  title: string;
-  description: string;
-  timestamp: string;
-  icon: React.ReactNode;
-}
+const NotificationModal: React.FC<NotificationModalProps> = ({
+  isOpen,
+  onClose,
+  userFirstName = "there"
+}) => {
+  const { notifications, loading, unreadCount, markAllAsRead } = useNotifications();
 
-export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: NotificationModalProps) => {
-  const [activities, setActivities] = useState<ActivityItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchUserActivities();
+  const handleClose = async () => {
+    if (unreadCount > 0) {
+      await markAllAsRead();
     }
-  }, [isOpen]);
+    onClose();
+  };
 
-  const fetchUserActivities = async () => {
-    try {
-      setLoading(true);
-      const { data: attempts, error } = await supabase
-        .from('trick_attempts')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (error) throw error;
-
-      // Transform attempts into activity items
-      const activityItems: ActivityItem[] = [];
-      
-      attempts?.forEach((attempt) => {
-        // Upload activity
-        activityItems.push({
-          id: `upload-${attempt.id}`,
-          type: 'upload',
-          title: 'Video uploaded',
-          description: `Your ${attempt.trick_name || 'trick'} attempt is being reviewed by Coach`,
-          timestamp: formatTimestamp(attempt.created_at),
-          icon: <Upload className="w-4 h-4" />
-        });
-
-        // Coach Reviewed activity (if processed)
-        if (attempt.status === 'completed' && attempt.processed_at) {
-          activityItems.push({
-            id: `coach-reviewed-${attempt.id}`,
-            type: 'coach_reviewed',
-            title: 'Coach Reviewed',
-            description: `Your ${attempt.trick_name || 'trick'} analysis is complete with coaching tips`,
-            timestamp: formatTimestamp(attempt.processed_at),
-            icon: <Megaphone className="w-4 h-4" />
-          });
-        }
-      });
-
-      // Add some sample activities for demonstration
-      if (activityItems.length === 0) {
-        activityItems.push(
-          {
-            id: 'upload-demo',
-            type: 'upload',
-            title: 'Video uploaded',
-            description: 'Your 360 flip attempt is being reviewed by Coach',
-            timestamp: '10 hours ago',
-            icon: <Upload className="w-4 h-4" />
-          },
-          {
-            id: 'tip-saved-1',
-            type: 'tip_saved',
-            title: 'Tip saved',
-            description: 'You saved "Master Your Ollie Foundation" to your collection',
-            timestamp: 'Yesterday',
-            icon: <BookmarkPlus className="w-4 h-4" />
-          }
-        );
-      }
-
-      setActivities(activityItems.slice(0, 8)); // Show max 8 items
-    } catch (error) {
-      console.error('Error fetching activities:', error);
-      // Show demo data on error
-      setActivities([
-        {
-          id: 'upload-demo',
-          type: 'upload',
-          title: 'Video uploaded',
-          description: 'Your 360 flip attempt is being reviewed by Coach',
-          timestamp: '10 hours ago',
-          icon: <Upload className="w-4 h-4" />
-        },
-        {
-          id: 'tip-saved-1',
-          type: 'tip_saved',
-          title: 'Tip saved',
-          description: 'You saved "Master Your Ollie Foundation" to your collection',
-          timestamp: 'Yesterday',
-          icon: <BookmarkPlus className="w-4 h-4" />
-        }
-      ]);
-    } finally {
-      setLoading(false);
+  const getNotificationIcon = (type: Notification['type']) => {
+    switch (type) {
+      case 'video_upload':
+        return <Upload className="w-4 h-4 text-blue-600" />;
+      case 'coach_review':
+        return <MessageSquare className="w-4 h-4 text-green-600" />;
+      case 'tip_saved':
+        return <BookOpen className="w-4 h-4 text-purple-600" />;
+      case 'tip_removed':
+        return <BookOpen className="w-4 h-4 text-orange-600" />;
+      case 'video_deleted':
+        return <Trash2 className="w-4 h-4 text-red-600" />;
+      case 'profile_updated':
+        return <User className="w-4 h-4 text-blue-600" />;
+      case 'subscription_upgraded':
+        return <Crown className="w-4 h-4 text-yellow-600" />;
+      case 'subscription_downgraded':
+        return <CrownIcon className="w-4 h-4 text-gray-600" />;
+      default:
+        return <Bell className="w-4 h-4 text-gray-600" />;
     }
   };
 
@@ -137,77 +66,87 @@ export const NotificationModal = ({ isOpen, onClose, userFirstName = "User" }: N
         <div className="sticky top-0 bg-white rounded-t-2xl border-b border-gray-100 p-6 pb-4">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-xl font-semibold text-gray-900">
-              {userFirstName}'s Activity
+              Hey {userFirstName}!
             </h2>
-            <Button 
-              onClick={onClose}
-              className="bg-gray-900 hover:bg-gray-800 text-white px-4 py-1.5 h-auto text-sm rounded-lg font-medium"
+            <button
+              onClick={handleClose}
+              className="text-gray-600 hover:text-gray-800 transition-colors"
             >
-              Done
-            </Button>
+              <X className="w-5 h-5" />
+            </button>
           </div>
           <p className="text-sm text-gray-600">
-            Recent uploads, notifications, saved tips and more.
+            Here's what's been happening with your skating journey
           </p>
         </div>
 
         {/* Scrollable content */}
-        <ScrollArea className="flex-1 px-6 pb-6">
+        <ScrollArea className="flex-1 px-6">
           {loading ? (
-            <div className="space-y-4 pt-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-full"></div>
-                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                    </div>
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
                   </div>
                 </div>
               ))}
             </div>
-          ) : activities.length > 0 ? (
-            <div className="space-y-3 pt-4">
-              {activities.map((activity) => (
-                <div key={activity.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                  <div className="flex items-start gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      activity.type === 'coach_reviewed' 
-                        ? 'bg-green-100 text-green-600' 
-                        : 'bg-blue-100 text-blue-600'
-                    }`}>
-                      {activity.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-1">
-                        {activity.title}
-                      </h4>
-                      <p className="text-sm text-gray-600 mb-2 leading-relaxed">
-                        {activity.description}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {activity.timestamp}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
+          ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
                 <Bell className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No activity yet</h3>
-              <p className="text-sm text-gray-600 max-w-xs">
-                Upload your first video to start tracking your progress and receive personalized coaching tips.
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications yet</h3>
+              <p className="text-gray-500 text-sm max-w-xs">
+                Your notifications will appear here when you have activity
               </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={`flex items-start space-x-3 py-3 border-b border-gray-50 last:border-b-0 ${
+                    !notification.is_read ? 'bg-blue-50 rounded-lg px-3 -mx-3' : ''
+                  }`}
+                >
+                  <div className="flex-shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
+                    {getNotificationIcon(notification.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-medium text-gray-900">
+                        {notification.title}
+                      </p>
+                      {!notification.is_read && (
+                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {notification.description}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {formatTimestamp(notification.created_at)}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </ScrollArea>
+
+        {/* Footer */}
+        <div className="p-6 pt-4 border-t border-gray-100">
+          <p className="text-xs text-gray-500 text-center">
+            Stay updated on your skating progress
+          </p>
+        </div>
       </div>
     </div>
   );
 };
+
+export { NotificationModal };

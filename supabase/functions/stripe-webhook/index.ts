@@ -74,6 +74,19 @@ serve(async (req) => {
             })
         ]);
 
+        // Create subscription upgrade notification
+        const { error: notificationError } = await supabase.functions.invoke('subscription-notifications', {
+          body: {
+            user_id: userId,
+            type: 'upgrade',
+            plan_name: 'pro'
+          }
+        });
+
+        if (notificationError) {
+          console.error('Error creating upgrade notification:', notificationError);
+        }
+
         console.log(`Successfully upgraded user ${userId} to Pro`);
         break;
       }
@@ -109,6 +122,19 @@ serve(async (req) => {
               })
               .eq('id', user.id)
           ]);
+
+          // Create subscription downgrade notification
+          const { error: notificationError } = await supabase.functions.invoke('subscription-notifications', {
+            body: {
+              user_id: user.id,
+              type: 'downgrade',
+              plan_name: 'free'
+            }
+          });
+
+          if (notificationError) {
+            console.error('Error creating downgrade notification:', notificationError);
+          }
 
           console.log(`Successfully downgraded user ${user.id} to free`);
         }

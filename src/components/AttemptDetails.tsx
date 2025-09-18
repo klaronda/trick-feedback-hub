@@ -153,9 +153,10 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
+      // Use soft delete by setting deleted_at instead of hard delete
       const { error } = await supabase
         .from('trick_attempts')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', attemptId);
 
       if (error) throw error;
