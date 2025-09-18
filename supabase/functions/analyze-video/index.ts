@@ -118,6 +118,24 @@ serve(async (req) => {
       );
     }
 
+    // Create notification for coaching feedback
+    if (attempt.user_id) {
+      const { error: notificationError } = await supabase
+        .from('user_notifications')
+        .insert({
+          user_id: attempt.user_id,
+          type: 'coach_review',
+          title: 'Coach Review Complete',
+          description: `Your ${attempt.trick_name} attempt has been reviewed with personalized feedback.`
+        });
+
+      if (notificationError) {
+        console.error('Error creating notification:', notificationError);
+      } else {
+        console.log('Notification created for user:', attempt.user_id);
+      }
+    }
+
     console.log('Successfully analyzed and updated attempt:', attempt_id);
 
     return new Response(

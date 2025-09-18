@@ -30,9 +30,9 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       case 'coach_review':
         return <MessageSquare className="w-4 h-4 text-green-600" />;
       case 'tip_saved':
-        return <Heart className="w-4 h-4 text-red-400" />;
+        return <Heart className="w-4 h-4 text-red-400 fill-current" />;
       case 'tip_removed':
-        return <BookOpen className="w-4 h-4 text-orange-600" />;
+        return <Heart className="w-4 h-4 text-gray-600" />;
       case 'video_deleted':
         return <Trash2 className="w-4 h-4 text-red-600" />;
       case 'profile_updated':
@@ -112,9 +112,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`flex items-start space-x-3 py-3 border-b border-gray-50 last:border-b-0 ${
-                    !notification.is_read ? 'bg-blue-50 rounded-lg px-3 -mx-3' : ''
-                  }`}
+                  className="flex items-start space-x-3 py-3 border-b border-gray-50 last:border-b-0"
                 >
                   <div className="flex-shrink-0 w-8 h-8 bg-gray-50 rounded-full flex items-center justify-center">
                     {getNotificationIcon(notification.type)}
@@ -124,9 +122,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       <p className="text-sm font-medium text-gray-900">
                         {notification.title}
                       </p>
-                      {!notification.is_read && (
-                        <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                      )}
                     </div>
                     <p className="text-sm text-gray-600 mb-2">
                       {notification.description}
