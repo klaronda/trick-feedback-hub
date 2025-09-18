@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, VideoIcon, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast"; // Removed to reduce toast notifications
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface UploadAttemptProps {
@@ -19,35 +19,35 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
   const [trickName, setTrickName] = useState("");
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('video/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please select a video file",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Invalid file type",
+      //   description: "Please select a video file",
+      //   variant: "destructive"
+      // });
       return;
     }
 
     if (!trickName.trim()) {
-      toast({
-        title: "Trick name required",
-        description: "Please enter a trick name",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Trick name required",
+      //   description: "Please enter a trick name",
+      //   variant: "destructive"
+      // });
       return;
     }
 
     // Get current user and pre-check monthly quota before uploading large files
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast({
-        title: "Authentication required",
-        description: "You must be logged in to upload.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Authentication required",
+      //   description: "You must be logged in to upload.",
+      //   variant: "destructive"
+      // });
       return;
     }
 
@@ -137,21 +137,21 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
         // Don't throw - upload was successful, analysis failure is secondary
       }
 
-      toast({
-        title: "Upload successful!",
-        description: "Your trick attempt has been saved and is being analyzed."
-      });
+      // toast({
+      //   title: "Upload successful!",
+      //   description: "Your trick attempt has been saved and is being analyzed."
+      // });
 
       setTrickName("");
       onUploadSuccess(String(newAttempt.id));
       
     } catch (error) {
       console.error('Upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Upload failed",
+      //   description: "Something went wrong. Please try again.",
+      //   variant: "destructive"
+      // });
     } finally {
       setIsUploading(false);
     }
@@ -162,11 +162,11 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast({
-          title: "Authentication required",
-          description: "Please log in to upgrade",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Authentication required",
+        //   description: "Please log in to upgrade",
+        //   variant: "destructive"
+        // });
         return;
       }
 
@@ -174,11 +174,11 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       
       if (error) {
         console.error('Error creating checkout session:', error);
-        toast({
-          title: "Upgrade failed",
-          description: "Failed to create checkout session. Please try again.",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Upgrade failed",
+        //   description: "Failed to create checkout session. Please try again.",
+        //   variant: "destructive"
+        // });
         return;
       }
 
@@ -188,11 +188,11 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       }
     } catch (error) {
       console.error('Upgrade error:', error);
-      toast({
-        title: "Upgrade failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Upgrade failed",
+      //   description: "Something went wrong. Please try again.",
+      //   variant: "destructive"
+      // });
     } finally {
       setIsUpgrading(false);
     }

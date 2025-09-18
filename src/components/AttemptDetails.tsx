@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, RotateCcw, Trash2, Play } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast"; // Removed to reduce toast notifications
 import { usePersonalizedCoach } from "@/hooks/usePersonalizedCoach";
 import { ConfirmationModal } from "./ConfirmationModal";
 
@@ -37,7 +37,7 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
   const [coachMessages, setCoachMessages] = useState<Array<{role: 'user' | 'coach', text: string, timestamp: Date}>>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { sendMessage: sendCoachMessage, loading: coachLoading } = usePersonalizedCoach();
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
 
   useEffect(() => {
     fetchAttemptDetails();
@@ -99,30 +99,30 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
         })
       });
 
-      toast({
-        title: "Reprocessing started",
-        description: "Your video is being analyzed again."
-      });
+      // toast({
+      //   title: "Reprocessing started",
+      //   description: "Your video is being analyzed again."
+      // });
 
       // Refresh the data
       fetchAttemptDetails();
     } catch (error) {
       console.error('Reprocess error:', error);
-      toast({
-        title: "Reprocess failed",
-        description: "Failed to start reprocessing. Please try again.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Reprocess failed",
+      //   description: "Failed to start reprocessing. Please try again.",
+      //   variant: "destructive"
+      // });
     }
   };
 
   const handleCoachMessage = async () => {
     if (!coachQuestion.trim()) {
-      toast({
-        title: "Please enter a question",
-        description: "Type your question about the trick.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Please enter a question",
+      //   description: "Type your question about the trick.",
+      //   variant: "destructive"
+      // });
       return;
     }
 
@@ -161,19 +161,19 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
 
       if (error) throw error;
 
-      toast({
-        title: "Attempt deleted",
-        description: "The attempt has been removed successfully."
-      });
+      // toast({
+      //   title: "Attempt deleted",
+      //   description: "The attempt has been removed successfully."
+      // });
 
       onBack();
     } catch (error) {
       console.error('Error deleting attempt:', error);
-      toast({
-        title: "Delete failed",
-        description: "Failed to delete the attempt. Please try again.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Delete failed",
+      //   description: "Failed to delete the attempt. Please try again.",
+      //   variant: "destructive"
+      // });
     } finally {
       setIsDeleting(false);
     }
@@ -192,11 +192,11 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
       }
 
       if (!data) {
-        toast({
-          title: "Attempt not found",
-          description: "This attempt no longer exists",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Attempt not found",
+        //   description: "This attempt no longer exists",
+        //   variant: "destructive"
+        // });
         return;
       }
 
@@ -217,22 +217,22 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
       
       if (urlError) {
         console.error('Error getting video URL:', urlError);
-        toast({
-          title: "Video loading error",
-          description: "Unable to load video. Please try refreshing.",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Video loading error",
+        //   description: "Unable to load video. Please try refreshing.",
+        //   variant: "destructive"
+        // });
       } else {
         setVideoUrl(urlData.signedUrl);
       }
 
     } catch (error) {
       console.error('Error fetching attempt details:', error);
-      toast({
-        title: "Error loading attempt",
-        description: "Failed to load attempt details",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Error loading attempt",
+      //   description: "Failed to load attempt details",
+      //   variant: "destructive"
+      // });
     } finally {
       setIsLoading(false);
     }
@@ -382,11 +382,11 @@ export const AttemptDetails = ({ attemptId, onBack, userPlan }: AttemptDetailsPr
                   preload="metadata"
                   onError={(e) => {
                     console.error('Video load error:', e);
-                    toast({
-                      title: "Video playback error",
-                      description: "Unable to play video. The file may be corrupted or in an unsupported format.",
-                      variant: "destructive"
-                    });
+                    // toast({
+                    //   title: "Video playback error",
+                    //   description: "Unable to play video. The file may be corrupted or in an unsupported format.",
+                    //   variant: "destructive"
+                    // });
                   }}
                 />
               ) : (

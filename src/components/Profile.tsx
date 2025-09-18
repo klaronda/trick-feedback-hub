@@ -11,7 +11,7 @@ import { useSavedTips } from "@/hooks/useSavedTips";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+// import { toast } from "sonner"; // Removed to reduce toast notifications
 
 interface ProfileProps {
   user: User | null;
@@ -110,12 +110,12 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
       // Sign out user
       await supabase.auth.signOut();
       
-      toast.success('Account deleted successfully');
+      // toast.success('Account deleted successfully');
       
       // Redirect will happen via auth state change
     } catch (error) {
       console.error('Error deleting account:', error);
-      toast.error('Failed to delete account. Please try again.');
+      // toast.error('Failed to delete account. Please try again.');
     } finally {
       setIsDeleting(false);
       setShowConfirmDeleteModal(false);

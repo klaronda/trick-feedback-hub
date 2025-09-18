@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Upload, X, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast"; // Removed to reduce toast notifications
 import { VideoTrimModal } from "./VideoTrimModal";
 
 interface UploadModalProps {
@@ -42,7 +42,7 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showTrimModal, setShowTrimModal] = useState(false);
   const [notesPlaceholder, setNotesPlaceholder] = useState("");
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
 
   useEffect(() => {
     if (isOpen) {
@@ -82,20 +82,20 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('video/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please select a video file",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Invalid file type",
+      //   description: "Please select a video file",
+      //   variant: "destructive"
+      // });
       return;
     }
 
     if (!trickName.trim()) {
-      toast({
-        title: "Trick name required",
-        description: "Please enter what trick you're practicing",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Trick name required",
+      //   description: "Please enter what trick you're practicing",
+      //   variant: "destructive"
+      // });
       return;
     }
 
@@ -116,11 +116,11 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: "Authentication required",
-          description: "You must be logged in to upload.",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Authentication required",
+        //   description: "You must be logged in to upload.",
+        //   variant: "destructive"
+        // });
         return;
       }
 
@@ -137,11 +137,11 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
           .lt('created_at', nextMonth.toISOString());
 
         if (!countError && (count ?? 0) >= 5) {
-          toast({
-            title: "Upload limit reached",
-            description: "You've reached your 5 free uploads for this month. Upgrade to Pro for unlimited uploads.",
-            variant: "destructive"
-          });
+          // toast({
+          //   title: "Upload limit reached",
+          //   description: "You've reached your 5 free uploads for this month. Upgrade to Pro for unlimited uploads.",
+          //   variant: "destructive"
+          // });
           return;
         }
       }
@@ -205,21 +205,21 @@ export const UploadModal = ({ isOpen, onClose, onUploadSuccess, userPlan }: Uplo
         console.error('Edge function call failed:', apiError);
       }
 
-      toast({
-        title: "Upload successful!",
-        description: "Your trick attempt has been saved and is being analyzed."
-      });
+      // toast({
+      //   title: "Upload successful!",
+      //   description: "Your trick attempt has been saved and is being analyzed."
+      // });
 
       onUploadSuccess(String(newAttempt.id));
       onClose();
       
     } catch (error) {
       console.error('Upload error:', error);
-      toast({
-        title: "Upload failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Upload failed",
+      //   description: "Something went wrong. Please try again.",
+      //   variant: "destructive"
+      // });
     } finally {
       setIsUploading(false);
     }

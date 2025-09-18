@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+// import { useToast } from "@/components/ui/use-toast"; // Removed to reduce toast notifications
 import { usePersonalizedCoach } from "@/hooks/usePersonalizedCoach";
 import { Bot, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +25,7 @@ const QUICK_QUESTIONS = [
 
 export default function CoachChat({ userFirstName }: CoachChatProps) {
   const { sendMessage, loading, error } = usePersonalizedCoach();
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
@@ -81,7 +81,7 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
       };
       setMessages((prev) => [...prev.slice(-9), coachMsg]);
     } else if (error) {
-      toast({ title: "Coach error", description: error, variant: "destructive" });
+      // toast({ title: "Coach error", description: error, variant: "destructive" });
     }
   };
 

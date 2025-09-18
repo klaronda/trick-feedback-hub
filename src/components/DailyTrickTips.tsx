@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+// import { useToast } from "@/components/ui/use-toast"; // Removed to reduce toast notifications
 import { useQuery } from "@tanstack/react-query";
 
 interface DailyTrickTipsProps {
@@ -35,7 +35,7 @@ interface TipSlot {
 export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
   const [seenSlots, setSeenSlots] = useState<number[]>([]);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
   
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
@@ -68,13 +68,13 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   useEffect(() => {
     if (error) {
       console.error('Error loading daily tips:', error);
-      toast({
-        title: "Error loading tips",
-        description: "Failed to load your daily trick tips. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error loading tips",
+      //   description: "Failed to load your daily trick tips. Please try again.",
+      //   variant: "destructive",
+      // });
     }
-  }, [error, toast]);
+  }, [error]);
 
   const handleLearnMore = (tip: TrickTip) => {
     if (onTipClick) {

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { ChevronLeft, Zap } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+// import { useToast } from '@/hooks/use-toast'; // Removed to reduce toast notifications
 import onboardingUploadImage from '@/assets/onboarding-upload.jpg';
 import onboardingUpgradeImage from '@/assets/onboarding-upgrade.jpg';
 
@@ -19,7 +19,7 @@ interface OnboardingProps {
 export default function Onboarding({ onComplete }: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
   
   // Calculate default birthday (today minus 4 years)
   const today = new Date();
@@ -107,19 +107,19 @@ export default function Onboarding({ onComplete }: OnboardingProps) {
 
       if (error) throw error;
 
-      toast({
-        title: "Welcome to SkateCoach!",
-        description: "Your profile has been set up successfully.",
-      });
+      // toast({
+      //   title: "Welcome to SkateCoach!",
+      //   description: "Your profile has been set up successfully.",
+      // });
 
       onComplete();
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      toast({
-        title: "Error",
-        description: "Failed to complete onboarding. Please try again.",
-        variant: "destructive",
-      });
+      // toast({
+      //   title: "Error",
+      //   description: "Failed to complete onboarding. Please try again.",
+      //   variant: "destructive",
+      // });
     }
     
     setLoading(false);

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Upload, VideoIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+// import { useToast } from "@/hooks/use-toast"; // Removed to reduce toast notifications
 import { useUploadGuard } from "@/hooks/useUploadGuard";
 
 interface VideoUploadProps {
@@ -14,15 +14,15 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const { handleServerInsertError } = useUploadGuard();
   const [isUploading, setIsUploading] = useState(false);
-  const { toast } = useToast();
+  // const { toast } = useToast(); // Removed to reduce toast notifications
 
   const handleFileSelect = async (file: File) => {
     if (!file.type.startsWith('video/')) {
-      toast({
-        title: "Invalid file type",
-        description: "Please select a video file",
-        variant: "destructive"
-      });
+      // toast({
+      //   title: "Invalid file type",
+      //   description: "Please select a video file",
+      //   variant: "destructive"
+      // });
       return;
     }
 
@@ -43,10 +43,10 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
 
       onUploadSuccess(filePath, file);
       
-      toast({
-        title: "Video uploaded!",
-        description: "Processing your trick attempt..."
-      });
+      // toast({
+      //   title: "Video uploaded!",
+      //   description: "Processing your trick attempt..."
+      // });
     } catch (error: any) {
       console.error('Upload error:', error);
       
@@ -55,11 +55,11 @@ export const VideoUpload = ({ onUploadSuccess }: VideoUploadProps) => {
       const handled = handleServerInsertError(error);
       
       if (!handled) {
-        toast({
-          title: "Upload failed",
-          description: "Something went wrong. Please try again.",
-          variant: "destructive"
-        });
+        // toast({
+        //   title: "Upload failed",
+        //   description: "Something went wrong. Please try again.",
+        //   variant: "destructive"
+        // });
       }
     } finally {
       setIsUploading(false);
