@@ -1,8 +1,10 @@
-import { Bell, User, Zap } from "lucide-react";
+import { User, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { memo } from "react";
 import { useNotifications } from "@/hooks/useNotifications";
+import bellIcon from "@/assets/bell.svg";
+import bellWithAlertIcon from "@/assets/bell_with_alert.svg";
 
 interface HeaderProps {
   userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
@@ -33,12 +35,13 @@ const Header = memo(({ userPlan, onNotificationClick }: HeaderProps) => {
             variant="ghost" 
             size="sm" 
             onClick={onNotificationClick}
-            className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors relative"
+            className="p-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
           >
-            <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <div className="absolute -top-0.5 -right-0.5 w-1 h-1 bg-red-500 rounded-full"></div>
-            )}
+            <img 
+              src={unreadCount > 0 ? bellWithAlertIcon : bellIcon} 
+              alt="Notifications" 
+              className="w-4 h-4"
+            />
           </Button>
         </div>
       </div>
