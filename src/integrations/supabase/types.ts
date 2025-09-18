@@ -370,6 +370,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      cleanup_old_daily_tips: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_notification: {
         Args: {
           p_description: string
