@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmationModal } from '@/components/ConfirmationModal';
-import { Pin, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import expandIcon from '@/assets/expand.svg';
+import { PinIcon } from '@/components/ui/PinIcon';
 
 interface SavedTipCardProps {
   tip: {
@@ -68,12 +69,9 @@ export function SavedTipCard({ tip, onDelete, onTogglePin, showPinIcon = true, o
                   disabled={isToggling}
                   className="p-1 h-7 w-7 hover:bg-gray-100 rounded"
                 >
-                  <Pin 
-                    className={`h-4 w-4 transition-colors ${
-                      tip.is_pinned 
-                        ? 'fill-gray-900' 
-                        : 'text-gray-500'
-                    }`}
+                  <PinIcon 
+                    filled={tip.is_pinned}
+                    className="h-4 w-4 transition-colors"
                   />
                 </Button>
               )}

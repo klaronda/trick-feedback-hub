@@ -34,6 +34,7 @@ export function useSavedTips() {
   // Toast removed per user request
 
   const fetchSavedTips = async () => {
+    console.log('🔍 Fetching saved tips...');
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -45,9 +46,11 @@ export function useSavedTips() {
 
       if (error) throw error;
 
+      console.log('✅ Fetched saved tips:', data?.length || 0, 'tips');
+      console.log('📋 Saved tips data:', data);
       setSavedTips(data || []);
     } catch (error) {
-      console.error('Error fetching saved tips:', error);
+      console.error('❌ Error fetching saved tips:', error);
       // Toast notification removed per user request
     } finally {
       setLoading(false);
@@ -73,6 +76,7 @@ export function useSavedTips() {
   };
 
   const saveTip = async (tip: TrickTip, source: string = 'daily-tips') => {
+    console.log('💾 Saving tip:', tip.id, tip.headline);
     try {
       // Check for duplicates before saving
       const { data: existingTips, error: checkError } = await supabase
@@ -84,10 +88,11 @@ export function useSavedTips() {
       if (checkError) throw checkError;
 
       if (existingTips && existingTips.length > 0) {
-        // Toast notification removed per user request
+        console.log('⚠️ Tip already saved, skipping');
         return;
       }
 
+      console.log('🔄 Calling save_trick_tip function...');
       const { error } = await supabase.rpc('save_trick_tip', {
         tip_data: tip as any,
         source: source
@@ -95,12 +100,13 @@ export function useSavedTips() {
 
       if (error) throw error;
 
+      console.log('✅ Tip saved successfully, refreshing list...');
       // Refresh the list
-      fetchSavedTips();
+      await fetchSavedTips();
 
       // Toast notification removed per user request
     } catch (error) {
-      console.error('Error saving tip:', error);
+      console.error('❌ Error saving tip:', error);
       // Toast notification removed per user request
     }
   };
