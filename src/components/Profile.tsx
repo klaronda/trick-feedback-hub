@@ -344,9 +344,8 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
         </Card>
       </div>
 
-      {/* Saved Tips Section - Pro Only */}
-      {isPro && (
-        <div className="space-y-3">
+      {/* Saved Tips Section */}
+      <div className="space-y-3">
           <h2 className="text-lg font-normal text-gray-900">Saved Tips</h2>
           <Card className="bg-white border-gray-200">
             <CardContent className="pt-6">
@@ -423,7 +422,6 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
             </CardContent>
           </Card>
         </div>
-      )}
 
       {/* Preferences Section */}
       <div className="space-y-3">

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X } from "lucide-react";
+import { useSavedTips } from "@/hooks/useSavedTips";
 
 interface TrickTip {
   id: string;
@@ -23,13 +24,24 @@ interface TrickTipModalProps {
   tip: TrickTip | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (tip: TrickTip) => void;
+  onSave?: (tip: TrickTip) => void;
   isAlreadySaved?: boolean;
   onUnsave?: (tip: TrickTip) => void;
 }
 
 export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = false, onUnsave }: TrickTipModalProps) => {
   const [isSaved, setIsSaved] = useState(isAlreadySaved);
+  const { saveTip, unsaveTip, savedTips } = useSavedTips();
+  
+  // Check if tip is already saved when tip changes
+  useEffect(() => {
+    if (tip && savedTips.length > 0) {
+      const isCurrentTipSaved = savedTips.some(savedTip => savedTip.tip?.id === tip.id);
+      setIsSaved(isCurrentTipSaved);
+    } else {
+      setIsSaved(isAlreadySaved);
+    }
+  }, [tip, savedTips, isAlreadySaved]);
   
   if (!tip || !isOpen) return null;
 
@@ -51,12 +63,18 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = f
     return steps;
   };
 
-  const handleSave = () => {
-    if (isAlreadySaved && onUnsave) {
-      onUnsave(tip);
-      setIsSaved(false);
+  const handleSave = async () => {
+    if (!tip) return;
+    
+    if (isSaved) {
+      // Find the saved tip to unsave
+      const savedTip = savedTips.find(savedTip => savedTip.tip?.id === tip.id);
+      if (savedTip) {
+        await unsaveTip(savedTip.id);
+        setIsSaved(false);
+      }
     } else {
-      onSave(tip);
+      await saveTip(tip, 'daily-tips');
       setIsSaved(true);
     }
   };
@@ -118,16 +136,16 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = f
             
             <div className="flex gap-3 pt-4 border-t border-gray-200">
               <Button 
-                variant={isSaved || isAlreadySaved ? "default" : "outline"}
+                variant={isSaved ? "default" : "outline"}
                 onClick={handleSave}
                 className={`w-full gap-2 transition-all duration-200 ${
-                  isSaved || isAlreadySaved
+                  isSaved
                     ? "bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white" 
                     : "hover:bg-gray-50 hover:border-gray-300"
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isSaved || isAlreadySaved ? "fill-current" : ""}`} />
-                {isAlreadySaved ? "Saved Tip" : (isSaved ? "Tip Saved" : "Save Tip")}
+                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+                {isSaved ? "Tip Saved" : "Save Tip"}
               </Button>
             </div>
           </div>

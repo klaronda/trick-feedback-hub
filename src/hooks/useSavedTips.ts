@@ -122,18 +122,7 @@ export function useSavedTips() {
 
       if (error) throw error;
 
-      // Create tip removed notification
-      if (tipToDelete) {
-        const { error: notifError } = await supabase.rpc('create_notification', {
-          p_user_id: (await supabase.auth.getUser()).data.user?.id,
-          p_type: 'tip_removed',
-          p_title: 'Tip removed',
-          p_description: `"${tipToDelete.tip?.headline || 'Tip'}" has been removed from your saved tips`,
-          p_metadata: { tip_id: tipId, tip_headline: tipToDelete.tip?.headline }
-        });
-        
-        if (notifError) console.error('Error creating notification:', notifError);
-      }
+      // Note: Database trigger will handle notification creation automatically
 
       // Remove from local state
       setSavedTips(prev => prev.filter(tip => tip.id !== tipId));

@@ -301,7 +301,7 @@ const Index = () => {
         tip={selectedTrickTip}
         isOpen={trickTipModalOpen}
         onClose={() => setTrickTipModalOpen(false)}
-        onSave={(tip) => console.log('Save tip:', tip)}
+        
       />
 
       {/* Main Content */}
