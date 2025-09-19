@@ -84,7 +84,8 @@ export function CropPhotoModal({ isOpen, onClose, image, onCropComplete }: CropP
     try {
       setIsProcessing(true);
       const croppedImage = await getCroppedImg(imageUrl, croppedAreaPixels);
-      onCropComplete(croppedImage);
+      await onCropComplete(croppedImage);
+      onClose(); // Close modal after successful save
     } catch (error) {
       console.error('Error cropping image:', error);
     } finally {
