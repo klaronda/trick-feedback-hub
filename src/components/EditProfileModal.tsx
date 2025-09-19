@@ -141,7 +141,10 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
           learning_goals: learningGoals,
           profile_image_url: profileImage, // Save the profile image URL
           updated_at: new Date().toISOString(),
-        });
+        }, {
+          onConflict: 'user_id'
+        })
+        .select();
 
       if (error) {
         console.error('Profile upsert error:', error);
