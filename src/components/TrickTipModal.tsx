@@ -31,17 +31,17 @@ interface TrickTipModalProps {
 
 export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = false, onUnsave }: TrickTipModalProps) => {
   const [isSaved, setIsSaved] = useState(isAlreadySaved);
-  const { saveTip, unsaveTip, savedTips } = useSavedTips();
+  const { saveTip, unsaveTip, savedTips, loading } = useSavedTips();
   
-  // Check if tip is already saved when tip changes
+  // Check if tip is already saved when tip changes and after loading completes
   useEffect(() => {
-    if (tip && savedTips.length > 0) {
+    if (!loading && tip) {
       const isCurrentTipSaved = savedTips.some(savedTip => savedTip.tip?.id === tip.id);
       setIsSaved(isCurrentTipSaved);
-    } else {
+    } else if (!tip) {
       setIsSaved(isAlreadySaved);
     }
-  }, [tip, savedTips, isAlreadySaved]);
+  }, [tip, savedTips, loading, isAlreadySaved]);
   
   if (!tip || !isOpen) return null;
 
