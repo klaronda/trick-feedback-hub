@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { X, Camera } from 'lucide-react';
+import { X } from 'lucide-react';
 import { CropPhotoModal } from './CropPhotoModal';
 import { PasswordConfirmModal } from './PasswordConfirmModal';
 import { UpdateEmailModal } from './UpdateEmailModal';
@@ -167,27 +167,17 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
           {/* Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
             {/* Profile Photo */}
-            <div className="flex flex-col items-center mb-6">
-              <div className="relative">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src={profileImage || undefined} />
-                  <AvatarFallback className="text-lg">
-                    {user ? getInitials(user.email || '', firstName) : ''}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePhotoClick}
-                  className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
-                >
-                  <Camera className="h-4 w-4" />
-                </Button>
-              </div>
+            <div className="flex items-center gap-4 mb-6">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={profileImage || undefined} />
+                <AvatarFallback className="text-lg bg-gray-600 text-white">
+                  {user ? getInitials(user.email || '', firstName) : ''}
+                </AvatarFallback>
+              </Avatar>
               <Button
                 variant="outline"
                 onClick={handlePhotoClick}
-                className="mt-3 text-sm"
+                className="text-sm"
                 disabled={isLoading}
               >
                 Change Photo
@@ -196,7 +186,6 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                capture="environment"
                 onChange={handleFileSelect}
                 className="hidden"
               />
@@ -234,15 +223,15 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
                     id="email"
                     value={user?.email || ''}
                     disabled
-                    className="bg-gray-100 text-gray-600"
+                    className="bg-gray-100 text-gray-600 flex-[3]"
                   />
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleEmailChange}
-                    className="whitespace-nowrap"
+                    className="whitespace-nowrap flex-1"
                   >
-                    Change Email
+                    Change
                   </Button>
                 </div>
               </div>
