@@ -191,7 +191,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
             {/* Profile Info */}
             <div className="flex items-center space-x-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src="" />
+                <AvatarImage src={userProfile?.profile_image_url || ""} />
                 <AvatarFallback className="bg-gray-100 text-gray-600 text-lg font-medium">
                   {user?.email ? getInitials(user.email, userProfile?.first_name) : "U"}
                 </AvatarFallback>

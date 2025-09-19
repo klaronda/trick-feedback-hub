@@ -108,6 +108,7 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
           first_name: firstName,
           last_name: lastName,
           learning_goals: learningGoals,
+          profile_image_url: profileImage, // Save the profile image URL
           updated_at: new Date().toISOString(),
         });
 
