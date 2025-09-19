@@ -12,6 +12,7 @@ import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { TrickTipModal } from "./TrickTipModal";
+import { EditProfileModal } from "./EditProfileModal";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 // import { toast } from "sonner"; // Removed to reduce toast notifications
@@ -20,15 +21,17 @@ interface ProfileProps {
   user: User | null;
   userProfile: { 
     first_name: string | null;
+    last_name: string | null;
     stance: string | null;
     learning_goals: string | null;
   } | null;
   userPlan: { plan_name: string | null; is_subscribed: boolean } | null;
   onUpgrade: () => void;
   onSignOut: () => void;
+  onProfileUpdate: () => void;
 }
 
-export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: ProfileProps) => {
+export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onProfileUpdate }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
   const { savedTips, loading: tipsLoading, unsaveTip, togglePin, canUnsaveFromHomepage } = useSavedTips();
   const [showDeleteTipModal, setShowDeleteTipModal] = useState(false);
@@ -39,6 +42,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedTrickTip, setSelectedTrickTip] = useState<any>(null);
   const [showTrickTipModal, setShowTrickTipModal] = useState(false);
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
   const getInitials = (email: string, firstName?: string | null) => {
     if (firstName) {
       return firstName.charAt(0).toUpperCase();
@@ -173,7 +177,14 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut }: P
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">Account</h2>
-          <Settings className="h-5 w-5 text-gray-600" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowEditProfileModal(true)}
+            className="p-1 h-7 w-7 hover:bg-gray-100 rounded"
+          >
+            <Settings className="h-5 w-5 text-gray-600" />
+          </Button>
         </div>
         <Card className="bg-white border-gray-200">
           <CardContent className="space-y-6 pt-6">
@@ -542,6 +553,15 @@ This action will permanently delete all your uploaded videos, coaching feedback,
           onSave={handleSaveTrickTip}
         />
       )}
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={showEditProfileModal}
+        onClose={() => setShowEditProfileModal(false)}
+        user={user}
+        userProfile={userProfile}
+        onProfileUpdate={onProfileUpdate}
+      />
     </div>
   );
 };
