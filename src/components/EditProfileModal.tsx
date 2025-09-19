@@ -20,6 +20,7 @@ interface EditProfileModalProps {
     first_name: string | null;
     last_name: string | null;
     learning_goals: string | null;
+    profile_image_url: string | null;
   } | null;
   onProfileUpdate: () => void;
 }
@@ -28,7 +29,7 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
   const [firstName, setFirstName] = useState(userProfile?.first_name || '');
   const [lastName, setLastName] = useState(userProfile?.last_name || '');
   const [learningGoals, setLearningGoals] = useState(userProfile?.learning_goals || '');
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(userProfile?.profile_image_url || null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   

@@ -83,6 +83,7 @@ export type Database = {
           onboarding_completed: boolean | null
           plan_name: string | null
           preferences_updated_at: string | null
+          profile_image_url: string | null
           stance: string | null
           started_skating_year: number | null
           tone_pref: string | null
@@ -103,6 +104,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           plan_name?: string | null
           preferences_updated_at?: string | null
+          profile_image_url?: string | null
           stance?: string | null
           started_skating_year?: number | null
           tone_pref?: string | null
@@ -123,6 +125,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           plan_name?: string | null
           preferences_updated_at?: string | null
+          profile_image_url?: string | null
           stance?: string | null
           started_skating_year?: number | null
           tone_pref?: string | null

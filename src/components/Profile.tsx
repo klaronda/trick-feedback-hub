@@ -24,6 +24,7 @@ interface ProfileProps {
     last_name: string | null;
     stance: string | null;
     learning_goals: string | null;
+    profile_image_url: string | null;
   } | null;
   userPlan: { plan_name: string | null; is_subscribed: boolean } | null;
   onUpgrade: () => void;
