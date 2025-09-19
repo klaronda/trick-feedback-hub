@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +32,29 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
   const [profileImage, setProfileImage] = useState<string | null>(userProfile?.profile_image_url || null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  // Sync local state with userProfile prop when it changes
+  useEffect(() => {
+    if (userProfile) {
+      console.log('Syncing EditProfileModal state with userProfile:', userProfile);
+      setFirstName(userProfile.first_name || '');
+      setLastName(userProfile.last_name || '');
+      setLearningGoals(userProfile.learning_goals || '');
+      setProfileImage(userProfile.profile_image_url || null);
+    }
+  }, [userProfile]);
+
+  // Reset state and hasUnsavedChanges when modal opens
+  useEffect(() => {
+    if (isOpen && userProfile) {
+      console.log('Modal opened, resetting state with userProfile:', userProfile);
+      setFirstName(userProfile.first_name || '');
+      setLastName(userProfile.last_name || '');
+      setLearningGoals(userProfile.learning_goals || '');
+      setProfileImage(userProfile.profile_image_url || null);
+      setHasUnsavedChanges(false);
+    }
+  }, [isOpen, userProfile]);
   
   // Modal states
   const [showCropModal, setShowCropModal] = useState(false);
@@ -100,9 +123,16 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
     
     try {
       setIsLoading(true);
+      console.log('Saving profile with data:', {
+        user_id: user.id,
+        first_name: firstName,
+        last_name: lastName,
+        learning_goals: learningGoals,
+        profile_image_url: profileImage
+      });
 
       // Update profile
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .upsert({
           user_id: user.id,
@@ -113,20 +143,29 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
           updated_at: new Date().toISOString(),
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile upsert error:', error);
+        throw error;
+      }
+
+      console.log('Profile updated successfully:', data);
 
       // Update learning context if learning goals changed
       if (learningGoals !== userProfile?.learning_goals) {
+        console.log('Updating learning context...');
         await supabase.functions.invoke('update-learning-context', {
           body: { learning_goals: learningGoals }
         });
       }
 
       setHasUnsavedChanges(false);
+      console.log('Calling onProfileUpdate...');
       onProfileUpdate();
+      console.log('Profile update complete, closing modal...');
       onClose();
     } catch (error) {
       console.error('Error updating profile:', error);
+      // You could add a toast notification here for user feedback
     } finally {
       setIsLoading(false);
     }
