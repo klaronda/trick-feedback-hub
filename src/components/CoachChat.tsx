@@ -92,24 +92,24 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         <p className="text-gray-600">Chat with your personalized skating coach</p>
       </section>
 
-      <article className="rounded-lg border border-border bg-card p-4 flex gap-3">
-        <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center">
-          <Bot className="h-5 w-5 text-muted-foreground" />
+      <div className="bg-white rounded-[8px] border border-gray-200 p-4 flex gap-3">
+        <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
+          <Bot className="h-5 w-5 text-gray-600" />
         </div>
         <div>
-          <p className="font-medium text-foreground">{userFirstName ? `${userFirstName}'s` : "Your"} SkateCoach</p>
-          <p className="text-sm text-muted-foreground">Ask me anything about skateboarding techniques, tricks, drills, or get feedback on your uploaded videos.</p>
+          <p className="font-medium text-gray-900">{userFirstName ? `${userFirstName}'s` : "Your"} SkateCoach</p>
+          <p className="text-sm text-gray-600">Ask me anything about skateboarding techniques, tricks, drills, or get feedback on your uploaded videos.</p>
         </div>
-      </article>
+      </div>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold text-foreground">Quick Questions</h2>
+        <h2 className="text-sm font-semibold text-gray-900">Quick Questions</h2>
         <div className="grid grid-cols-1 gap-2">
           {QUICK_QUESTIONS.map((q) => (
             <button
               key={q}
               onClick={() => handleSend(q)}
-              className="w-full rounded-md border border-border bg-muted text-foreground px-3 py-2 text-sm text-left hover:bg-muted/80 active:translate-y-px transition"
+              className="w-full rounded-[8px] border border-gray-200 bg-white text-gray-900 px-3 py-2 text-sm text-left hover:bg-gray-50 active:translate-y-px transition"
             >
               {q}
             </button>
@@ -118,22 +118,29 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
       </section>
 
       <section className="space-y-3 pb-28">
-        <h2 className="text-sm font-semibold text-foreground">Recent Conversation</h2>
+        <h2 className="text-sm font-semibold text-gray-900">Recent Conversation</h2>
         <div ref={listRef} className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
           {messages.length === 0 && (
-            <p className="text-sm text-muted-foreground">No messages yet. Try a quick question above.</p>
+            <div className="bg-white rounded-[8px] border border-gray-200 p-4 text-center">
+              <p className="text-sm text-gray-600">No messages yet. Try a quick question above or start typing below.</p>
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-50 rounded-[8px] border border-red-200 p-4">
+              <p className="text-sm text-red-600">Failed to connect to coach. Please try again.</p>
+            </div>
           )}
           {messages.map((m, idx) => (
             <div key={idx} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
                 className={`${
                   m.role === "user"
-                    ? "bg-foreground text-background"
-                    : "bg-card border border-border text-foreground"
+                    ? "bg-gray-900 text-white"
+                    : "bg-white border border-gray-200 text-gray-900"
                 } max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm`}
               >
                 <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
-                <p className={`${m.role === "user" ? "text-background/70" : "text-muted-foreground"} text-[10px] mt-1`}>just now</p>
+                <p className={`${m.role === "user" ? "text-white/70" : "text-gray-500"} text-[10px] mt-1`}>just now</p>
               </div>
             </div>
           ))}
@@ -141,7 +148,7 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
       </section>
 
       <div className="fixed left-4 right-4 bottom-20">
-        <div className="mx-auto max-w-sm rounded-xl border border-border bg-background shadow-sm p-1.5 flex items-center gap-2" style={{ maxWidth: 'calc(384px - 2rem)' }}>
+        <div className="mx-auto max-w-sm rounded-[8px] border border-gray-200 bg-white shadow-sm p-1.5 flex items-center gap-2" style={{ maxWidth: 'calc(384px - 2rem)' }}>
           <Input
             placeholder="Ask Coach something..."
             value={input}
@@ -154,7 +161,11 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
               }
             }}
           />
-          <Button onClick={() => handleSend()} disabled={loading} className="h-9 aspect-square p-0">
+          <Button 
+            onClick={() => handleSend()} 
+            disabled={loading || !input.trim()} 
+            className="h-9 aspect-square p-0"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>

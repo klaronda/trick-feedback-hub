@@ -15,12 +15,15 @@ serve(async (req) => {
 
   try {
     const { message, context = 'general' } = await req.json();
+    console.log('Personalized coach request:', { message, context });
     
     // Get the authorization header
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('No authorization header found');
       throw new Error('No authorization header');
     }
+    console.log('Auth header found:', authHeader.substring(0, 20) + '...');
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -32,8 +35,10 @@ serve(async (req) => {
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
+      console.error('User authentication failed:', userError);
       throw new Error('Unauthorized');
     }
+    console.log('Authenticated user:', user.id);
 
     // Get user profile for personalization
     const { data: profile, error: profileError } = await supabase
@@ -44,15 +49,35 @@ serve(async (req) => {
 
     if (profileError) {
       console.error('Error fetching profile:', profileError);
-      throw new Error('Failed to fetch user profile');
+      // Create a default profile if none exists
+      const defaultProfile = {
+        user_id: user.id,
+        first_name: 'there',
+        stance: null,
+        birthday: null,
+        started_skating_year: null,
+        learning_goals: null,
+        gender: null
+      };
+      console.log('Using default profile for user:', user.id);
+      // Continue with default profile instead of throwing error
     }
+
+    const userProfile = profile || {
+      first_name: 'there',
+      stance: null,
+      birthday: null,
+      started_skating_year: null,
+      learning_goals: null,
+      gender: null
+    };
 
     // Calculate age and reading level
     let age = 16; // Default age
     let readingLevel = '10th grade';
     
-    if (profile.birthday) {
-      const birthDate = new Date(profile.birthday);
+    if (userProfile.birthday) {
+      const birthDate = new Date(userProfile.birthday);
       const today = new Date();
       age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -86,29 +111,29 @@ serve(async (req) => {
     personalContext.push(`The user is ${age} years old. Please use ${readingLevel} level language and concepts.`);
     
     // Gender consideration
-    if (profile.gender) {
-      personalContext.push(`The user identifies as ${profile.gender}.`);
+    if (userProfile.gender) {
+      personalContext.push(`The user identifies as ${userProfile.gender}.`);
     }
     
     // Skating experience
-    if (profile.started_skating_year) {
+    if (userProfile.started_skating_year) {
       const currentYear = new Date().getFullYear();
-      const yearsSkating = currentYear - profile.started_skating_year;
-      personalContext.push(`They started skating in ${profile.started_skating_year} (${yearsSkating} years of experience).`);
+      const yearsSkating = currentYear - userProfile.started_skating_year;
+      personalContext.push(`They started skating in ${userProfile.started_skating_year} (${yearsSkating} years of experience).`);
     }
     
     // Stance
-    if (profile.stance) {
-      personalContext.push(`Their skating stance is ${profile.stance}.`);
+    if (userProfile.stance) {
+      personalContext.push(`Their skating stance is ${userProfile.stance}.`);
     }
     
     // Learning goals
-    if (profile.learning_goals) {
-      personalContext.push(`Their learning goals are: ${profile.learning_goals}`);
+    if (userProfile.learning_goals) {
+      personalContext.push(`Their learning goals are: ${userProfile.learning_goals}`);
     }
     
     // Name for personalization
-    const name = profile.first_name ? profile.first_name : 'there';
+    const name = userProfile.first_name ? userProfile.first_name : 'there';
 
     // Create system prompt based on context
     let systemPrompt = `You are an expert skateboarding coach providing personalized advice. 
@@ -120,8 +145,8 @@ Guidelines:
 - Always address the user by their first name (${name}) when appropriate
 - Tailor your language complexity to their age and reading level
 - Consider their skating experience level when giving advice
-- Reference their stance (${profile.stance || 'unknown'}) when relevant to tricks or techniques
-- Keep their learning goals in mind: ${profile.learning_goals || 'general improvement'}
+- Reference their stance (${userProfile.stance || 'unknown'}) when relevant to tricks or techniques
+- Keep their learning goals in mind: ${userProfile.learning_goals || 'general improvement'}
 - Be encouraging and supportive
 - If they're under 18, emphasize safety and proper protective equipment
 - Use skateboarding terminology they would understand based on their experience level`;
@@ -185,9 +210,9 @@ You are providing general skateboarding coaching advice. Focus on:
       userContext: {
         age,
         readingLevel,
-        name: profile.first_name,
-        stance: profile.stance,
-        experience: profile.started_skating_year ? new Date().getFullYear() - profile.started_skating_year : null
+        name: userProfile.first_name,
+        stance: userProfile.stance,
+        experience: userProfile.started_skating_year ? new Date().getFullYear() - userProfile.started_skating_year : null
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
