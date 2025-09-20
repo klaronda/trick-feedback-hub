@@ -65,7 +65,8 @@ serve(async (req) => {
       })
     }
 
-    const isPro = userPlan?.plan_name === 'pro' && userPlan?.is_subscribed
+    const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed
+    console.log(`User ${user.id} plan check: plan_name=${userPlan?.plan_name}, is_subscribed=${userPlan?.is_subscribed}, isPro=${isPro}`)
     if (!isPro) {
       return new Response(JSON.stringify({ 
         success: false, 

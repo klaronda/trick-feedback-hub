@@ -40,26 +40,42 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   const queryClient = useQueryClient();
   
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+  
+  console.log('DailyTrickTips userPlan:', userPlan);
+  console.log('DailyTrickTips isPro:', isPro);
 
   // Use React Query for caching daily tips
   const { data: tips = [], isLoading: loading, error } = useQuery({
     queryKey: ['daily-tips', isPro],
     queryFn: async () => {
-      if (!isPro) return [];
+      if (!isPro) {
+        console.log('Not pro user, skipping daily tips');
+        return [];
+      }
+      
+      console.log('Fetching daily tips for pro user, seenSlots:', seenSlots);
       
       const { data, error } = await supabase.functions.invoke('generate-daily-tips', {
         body: { seenSlots }
       });
 
-      if (error) throw error;
+      console.log('Daily tips response:', { data, error });
+
+      if (error) {
+        console.error('Daily tips function error:', error);
+        throw error;
+      }
       
       if (data.success && data.tips) {
+        console.log('Successfully loaded tips:', data.tips);
         // Mark first tip as seen when loaded
         if (data.tips.length > 0 && !seenSlots.includes(1)) {
           setSeenSlots(prev => [...prev, 1]);
         }
         return data.tips;
       }
+      
+      console.log('No tips returned or unsuccessful response');
       return [];
     },
     enabled: isPro,
@@ -130,7 +146,17 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
     );
   }
 
-  if (tips.length === 0) return null;
+  if (tips.length === 0) {
+    console.log('No tips available, showing empty state');
+    return (
+      <div className="space-y-4">
+        <h2 className="text-lg font-medium">Daily Trick Tips</h2>
+        <div className="bg-white rounded-[8px] border border-gray-200 p-4">
+          <p className="text-sm text-gray-600">No daily tips available. New tips will be generated for you soon!</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentTipData = tips[currentTip];
   const tip = currentTipData?.tip;
