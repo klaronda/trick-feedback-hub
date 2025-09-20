@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { usePersonalizedCoach } from "@/hooks/usePersonalizedCoach";
 import { Bot, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import ReactMarkdown from "react-markdown";
 
 interface CoachChatProps {
   userFirstName?: string | null;
@@ -139,7 +140,13 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
                     : "bg-white border border-gray-200 text-gray-900"
                 } max-w-[80%] rounded-2xl px-3 py-2 text-sm shadow-sm`}
               >
-                <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                {m.role === "coach" ? (
+                  <div className="prose prose-sm max-w-none leading-relaxed prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0">
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                )}
                 <p className={`${m.role === "user" ? "text-white/70" : "text-gray-500"} text-[10px] mt-1`}>just now</p>
               </div>
             </div>
