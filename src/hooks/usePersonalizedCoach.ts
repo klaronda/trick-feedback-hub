@@ -30,8 +30,13 @@ export function usePersonalizedCoach(): UsePersonalizedCoachReturn {
     setError(null);
 
     try {
+      // Ensure we pass a fresh auth token explicitly
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+
       const { data, error } = await supabase.functions.invoke('personalized-coach', {
-        body: { message, context }
+        body: { message, context },
+        headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
       });
 
       if (error) {

@@ -25,15 +25,19 @@ serve(async (req) => {
     }
     console.log('Auth header found:', authHeader.substring(0, 20) + '...');
 
-    // Create Supabase client
+    // Extract token and create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const token = authHeader.replace(/^Bearer\s+/i, '');
+    if (!token) {
+      console.error('Authorization token missing in header');
+      throw new Error('Unauthorized');
+    }
+
+    // Get current user using the provided JWT (avoid session-based auth in edge runtime)
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
       console.error('User authentication failed:', userError);
       throw new Error('Unauthorized');
