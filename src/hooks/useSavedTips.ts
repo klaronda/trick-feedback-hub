@@ -77,6 +77,20 @@ export function useSavedTips() {
 
   const saveTip = async (tip: TrickTip, source: string = 'daily-tips') => {
     console.log('💾 Saving tip:', tip.id, tip.headline);
+    
+    // Check if user is pro before allowing save
+    const { data: userPlan } = await supabase
+      .from('profiles')
+      .select('plan_name, is_subscribed')
+      .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+      .single();
+    
+    const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+    if (!isPro) {
+      console.log('⚠️ User is not pro, cannot save tip');
+      return;
+    }
+    
     try {
       // Check for duplicates before saving
       const { data: existingTips, error: checkError } = await supabase

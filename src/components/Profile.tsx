@@ -356,84 +356,86 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
         </Card>
       </div>
 
-      {/* Saved Tips Section */}
-      <div className="space-y-3">
-          <h2 className="text-lg font-normal text-gray-900">Saved Tips</h2>
-          <Card className="bg-white border-gray-200">
-            <CardContent className="pt-6">
-              {tipsLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="h-16 bg-gray-200 rounded-lg"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : savedTips.length === 0 ? (
-                <div className="text-center py-8">
-                  <Heart className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500">No saved tips yet</p>
-                  <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {/* Pinned Tips Section */}
-                  {pinnedTips.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium text-gray-600 mb-3">Pinned Tips</h3>
-                      <div className="space-y-2">
-                        {pinnedTips.map((tip) => (
-                           <SavedTipCard
-                             key={tip.id}
-                             tip={tip}
-                             onDelete={handleDeleteTipClick}
-                             onTogglePin={togglePin}
-                             onExpandClick={handleExpandTrickTip}
-                             showPinIcon={true}
-                           />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Scrollable Tips Container */}
+      {/* Saved Tips Section - Pro Only */}
+      {isPro && (
+        <div className="space-y-3">
+            <h2 className="text-lg font-normal text-gray-900">Saved Tips</h2>
+            <Card className="bg-white border-gray-200">
+              <CardContent className="pt-6">
+                {tipsLoading ? (
                   <div className="space-y-4">
-                    {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
-                      <div key={monthYear}>
-                        <h3 className="text-sm font-normal text-gray-700 mb-3">{monthYear}</h3>
-                         <ScrollArea className="h-[400px]">
-                           <div className="space-y-2">
-                             {tips.slice(0, 6).map((tip, index) => (
-                               <div
-                                 key={tip.id}
-                                 className={index === 5 ? "opacity-50" : ""}
-                               >
-                                 <SavedTipCard
-                                   tip={tip}
-                                   onDelete={handleDeleteTipClick}
-                                   onTogglePin={togglePin}
-                                   onExpandClick={handleExpandTrickTip}
-                                   showPinIcon={true}
-                                 />
-                               </div>
-                             ))}
-                            {tips.length > 6 && (
-                              <div className="text-center py-2">
-                                <p className="text-sm text-gray-500">
-                                  +{tips.length - 6} more tips...
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </ScrollArea>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="h-16 bg-gray-200 rounded-lg"></div>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                ) : savedTips.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Heart className="w-8 h-8 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No saved tips yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Tips you save will appear here</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Pinned Tips Section */}
+                    {pinnedTips.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-600 mb-3">Pinned Tips</h3>
+                        <div className="space-y-2">
+                          {pinnedTips.map((tip) => (
+                             <SavedTipCard
+                               key={tip.id}
+                               tip={tip}
+                               onDelete={handleDeleteTipClick}
+                               onTogglePin={togglePin}
+                               onExpandClick={handleExpandTrickTip}
+                               showPinIcon={true}
+                             />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Scrollable Tips Container */}
+                    <div className="space-y-4">
+                      {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
+                        <div key={monthYear}>
+                          <h3 className="text-sm font-normal text-gray-700 mb-3">{monthYear}</h3>
+                           <ScrollArea className="h-[400px]">
+                             <div className="space-y-2">
+                               {tips.slice(0, 6).map((tip, index) => (
+                                 <div
+                                   key={tip.id}
+                                   className={index === 5 ? "opacity-50" : ""}
+                                 >
+                                   <SavedTipCard
+                                     tip={tip}
+                                     onDelete={handleDeleteTipClick}
+                                     onTogglePin={togglePin}
+                                     onExpandClick={handleExpandTrickTip}
+                                     showPinIcon={true}
+                                   />
+                                 </div>
+                               ))}
+                              {tips.length > 6 && (
+                                <div className="text-center py-2">
+                                  <p className="text-sm text-gray-500">
+                                    +{tips.length - 6} more tips...
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+      )}
 
       {/* Preferences Section */}
       <div className="space-y-3">

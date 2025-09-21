@@ -309,7 +309,7 @@ const Index = () => {
         tip={selectedTrickTip}
         isOpen={trickTipModalOpen}
         onClose={() => setTrickTipModalOpen(false)}
-        
+        userPlan={userPlan}
       />
 
       {/* Main Content */}

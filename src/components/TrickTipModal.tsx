@@ -27,9 +27,10 @@ interface TrickTipModalProps {
   onSave?: (tip: TrickTip) => void;
   isAlreadySaved?: boolean;
   onUnsave?: (tip: TrickTip) => void;
+  userPlan?: { plan_name: string | null; is_subscribed: boolean } | null;
 }
 
-export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = false, onUnsave }: TrickTipModalProps) => {
+export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = false, onUnsave, userPlan }: TrickTipModalProps) => {
   const [isSaved, setIsSaved] = useState(isAlreadySaved);
   const { saveTip, unsaveTip, savedTips, loading } = useSavedTips();
   
@@ -134,20 +135,37 @@ export const TrickTipModal = ({ tip, isOpen, onClose, onSave, isAlreadySaved = f
             </div>
             
             
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
-              <Button 
-                variant={isSaved ? "default" : "outline"}
-                onClick={handleSave}
-                className={`w-full gap-2 transition-all duration-200 ${
-                  isSaved
-                    ? "bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white" 
-                    : "hover:bg-gray-50 hover:border-gray-300"
-                }`}
-              >
-                <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
-                {isSaved ? "Tip Saved" : "Save Tip"}
-              </Button>
-            </div>
+            {/* Save Button - Only for Pro Users */}
+            {userPlan?.plan_name === 'pro' || userPlan?.is_subscribed ? (
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <Button 
+                  variant={isSaved ? "default" : "outline"}
+                  onClick={handleSave}
+                  className={`w-full gap-2 transition-all duration-200 ${
+                    isSaved
+                      ? "bg-[var(--soft-black)] hover:bg-[var(--soft-black)]/90 text-white" 
+                      : "hover:bg-gray-50 hover:border-gray-300"
+                  }`}
+                >
+                  <Heart className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
+                  {isSaved ? "Tip Saved" : "Save Tip"}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex gap-3 pt-4 border-t border-gray-200">
+                <div className="text-center w-full">
+                  <p className="text-sm text-gray-500 mb-2">Upgrade to Pro to save tips</p>
+                  <Button 
+                    variant="outline"
+                    className="w-full"
+                    disabled
+                  >
+                    <Heart className="w-4 h-4 mr-2" />
+                    Save Tip (Pro Only)
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
