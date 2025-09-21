@@ -52,11 +52,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a skateboarding expert. Create a 2-3 word summary of skateboarding learning goals. Focus on the main progression theme or trick category. Examples: "Switch Progression", "Rail Mastery", "Flip Tricks", "Vert Skills", "Street Flow", "Tech Combos".'
+            content: 'You are a skateboarding expert. Create a 3-5 word summary of skateboarding learning goals. Focus on the main progression theme or trick category. Examples: "Switch Progression Goals", "Rail Mastery Journey", "Flip Tricks Development", "Vert Skills Building", "Street Flow Improvement", "Technical Combo Work".'
           },
           {
             role: 'user',
-            content: `Summarize these skateboarding goals in 2-3 words: ${goals}`
+            content: `Summarize these skateboarding goals in 3-5 words: ${goals}`
           }
         ],
         temperature: 0.3,
