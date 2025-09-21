@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
+import { useGoalsSummary } from "@/hooks/useGoalsSummary";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { TrickTipModal } from "./TrickTipModal";
 import { EditProfileModal } from "./EditProfileModal";
@@ -58,16 +59,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
     return email.split('@')[0];
   };
 
-  const summarizeGoals = (goals?: string | null) => {
-    if (!goals) return null;
-    // Extract first 2-3 meaningful words
-    const words = goals.toLowerCase()
-      .replace(/[^\w\s]/g, '')
-      .split(/\s+/)
-      .filter(word => word.length > 2)
-      .slice(0, 3);
-    return words.join(' ');
-  };
+  const { summary: goalsSummary, loading: summaryLoading } = useGoalsSummary(userProfile?.learning_goals);
 
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
 
@@ -217,7 +209,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Goals</p>
                 <p className="text-sm text-gray-900 mt-1 capitalize">
-                  {summarizeGoals(userProfile?.learning_goals) || 'Not set'}
+                  {summaryLoading ? 'Summarizing...' : goalsSummary}
                 </p>
               </div>
             </div>
