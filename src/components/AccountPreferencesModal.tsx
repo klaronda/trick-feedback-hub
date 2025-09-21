@@ -27,9 +27,16 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
   const [confirmAction, setConfirmAction] = useState<() => void>(() => {});
   const [confirmText, setConfirmText] = useState('');
 
+  // Debug logging
+  useEffect(() => {
+    console.log('AccountPreferencesModal - preferences loaded:', preferences);
+    console.log('AccountPreferencesModal - isLoading:', isLoading);
+  }, [preferences, isLoading]);
+
   // Sync local state with preferences when they load
   useEffect(() => {
     if (preferences) {
+      console.log('Syncing local state with preferences:', preferences);
       setNotificationsEnabled(preferences.notifications_enabled);
       setCameraAccessEnabled(preferences.camera_access_enabled);
       setMicrophoneAccessEnabled(preferences.microphone_access_enabled);
