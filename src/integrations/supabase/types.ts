@@ -71,6 +71,7 @@ export type Database = {
       profiles: {
         Row: {
           birthday: string | null
+          camera_access_enabled: boolean | null
           created_at: string | null
           first_name: string | null
           focus: string | null
@@ -80,6 +81,8 @@ export type Database = {
           is_subscribed: boolean | null
           last_name: string | null
           learning_goals: string | null
+          microphone_access_enabled: boolean | null
+          notifications_enabled: boolean | null
           onboarding_completed: boolean | null
           plan_name: string | null
           preferences_updated_at: string | null
@@ -92,6 +95,7 @@ export type Database = {
         }
         Insert: {
           birthday?: string | null
+          camera_access_enabled?: boolean | null
           created_at?: string | null
           first_name?: string | null
           focus?: string | null
@@ -101,6 +105,8 @@ export type Database = {
           is_subscribed?: boolean | null
           last_name?: string | null
           learning_goals?: string | null
+          microphone_access_enabled?: boolean | null
+          notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
           plan_name?: string | null
           preferences_updated_at?: string | null
@@ -113,6 +119,7 @@ export type Database = {
         }
         Update: {
           birthday?: string | null
+          camera_access_enabled?: boolean | null
           created_at?: string | null
           first_name?: string | null
           focus?: string | null
@@ -122,6 +129,8 @@ export type Database = {
           is_subscribed?: boolean | null
           last_name?: string | null
           learning_goals?: string | null
+          microphone_access_enabled?: boolean | null
+          notifications_enabled?: boolean | null
           onboarding_completed?: boolean | null
           plan_name?: string | null
           preferences_updated_at?: string | null

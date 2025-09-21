@@ -11,9 +11,11 @@ import type { User } from "@supabase/supabase-js";
 import { useProfileStats } from "@/hooks/useProfileStats";
 import { useSavedTips } from "@/hooks/useSavedTips";
 import { useGoalsSummary } from "@/hooks/useGoalsSummary";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { TrickTipModal } from "./TrickTipModal";
 import { EditProfileModal } from "./EditProfileModal";
+import { AccountPreferencesModal } from "./AccountPreferencesModal";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 // import { toast } from "sonner"; // Removed to reduce toast notifications
@@ -36,10 +38,12 @@ interface ProfileProps {
 export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onProfileUpdate }: ProfileProps) => {
   const { totalUploads, monthlyUploads, coachChats, loading } = useProfileStats(user);
   const { savedTips, loading: tipsLoading, unsaveTip, togglePin, canUnsaveFromHomepage } = useSavedTips();
+  const { preferences, isLoading: preferencesLoading } = useUserPreferences();
   const [showDeleteTipModal, setShowDeleteTipModal] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
   const [tipToDelete, setTipToDelete] = useState<any>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedTrickTip, setSelectedTrickTip] = useState<any>(null);
@@ -433,7 +437,14 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-medium text-gray-900">Preferences</h2>
-          <Settings className="h-5 w-5 text-gray-600" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowPreferencesModal(true)}
+            className="p-1 h-7 w-7 hover:bg-gray-100 rounded"
+          >
+            <Settings className="h-5 w-5 text-gray-600" />
+          </Button>
         </div>
           <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
@@ -442,21 +453,30 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               <h4 className="font-medium text-gray-900">Push Notifications</h4>
               <p className="text-sm text-gray-600">Get notified about new tips and updates</p>
             </div>
-            <Switch />
+            <Switch 
+              checked={preferences?.notifications_enabled ?? true} 
+              disabled 
+            />
           </div>
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Camera Access</h4>
               <p className="text-sm text-gray-600">Allow app to access your camera</p>
             </div>
-            <Switch defaultChecked />
+            <Switch 
+              checked={preferences?.camera_access_enabled ?? true} 
+              disabled 
+            />
           </div>
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Microphone</h4>
               <p className="text-sm text-gray-600">Allow app to access your microphone</p>
             </div>
-            <Switch defaultChecked />
+            <Switch 
+              checked={preferences?.microphone_access_enabled ?? true} 
+              disabled 
+            />
           </div>
           </CardContent>
         </Card>
@@ -556,6 +576,12 @@ This action will permanently delete all your uploaded videos, coaching feedback,
         user={user}
         userProfile={userProfile}
         onProfileUpdate={onProfileUpdate}
+      />
+
+      {/* Account Preferences Modal */}
+      <AccountPreferencesModal
+        isOpen={showPreferencesModal}
+        onClose={() => setShowPreferencesModal(false)}
       />
     </div>
   );
