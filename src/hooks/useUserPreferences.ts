@@ -15,29 +15,44 @@ export const useUserPreferences = () => {
   const fetchPreferences = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        console.log('No user found in fetchPreferences');
+        return;
+      }
 
+      console.log('Fetching preferences for user:', user.id);
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('notifications_enabled, camera_access_enabled, microphone_access_enabled')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database error fetching preferences:', error);
+        throw error;
+      }
 
-      setPreferences({
+      console.log('Raw preferences data:', data);
+
+      const preferences = {
         notifications_enabled: data?.notifications_enabled ?? true,
         camera_access_enabled: data?.camera_access_enabled ?? true,
         microphone_access_enabled: data?.microphone_access_enabled ?? true,
-      });
+      };
+
+      console.log('Setting preferences:', preferences);
+      setPreferences(preferences);
     } catch (error) {
       console.error('Error fetching preferences:', error);
       // Set defaults if fetch fails
-      setPreferences({
+      const defaultPreferences = {
         notifications_enabled: true,
         camera_access_enabled: true,
         microphone_access_enabled: true,
-      });
+      };
+      console.log('Setting default preferences:', defaultPreferences);
+      setPreferences(defaultPreferences);
     } finally {
       setIsLoading(false);
     }
