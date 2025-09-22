@@ -456,6 +456,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
             <Switch 
               checked={preferences?.notifications_enabled ?? true} 
               disabled 
+              onClick={() => setShowPreferencesModal(true)}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -466,6 +467,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
             <Switch 
               checked={preferences?.camera_access_enabled ?? true} 
               disabled 
+              onClick={() => setShowPreferencesModal(true)}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -476,6 +478,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
             <Switch 
               checked={preferences?.microphone_access_enabled ?? true} 
               disabled 
+              onClick={() => setShowPreferencesModal(true)}
             />
           </div>
           </CardContent>
