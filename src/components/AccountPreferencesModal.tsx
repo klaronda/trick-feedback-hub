@@ -138,7 +138,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
           {/* Header */}
           <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <div>
-              <h2 className="text-xl text-primary-foreground font-semibold">Account Preferences</h2>
+              <h2 className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Account Preferences</h2>
               <p className="text-sm text-gray-600">Manage your app settings and permissions</p>
             </div>
             <Button

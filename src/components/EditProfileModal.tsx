@@ -195,7 +195,7 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
           {/* Header */}
           <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <div>
-              <h2 className="text-xl text-primary-foreground font-semibold">Edit Profile</h2>
+              <h2 className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Edit Profile</h2>
               <p className="text-sm text-gray-600">Update your account information</p>
             </div>
             <Button
