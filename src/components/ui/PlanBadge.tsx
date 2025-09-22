@@ -10,7 +10,7 @@ export function PlanBadge({ plan, className }: PlanBadgeProps) {
   
   return (
     <Badge 
-      variant={isPro ? "pro" : "category"} 
+      variant={isPro ? "default" : "outline"} 
       className={className}
     >
       {isPro ? "Pro Plan" : "Free Plan"}
