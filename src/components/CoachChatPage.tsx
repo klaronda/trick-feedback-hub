@@ -50,7 +50,7 @@ export default function CoachChatPage({
           <Bot className="h-5 w-5 text-gray-600" />
         </div>
         <div>
-          <p className="font-medium text-gray-900">{userFirstName ? `${userFirstName}'s` : "Your"} SkateCoach</p>
+          <p className="font-medium text-gray-900">{userFirstName ? `${userFirstName}‘s` : "Your"} SkateCoach</p>
           <p className="text-sm text-gray-600">Ask me anything about skateboarding techniques, tricks, drills, or get feedback on your uploaded videos.</p>
         </div>
       </div>
