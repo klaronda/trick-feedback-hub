@@ -232,7 +232,9 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
           <div className="flex justify-between items-start">
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <PlanBadge plan={userPlan?.plan_name || 'free'} />
+                <h4 className="font-medium text-gray-900">
+                  {isPro ? "Pro Plan" : "Free Plan"}
+                </h4>
               </div>
               {isPro ? (
                 <p className="text-xs text-gray-600 mt-1">
