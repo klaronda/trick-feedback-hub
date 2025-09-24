@@ -51,20 +51,32 @@ serve(async (req) => {
       .eq('user_id', user.id)
       .single();
 
+    // Get user progression data
+    const { data: progressionData } = await supabase
+      .rpc('analyze_user_progression', { p_user_id: user.id });
+
+    const progression = progressionData?.[0] || {
+      completed_tricks: [],
+      current_tier: 'beginner',
+      available_tricks: [],
+      skill_level: 'beginner'
+    };
+
+    // Get recent trick attempts
+    const { data: recentAttempts } = await supabase
+      .from('trick_attempts')
+      .select('trick_name, status, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    // Get trick progression data for context
+    const { data: trickProgressions } = await supabase
+      .from('trick_progressions')
+      .select('*');
+
     if (profileError) {
       console.error('Error fetching profile:', profileError);
-      // Create a default profile if none exists
-      const defaultProfile = {
-        user_id: user.id,
-        first_name: 'there',
-        stance: null,
-        birthday: null,
-        started_skating_year: null,
-        learning_goals: null,
-        gender: null
-      };
-      console.log('Using default profile for user:', user.id);
-      // Continue with default profile instead of throwing error
     }
 
     const userProfile = profile || {
@@ -108,6 +120,21 @@ serve(async (req) => {
     }
 
 
+    // Build progression context for AI
+    const progressionContext = `
+User Progression Analysis:
+- Skill Level: ${progression.skill_level}
+- Current Tier: ${progression.current_tier}
+- Completed Tricks: ${progression.completed_tricks.join(', ') || 'None yet'}
+- Available Next Tricks: ${progression.available_tricks.slice(0, 5).join(', ') || 'None available'}
+- Recent Attempts: ${recentAttempts?.slice(0, 3).map(a => `${a.trick_name} (${a.status})`).join(', ') || 'No recent attempts'}
+
+Trick Progression Schema Context:
+${trickProgressions?.slice(0, 10).map(t => 
+  `${t.name} (${t.tier}): prerequisites [${JSON.parse(t.prerequisites).join(', ')}], tags [${JSON.parse(t.tags).join(', ')}]`
+).join('\n') || ''}
+`;
+
     // Build personalized context
     const personalContext = [];
     
@@ -139,40 +166,56 @@ serve(async (req) => {
     // Name for personalization
     const name = userProfile.first_name ? userProfile.first_name : 'there';
 
-    // Create system prompt based on context
-    let systemPrompt = `You are an expert skateboarding coach providing personalized advice. 
+    // Create system prompt based on context and progression
+    let systemPrompt = `You are a personalized skateboarding coach providing advice to ${name}.
 
 User Profile:
 ${personalContext.join(' ')}
 
-Guidelines:
-- Always address the user by their first name (${name}) when appropriate
-- Tailor your language complexity to their age and reading level
-- Consider their skating experience level when giving advice
-- Reference their stance (${userProfile.stance || 'unknown'}) when relevant to tricks or techniques
-- Keep their learning goals in mind: ${userProfile.learning_goals || 'general improvement'}
+${progressionContext}
+
+Based on their progression analysis:
+- Their current skill level and completed tricks
+- Suggest practice routines for tricks they're ready to learn
+- Help them understand the progression pathway
+- Address any specific goals they've mentioned
+
+Communication Style:
+- Match the ${readingLevel} reading level
 - Be encouraging and supportive
-- If they're under 18, emphasize safety and proper protective equipment
-- Use skateboarding terminology they would understand based on their experience level`;
+- Use skateboarding terminology appropriately for their skill level
+- Give specific, actionable advice
+- Reference their actual progression and trick history
+- If they're working on switch/nollie tricks, focus on that stance progression
+
+IMPORTANT: Use their actual trick progression data to give relevant, personalized advice. Don't suggest tricks they're not ready for based on prerequisites.`;
 
     // Adjust system prompt based on context
     if (context === 'trick_analysis') {
       systemPrompt += `
 
-You are specifically analyzing a skateboarding trick attempt. Provide:
-- Technical feedback on form and execution
-- Specific tips for improvement
-- Safety considerations
-- Next steps for progression
-- Encouragement and positive reinforcement`;
+You're analyzing their trick attempt. Focus on:
+- Technique specific to tricks they're working on
+- Progression advice based on prerequisites they've mastered
+- Next logical steps in their skateboarding journey
+- Reference specific mechanics from trick tags (flip, rotation, spin, etc.)`;
     } else if (context === 'general_coaching') {
       systemPrompt += `
 
-You are providing general skateboarding coaching advice. Focus on:
-- Skill development appropriate for their level
-- Practice routines and exercises
-- Motivation and goal setting
-- General skateboarding tips and techniques`;
+Provide general coaching advice considering:
+- Their current skill level and completed tricks
+- Suggest practice routines for tricks they're ready to learn
+- Help them understand the progression pathway
+- Address any specific goals they've mentioned`;
+    } else {
+      systemPrompt += `
+
+Respond as their personal skateboarding coach. Consider:
+- Their current progression level and what tricks they're ready for
+- Use their completed tricks to understand their skill level
+- Suggest appropriate next tricks based on prerequisites
+- Reference technique tips specific to trick tags (fundamental, pop, flip, rotation, spin, combo, etc.)
+- Be encouraging about their progress and realistic about next steps`;
     }
 
     // Call OpenAI
@@ -222,7 +265,10 @@ You are providing general skateboarding coaching advice. Focus on:
         readingLevel,
         name: userProfile.first_name,
         stance: userProfile.stance,
-        experience: userProfile.started_skating_year ? new Date().getFullYear() - userProfile.started_skating_year : null
+        experience: userProfile.started_skating_year ? new Date().getFullYear() - userProfile.started_skating_year : null,
+        skillLevel: progression.skill_level,
+        completedTricks: progression.completed_tricks,
+        availableTricks: progression.available_tricks.slice(0, 5)
       }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

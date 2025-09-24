@@ -183,6 +183,8 @@ export type Database = {
           id: string
           model_version: string | null
           processed_at: string | null
+          progression_context: Json | null
+          skill_level: string | null
           status: string
           storage_path: string | null
           tags: string[] | null
@@ -199,6 +201,8 @@ export type Database = {
           id?: string
           model_version?: string | null
           processed_at?: string | null
+          progression_context?: Json | null
+          skill_level?: string | null
           status?: string
           storage_path?: string | null
           tags?: string[] | null
@@ -215,6 +219,8 @@ export type Database = {
           id?: string
           model_version?: string | null
           processed_at?: string | null
+          progression_context?: Json | null
+          skill_level?: string | null
           status?: string
           storage_path?: string | null
           tags?: string[] | null
@@ -231,6 +237,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trick_progressions: {
+        Row: {
+          created_at: string
+          name: string
+          prerequisites: Json
+          tags: Json
+          tier: string
+          trick_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          name: string
+          prerequisites?: Json
+          tags?: Json
+          tier: string
+          trick_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          name?: string
+          prerequisites?: Json
+          tags?: Json
+          tier?: string
+          trick_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_daily_tips: {
         Row: {
@@ -380,6 +416,15 @@ export type Database = {
       }
     }
     Functions: {
+      analyze_user_progression: {
+        Args: { p_user_id: string }
+        Returns: {
+          available_tricks: string[]
+          completed_tricks: string[]
+          current_tier: string
+          skill_level: string
+        }[]
+      }
       call_reset_quotas: {
         Args: Record<PropertyKey, never>
         Returns: undefined

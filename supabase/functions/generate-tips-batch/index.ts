@@ -98,19 +98,30 @@ serve(async (req) => {
 
         console.log(`Generating ${neededTips} tips for user ${user.id}`);
 
-        // Get user profile and recent attempts
+        // Get user profile and progression data
         const { data: profile } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
+        const { data: progressionData } = await supabase
+          .rpc('analyze_user_progression', { p_user_id: user.id });
+
+        const progression = progressionData?.[0] || {
+          completed_tricks: [],
+          current_tier: 'beginner',
+          available_tricks: [],
+          skill_level: 'beginner'
+        };
+
+        // Get recent attempts for context
         const { data: recentAttempts } = await supabase
           .from('trick_attempts')
-          .select('trick_name, created_at, feedback')
+          .select('trick_name, status, created_at')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(5);
+          .limit(10);
 
         // Generate needed tips
         const usedSlots = currentTips?.map(t => t.slot) || [];
@@ -119,7 +130,7 @@ serve(async (req) => {
         const generatedTips = [];
         for (let i = 0; i < Math.min(neededTips, availableSlots.length); i++) {
           const slot = availableSlots[i];
-          const tip = await generateSingleTip(user, profile, recentAttempts || [], openaiKey, supabase, slot, generatedTips);
+          const tip = await generateSingleTip(user, profile, recentAttempts || [], progression, openaiKey, supabase, slot, generatedTips);
           generatedTips.push(tip);
           totalTipsGenerated++;
         }
@@ -154,14 +165,14 @@ serve(async (req) => {
   }
 });
 
-async function generateSingleTip(user: any, profile: any, recentAttempts: any[], openaiKey: string, supabase: any, slot: number, previousTips: any[] = []) {
+async function generateSingleTip(user: any, profile: any, recentAttempts: any[], progression: any, openaiKey: string, supabase: any, slot: number, previousTips: any[] = []) {
   const age = profile?.birthday ? 
     new Date().getFullYear() - new Date(profile.birthday).getFullYear() : null;
   
   const experience = profile?.started_skating_year ? 
     new Date().getFullYear() - profile.started_skating_year : null;
 
-  const skillLevel = determineSkillLevel(experience, recentAttempts);
+  const skillLevel = progression.skill_level;
 
   // Get saved topics to avoid repetition
   const { data: savedTips } = await supabase
@@ -175,19 +186,44 @@ async function generateSingleTip(user: any, profile: any, recentAttempts: any[],
   const formattedAttempts = recentAttempts.map(attempt => ({
     trick: attempt.trick_name,
     date: new Date(attempt.created_at).toLocaleDateString(),
-    feedback: attempt.feedback || 'No feedback yet'
+    status: attempt.status || 'No status'
   }));
 
-  // Create variation based on slot number
-  const focusAreas = [
-    "fundamentals and balance",
-    "trick progression and technique", 
-    "mindset and practice methods",
-    "safety and injury prevention",
-    "style and flow development",
-    "advanced skills and creativity"
-  ];
-  const currentFocus = focusAreas[slot - 1] || "general improvement";
+  // Determine tip focus based on slot and progression
+  let tipFocus = '';
+  let tipType = '';
+
+  switch (slot) {
+    case 1:
+      // Technique refinement for current tricks
+      if (progression.completed_tricks.length > 0) {
+        tipFocus = `technique refinement for ${progression.completed_tricks.slice(-3).join(', ')}`;
+        tipType = 'technique';
+      } else {
+        tipFocus = 'fundamental skateboarding basics like board setup and balance';
+        tipType = 'fundamentals';
+      }
+      break;
+    case 2:
+      // Next trick suggestions based on progression
+      if (progression.available_tricks.length > 0) {
+        const nextTricks = progression.available_tricks.slice(0, 3).join(', ');
+        tipFocus = `preparing for your next tricks: ${nextTricks}`;
+        tipType = 'progression';
+      } else {
+        tipFocus = 'building consistency with tricks you\'re currently working on';
+        tipType = 'consistency';
+      }
+      break;
+    case 3:
+      // Training/practice routine based on skill level
+      tipFocus = `training routine for ${progression.skill_level} level skaters`;
+      tipType = 'training';
+      break;
+    default:
+      tipFocus = 'general skateboarding improvement';
+      tipType = 'general';
+  }
 
   const previousTipSummaries = previousTips.map(tip => ({
     headline: tip.headline,
@@ -195,43 +231,49 @@ async function generateSingleTip(user: any, profile: any, recentAttempts: any[],
     tags: tip.tags
   }));
 
-  const systemPrompt = `You are Lovable, a skateboarding coach that generates personalized Daily Trick Tips. Follow the 5-step generation protocol EXACTLY.
+  // Calculate user age for appropriate language
+  const userAge = profile?.birthday 
+    ? Math.floor((new Date().getTime() - new Date(profile.birthday).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+    : 25;
 
-USER PROFILE:
-- Skill Level: ${skillLevel}
-- Age: ${age || 'Not specified'}
-- Experience: ${experience ? `${experience} years` : 'Not specified'}
-- Stance: ${profile?.stance || 'Not specified'}
-- Focus: ${profile?.focus || 'general improvement'}
-- Goals: ${profile?.learning_goals || 'general improvement'}
-- Recent Tricks: ${JSON.stringify(formattedAttempts)}
-- Previously Saved Topics: ${JSON.stringify(savedTopics)}
+  let readingLevel = 'adult';
+  if (userAge < 13) readingLevel = 'elementary';
+  else if (userAge < 16) readingLevel = 'middle-school';
+  else if (userAge < 18) readingLevel = 'high-school';
 
-TIP SLOT ${slot} REQUIREMENTS:
-- Focus Area: ${currentFocus}
-- Must be DIFFERENT from these already generated tips: ${JSON.stringify(previousTipSummaries)}
-- Avoid duplicate categories, headlines, or similar content
+  const systemPrompt = `You are a skateboarding coach creating personalized daily tips.
 
-GENERATION PROTOCOL (Follow these 5 steps):
-1. Generate an idea that benefits user's skateboarding progression (subtle personalization, don't be blatant about data usage)
-2. Create actionable steps (be specific, not generic)
-3. Add safety considerations appropriate to their level
-4. Estimate realistic time commitment
-5. Format as JSON with exact structure below
+User Profile:
+- Name: ${profile?.first_name || 'Skater'}
+- Age: ${userAge} (use ${readingLevel} reading level)
+- Stance: ${profile?.stance || 'unknown'}
+- Skill Level: ${progression.skill_level}
+- Current Tier: ${progression.current_tier}
+- Learning Goals: ${profile?.learning_goals || 'general improvement'}
 
-Return ONLY valid JSON with this exact structure:
+Progression Context:
+- Completed Tricks: ${progression.completed_tricks.join(', ') || 'None yet'}
+- Available Next Tricks: ${progression.available_tricks.slice(0, 5).join(', ') || 'None available'}
+- Recent Attempts: ${recentAttempts?.slice(0, 3).map(a => `${a.trick_name} (${a.status})`).join(', ') || 'No recent attempts'}
+
+Generate a tip focused on: ${tipFocus}
+
+Requirements:
+- Create a catchy, motivating headline (max 50 characters)
+- Write engaging content (max 200 words) appropriate for ${readingLevel} level
+- Include specific, actionable advice
+- Reference their actual progression and skill level
+- Use encouraging tone matching their preferences
+- If suggesting new tricks, ensure prerequisites are met
+- For switch/nollie tricks, focus on stance-specific progression
+
+Format as JSON:
 {
-  "headline": "Clear, specific headline (max 60 chars)",
-  "teaser_text": "Brief engaging summary (max 100 chars)",
-  "detailed_content": "Full tip explanation with specific steps",
-  "badge_category": "Category name (Fundamentals|Technique|Safety|Mindset|Style|Advanced)",
-  "greeting": "Personal greeting mentioning their progress or goals",
-  "tip_text": "Main actionable advice",
-  "actionable_step": "Specific step they can take today",
-  "safety_note": "Relevant safety consideration",
-  "difficulty": "beginner|intermediate|advanced",
-  "tags": ["tag1", "tag2", "tag3"],
-  "estimated_time_min": 15
+  "headline": "Catchy tip headline",
+  "content": "Detailed tip content with specific advice",
+  "type": "${tipType}",
+  "difficulty": "${progression.skill_level}",
+  "tags": ["relevant", "tags"]
 }`;
 
   try {
@@ -245,7 +287,7 @@ Return ONLY valid JSON with this exact structure:
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Generate a ${currentFocus} focused tip for slot ${slot}` }
+          { role: 'user', content: `Generate a ${tipType} tip for slot ${slot}` }
         ],
         max_tokens: 800,
         temperature: 0.8
@@ -264,7 +306,7 @@ Return ONLY valid JSON with this exact structure:
       tipData = JSON.parse(content);
     } catch (parseError) {
       console.error('Failed to parse OpenAI response:', content);
-      tipData = createFallbackTip(slot, currentFocus);
+      tipData = createFallbackTip(progression.skill_level, tipType, slot);
     }
 
     // Store in database
@@ -284,7 +326,7 @@ Return ONLY valid JSON with this exact structure:
 
   } catch (error) {
     console.error('Error generating tip:', error);
-    const fallbackTip = createFallbackTip(slot, currentFocus);
+    const fallbackTip = createFallbackTip(progression?.skill_level || 'beginner', tipType, slot);
     
     // Store fallback tip
     await supabase
@@ -299,97 +341,81 @@ Return ONLY valid JSON with this exact structure:
   }
 }
 
-function createFallbackTip(slot: number, focus: string) {
-  const fallbackTips = [
-    {
-      headline: "Practice Balance Today",
-      teaser_text: "Improve your board control with simple balance exercises",
-      detailed_content: "Spend 10 minutes practicing stationary balance on your board. Stand on your board on carpet or grass, focusing on keeping your weight centered. This builds the foundation for all skateboarding skills.",
-      badge_category: "Fundamentals",
-      greeting: "Let's work on your foundation today!",
-      tip_text: "Balance is the cornerstone of skateboarding - practice it daily",
-      actionable_step: "Stand on your board for 30 seconds without moving",
-      safety_note: "Practice on a soft surface first",
-      difficulty: "beginner",
-      tags: ["balance", "fundamentals", "practice"],
-      estimated_time_min: 10
-    },
-    {
-      headline: "Focus on Your Stance",
-      teaser_text: "Perfect your riding position for better control",
-      detailed_content: "Check your foot positioning while riding. Your front foot should be positioned comfortably over the front bolts, and your back foot should be perpendicular to the board on the tail.",
-      badge_category: "Technique",
-      greeting: "Time to refine your technique!",
-      tip_text: "Proper foot positioning unlocks better board control",
-      actionable_step: "Practice adjusting your foot position while stationary",
-      safety_note: "Make sure you're comfortable before trying while moving",
-      difficulty: "beginner",
-      tags: ["stance", "positioning", "control"],
-      estimated_time_min: 15
-    },
-    {
-      headline: "Master Your Push",
-      teaser_text: "Build speed and momentum efficiently",
-      detailed_content: "Practice pushing with your back foot while keeping your front foot stable on the board. Focus on smooth, controlled pushes that maintain your balance and build consistent speed.",
-      badge_category: "Fundamentals",
-      greeting: "Let's improve your pushing technique!",
-      tip_text: "A good push is the foundation of fluid skateboarding",
-      actionable_step: "Practice 20 controlled pushes focusing on balance",
-      safety_note: "Start slow and gradually build up speed",
-      difficulty: "beginner",
-      tags: ["pushing", "speed", "momentum"],
-      estimated_time_min: 12
-    },
-    {
-      headline: "Practice Safe Falling",
-      teaser_text: "Learn to fall safely to build confidence",
-      detailed_content: "Practice controlled falls on grass or padding. Learn to roll with falls rather than catching yourself with your hands. This builds confidence and prevents injuries when attempting new tricks.",
-      badge_category: "Safety",
-      greeting: "Safety first - let's practice falling!",
-      tip_text: "Knowing how to fall safely makes you a more confident skater",
-      actionable_step: "Practice 5 controlled falls on grass or padding",
-      safety_note: "Always practice on soft surfaces when learning to fall",
-      difficulty: "beginner",
-      tags: ["safety", "falling", "confidence"],
-      estimated_time_min: 8
-    },
-    {
-      headline: "Develop Board Feel",
-      teaser_text: "Build connection between you and your board",
-      detailed_content: "Spend time just riding and feeling how your board responds to weight shifts. Practice slight turns, speed control, and getting comfortable with the board's movement beneath your feet.",
-      badge_category: "Technique",
-      greeting: "Time to connect with your board!",
-      tip_text: "Board feel is essential for progressing to advanced tricks",
-      actionable_step: "Ride for 10 minutes focusing only on weight shifts",
-      safety_note: "Practice in an open area away from obstacles",
-      difficulty: "beginner",
-      tags: ["board-feel", "control", "connection"],
-      estimated_time_min: 15
-    },
-    {
-      headline: "Set Daily Goals",
-      teaser_text: "Structure your practice for consistent progress",
-      detailed_content: "Before each session, set one specific, achievable goal. Whether it's landing 5 clean pushes or riding 50 feet without putting your foot down, having a clear target improves focus and motivation.",
-      badge_category: "Mindset",
-      greeting: "Let's set some goals for today!",
-      tip_text: "Clear goals turn practice time into progress time",
-      actionable_step: "Choose one specific skill to focus on for 15 minutes",
-      safety_note: "Set realistic goals to avoid frustration and injury",
-      difficulty: "beginner",
-      tags: ["goals", "practice", "mindset"],
-      estimated_time_min: 5
-    }
-  ];
-  
-  // Ensure we have enough fallback tips and use slot number directly
-  const tipIndex = (slot - 1) % fallbackTips.length;
-  const tip = { ...fallbackTips[tipIndex] };
-  
-  // Add unique identifier for each slot
-  tip.id = `fallback-${slot}-${Date.now()}`;
-  tip.generated_at = new Date().toISOString();
-  
-  return tip;
+function createFallbackTip(skillLevel: string, tipType: string, slot: number) {
+  const fallbackTips = {
+    beginner: [
+      {
+        headline: "Master Your Stance",
+        content: "Spend 10 minutes today just standing on your board. Feel the balance, shift your weight, and get comfortable. This foundation will help with every trick you learn!",
+        type: "fundamentals",
+        difficulty: "beginner",
+        tags: ["stance", "balance", "fundamentals"]
+      },
+      {
+        headline: "Practice Pushing",
+        content: "Work on smooth, controlled pushing today. Push with your back foot while keeping your front foot centered on the board. Aim for 3-4 strong pushes in a row.",
+        type: "technique",
+        difficulty: "beginner", 
+        tags: ["pushing", "basics", "control"]
+      },
+      {
+        headline: "Build Board Feel",
+        content: "Try riding with your eyes closed for short distances (safely!). This helps develop the board feel that's essential for all skateboarding progression.",
+        type: "training",
+        difficulty: "beginner",
+        tags: ["board-feel", "balance", "progression"]
+      }
+    ],
+    intermediate: [
+      {
+        headline: "Consistency Challenge",
+        content: "Pick one trick you can land sometimes and try to hit it 5 times in a row. Consistency is key to moving to the next level!",
+        type: "consistency",
+        difficulty: "intermediate",
+        tags: ["consistency", "progression", "practice"]
+      },
+      {
+        headline: "Analyze Your Pop",
+        content: "Focus on your pop timing today. The sharper and quicker your back foot snap, the higher and more controlled your tricks will be.",
+        type: "technique", 
+        difficulty: "intermediate",
+        tags: ["pop", "technique", "improvement"]
+      },
+      {
+        headline: "Commit Fully",
+        content: "Choose one trick you're scared of and commit 100% for 10 attempts. Often the mental game is what's holding you back!",
+        type: "training",
+        difficulty: "intermediate", 
+        tags: ["commitment", "mental", "breakthrough"]
+      }
+    ],
+    advanced: [
+      {
+        headline: "Perfect Your Catch",
+        content: "Work on catching your tricks higher and with more control. The catch timing separates good tricks from perfect ones.",
+        type: "technique",
+        difficulty: "advanced",
+        tags: ["catch", "control", "precision"]
+      },
+      {
+        headline: "Combo Flow",
+        content: "Try linking two tricks together today. Focus on the transition between tricks and maintaining speed through both.",
+        type: "progression", 
+        difficulty: "advanced",
+        tags: ["combos", "flow", "progression"]
+      },
+      {
+        headline: "Spot Challenges",
+        content: "Find a new spot or obstacle to skate today. Adapting your tricks to different terrain builds real skill.",
+        type: "training",
+        difficulty: "advanced",
+        tags: ["spots", "adaptation", "challenge"]
+      }
+    ]
+  };
+
+  const tips = fallbackTips[skillLevel as keyof typeof fallbackTips] || fallbackTips.beginner;
+  return tips[(slot - 1) % tips.length];
 }
 
 function determineSkillLevel(experience: number | null, recentAttempts: any[]): string {
