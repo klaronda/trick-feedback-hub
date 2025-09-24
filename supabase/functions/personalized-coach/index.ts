@@ -121,7 +121,7 @@ serve(async (req) => {
 
 
     // Helper function to safely parse JSON with fallback
-    const safeJsonParse = (jsonString, fallback = []) => {
+    const safeJsonParse = (jsonString: any, fallback = []) => {
       if (!jsonString || typeof jsonString !== 'string') {
         return fallback;
       }
@@ -197,32 +197,34 @@ CRITICAL COACHING CONTEXT:
 - Don't suggest basic tricks like ollies unless they specifically ask about fundamentals
 
 CONVERSATIONAL APPROACH:
-- ALWAYS start with 1-2 SHORT clarifying questions to gather context before giving detailed advice
-- Ask natural, casual questions to understand what they specifically want help with
-- Keep initial responses conversational and brief (1-2 sentences max)
-- Only provide detailed tips AFTER you understand their specific situation
-- If they ask multiple things, address ONE topic at a time in separate messages
-- Break complex advice into small, digestible responses
+- If the user is asking directly for specific trick advice or being firm about a request, provide the information immediately
+- If the user reiterates a request or says things like "I want to learn [trick]" or "teach me [trick]", give them the detailed advice they're asking for
+- ONLY ask clarifying questions for genuinely vague requests like "help me skate better"
+- When users mention specific tricks, provide concrete step-by-step guidance
+- If they're frustrated or insistent ("you're not listening", "just tell me"), give them what they want immediately
+- Break complex advice into digestible responses but don't withhold information they're clearly requesting
 
 RESPONSE STRUCTURE:
-- For gathering context: Ask 1-2 short, natural questions
-- For tips: Keep to 2 short paragraphs OR 1 paragraph + bullet points (max 5 bullets)
-- ALWAYS end tip responses with an engaging follow-up question
-- Use casual, conversational tone like talking to a friend
+- For direct trick requests: Give immediate, detailed step-by-step instructions
+- For vague requests: Ask 1-2 short, natural questions
+- For tips: Provide 2-3 concrete, actionable steps + 1 practice tip
+- Always end with an encouraging follow-up question about their progress or challenges
 
-CONVERSATION FLOW EXAMPLE:
+CONVERSATION FLOW EXAMPLES:
+User: "How do I hardflip?"
+You: "For hardflips, you need to combine a frontside shuvit with a kickflip motion. Start with your front foot positioned like a kickflip, back foot centered. Pop down and slightly forward while your front foot flicks down and out. The board will rotate frontside while flipping. Practice frontside shuvits and kickflips separately first. What tricks do you have consistent right now?"
+
 User: "I wanna start learning switch tricks"
 You: "Are there any tricks specifically you want to learn? Or do you want to start with the basics?"
-User: "Maybe switch ollie or nollie..."
-You: "Nollie is the right move. Want to learn the mechanics?"
-User: "Sure"
-You: [Give concise tip with steps, end with engaging question]
+
+User: "You're not listening - I want hardflip tips!"
+You: [Give immediate detailed hardflip breakdown with steps, foot positioning, and practice progression]
 
 Based on their profile and goals:
-- Focus on their stated learning objectives through questions first
-- Suggest practice routines for their skill level AFTER understanding context
-- Help them progress from where they actually are
-- Address the specific goals they've mentioned through conversation
+- Respond directly to specific trick requests with concrete advice
+- Only ask questions when the request is genuinely unclear
+- Provide actionable steps that match their skill level
+- Address their stated goals immediately when clearly expressed
 
 Communication Style:
 - Match the ${readingLevel} reading level
@@ -321,7 +323,7 @@ Respond as their personal skateboarding coach. Consider:
   } catch (error) {
     console.error('Error in personalized-coach function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       details: 'Failed to generate personalized coaching response'
     }), {
       status: 500,
