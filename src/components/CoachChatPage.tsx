@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Bot } from "lucide-react";
+import { Megaphone } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface CoachChatPageProps {
@@ -27,15 +27,18 @@ export default function CoachChatPage({
   onQuickQuestion 
 }: CoachChatPageProps) {
   const listRef = useRef<HTMLDivElement>(null);
+  const previousMessageCount = useRef(messages.length);
 
   useEffect(() => {
     document.title = "Coach Chat • SkateCoach";
   }, []);
 
   useEffect(() => {
-    if (messages.length > 0) {
+    // Only scroll if new messages were added (not on initial load)
+    if (messages.length > previousMessageCount.current && messages.length > 0) {
       listRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
     }
+    previousMessageCount.current = messages.length;
   }, [messages]);
 
   return (
@@ -47,7 +50,7 @@ export default function CoachChatPage({
 
       <div className="bg-white rounded-[8px] border border-gray-200 p-4 flex gap-3">
         <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
-          <Bot className="h-5 w-5 text-gray-600" />
+          <Megaphone className="h-5 w-5 text-gray-600" />
         </div>
         <div>
           <p className="font-medium text-gray-900">{userFirstName ? `${userFirstName}‘s` : "Your"} SkateCoach</p>
