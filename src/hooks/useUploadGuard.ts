@@ -55,7 +55,7 @@ export function useUploadGuard() {
   }, [fetchStatus]);
 
   const showUpgradeModal = useCallback(() => {
-    toast.error('Monthly upload limit reached', {
+    toast.error('Monthly upload limit reached.', {
       description: 'You\'ve reached your 5 free uploads for this month. Upgrade to Pro to upload more.',
       action: {
         label: 'Upgrade',

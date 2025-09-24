@@ -25,7 +25,7 @@ export const UploadLimitModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100vw-32px)] sm:max-w-sm bg-white border-gray-200">
         <DialogHeader className="text-left">
-          <DialogTitle className="text-gray-900 text-left">Monthly upload limit reached</DialogTitle>
+          <DialogTitle className="text-gray-900 text-left">Monthly upload limit reached.</DialogTitle>
           <DialogDescription className="text-gray-600 pt-2 text-left">
             You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.
           </DialogDescription>
