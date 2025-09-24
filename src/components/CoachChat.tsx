@@ -154,8 +154,8 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <div className="fixed left-0 right-0 bottom-20 bg-white border-t border-gray-200 p-4">
-        <div className="mx-auto max-w-sm rounded-[8px] border border-gray-200 bg-white shadow-sm p-1.5 flex items-center gap-2">
+      <div className="fixed left-0 right-0 bottom-[72px] bg-background border-t border-border p-4 z-40">
+        <div className="mx-auto max-w-sm rounded-[8px] border border-border bg-background shadow-sm p-1.5 flex items-center gap-2">
           <Input
             placeholder="Ask Coach something..."
             value={input}

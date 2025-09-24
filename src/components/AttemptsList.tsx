@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { PlanBadge } from "@/components/ui/PlanBadge";
 import { Eye, Upload, VideoIcon, LogOut, MessageCircle, Trash2, X, Crown, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar";
+// import { NotificationBar, useNotificationBar } from "@/components/ui/notification-bar"; // Removed per user request
 import { Disclaimer } from "@/components/ui/Disclaimer";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -37,7 +37,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     return localStorage.getItem('freePlanBannerDismissed') === 'true';
   });
-  const { notification, showNotification, hideNotification } = useNotificationBar();
+  // const { notification, showNotification, hideNotification } = useNotificationBar(); // Removed per user request
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       setAttempts(data || []);
     } catch (error) {
       console.error('Error fetching attempts:', error);
-      showNotification('Failed to load your trick attempts', 'error');
+      // showNotification('Failed to load your trick attempts', 'error'); // Removed per user request
     } finally {
       setIsLoading(false);
     }
@@ -148,12 +148,12 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
       
       // Don't show error if it's just a session not found issue
       if (error && error.message !== "Session from session_id claim in JWT does not exist") {
-        showNotification('Failed to logout. Please try again.', 'error');
+        // showNotification('Failed to logout. Please try again.', 'error'); // Removed per user request
         return;
       }
       
       // Show success notification
-      showNotification('You successfully signed out.', 'success');
+      // showNotification('You successfully signed out.', 'success'); // Removed per user request
       
       // Delay navigation to show notification
       setTimeout(() => {
@@ -162,7 +162,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
     } catch (error) {
       console.error('Logout error:', error);
       // Show error notification but still redirect
-      showNotification('Failed to logout completely, but redirecting to login.', 'error');
+      // showNotification('Failed to logout completely, but redirecting to login.', 'error'); // Removed per user request
       
       // Delay navigation to show notification  
       setTimeout(() => {
@@ -217,12 +217,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
 
   return (
     <>
-      <NotificationBar
-        message={notification.message}
-        type={notification.type}
-        isVisible={notification.isVisible}
-        onHide={hideNotification}
-      />
+      {/* NotificationBar removed per user request */}
       <div className="space-y-6">
           {/* Header */}
           <div className="space-y-1">
