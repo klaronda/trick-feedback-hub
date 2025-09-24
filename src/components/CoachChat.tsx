@@ -118,7 +118,7 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <section className="space-y-3 pb-24">
+      <section className="space-y-3 pb-32">
         <h2 className="text-sm font-semibold text-gray-900">Recent Conversation</h2>
         <div ref={listRef} className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
           {messages.length === 0 && (
@@ -154,13 +154,13 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-10">
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-10">
         <div className="mx-auto max-w-md flex items-center gap-2">
           <Input
             placeholder="Ask Coach something..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="border border-gray-200 bg-white focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="border border-border bg-background focus-visible:ring-0 focus-visible:ring-offset-0"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
