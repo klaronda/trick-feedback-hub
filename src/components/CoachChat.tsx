@@ -118,7 +118,7 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <section className="space-y-3 pb-28">
+      <section className="space-y-3 pb-32">
         <h2 className="text-sm font-semibold text-gray-900">Recent Conversation</h2>
         <div ref={listRef} className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
           {messages.length === 0 && (
@@ -154,8 +154,8 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <div className="sticky bottom-[68px] bg-background border-t border-border p-4 z-10 -mx-4">
-        <div className="mx-auto max-w-sm flex items-center gap-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-10">
+        <div className="mx-auto max-w-md flex items-center gap-2">
           <Input
             placeholder="Ask Coach something..."
             value={input}
