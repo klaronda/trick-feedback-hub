@@ -29,12 +29,11 @@ export default function CoachChatPage({
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
     document.title = "Coach Chat • SkateCoach";
-  }, [messages]);
+  }, []);
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="space-y-6 pb-6">
       <section className="space-y-1">
         <h1 className="text-2xl font-extralight text-gray-900">Coach</h1>
         <p className="text-gray-600">Chat with your personalized skating coach</p>
@@ -67,7 +66,7 @@ export default function CoachChatPage({
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-gray-900">Recent Conversation</h2>
-        <div ref={listRef} className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+        <div ref={listRef} className="space-y-3 pr-1">
           {messages.length === 0 && (
             <div className="bg-white rounded-[8px] border border-gray-200 p-4 text-center">
               <p className="text-sm text-gray-600">No messages yet. Try a quick question above or start typing below.</p>
