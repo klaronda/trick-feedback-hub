@@ -54,7 +54,7 @@ export default function CoachChatPage({
         </div>
         <div>
           <p className="font-medium text-gray-900">{userFirstName ? `${userFirstName}‘s` : "Your"} SkateCoach</p>
-          <p className="text-sm text-gray-600">Ask me anything about skateboarding techniques, tricks, drills, or get feedback on your uploaded videos.</p>
+          <p className="text-sm text-gray-600">Ask me anything about skateboarding techniques, tricks, drills, or how to improve.</p>
         </div>
       </div>
 
