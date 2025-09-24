@@ -49,7 +49,7 @@ serve(async (req) => {
       .from('profiles')
       .select('*')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     // Get user progression data
     const { data: progressionData } = await supabase
@@ -120,19 +120,35 @@ serve(async (req) => {
     }
 
 
+    // Helper function to safely parse JSON with fallback
+    const safeJsonParse = (jsonString, fallback = []) => {
+      if (!jsonString || typeof jsonString !== 'string') {
+        return fallback;
+      }
+      try {
+        const parsed = JSON.parse(jsonString);
+        return Array.isArray(parsed) ? parsed : fallback;
+      } catch (error) {
+        console.warn('Failed to parse JSON:', jsonString, error);
+        return fallback;
+      }
+    };
+
     // Build progression context for AI
     const progressionContext = `
 User Progression Analysis:
 - Skill Level: ${progression.skill_level}
 - Current Tier: ${progression.current_tier}
-- Completed Tricks: ${progression.completed_tricks.join(', ') || 'None yet'}
-- Available Next Tricks: ${progression.available_tricks.slice(0, 5).join(', ') || 'None available'}
+- Completed Tricks: ${progression.completed_tricks?.join(', ') || 'None yet'}
+- Available Next Tricks: ${progression.available_tricks?.slice(0, 5).join(', ') || 'None available'}
 - Recent Attempts: ${recentAttempts?.slice(0, 3).map(a => `${a.trick_name} (${a.status})`).join(', ') || 'No recent attempts'}
 
 Trick Progression Schema Context:
-${trickProgressions?.slice(0, 10).map(t => 
-  `${t.name} (${t.tier}): prerequisites [${JSON.parse(t.prerequisites).join(', ')}], tags [${JSON.parse(t.tags).join(', ')}]`
-).join('\n') || ''}
+${trickProgressions?.slice(0, 10).map(t => {
+  const prerequisites = safeJsonParse(t.prerequisites, []);
+  const tags = safeJsonParse(t.tags, []);
+  return `${t.name} (${t.tier}): prerequisites [${prerequisites.join(', ')}], tags [${tags.join(', ')}]`;
+}).join('\n') || ''}
 `;
 
     // Build personalized context
