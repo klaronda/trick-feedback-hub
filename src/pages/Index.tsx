@@ -326,7 +326,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-sm mx-auto">
-        <div className={`px-4 py-6 ${currentView === 'coach' ? 'pb-0' : 'pb-20'} min-h-[calc(100vh-140px)]`}>
+        <div className={`px-4 py-6 ${currentView === 'coach' ? 'pb-32' : 'pb-20'} min-h-[calc(100vh-140px)]`}>
           <ViewTransition viewKey={currentView} className="w-full">
             {currentView === 'home' && (
               <div className="space-y-6">

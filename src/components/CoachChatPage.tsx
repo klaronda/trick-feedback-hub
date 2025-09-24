@@ -33,7 +33,7 @@ export default function CoachChatPage({
   }, []);
 
   return (
-    <div className="space-y-6 pb-6">
+    <div className="space-y-6 pb-32">
       <section className="space-y-1">
         <h1 className="text-2xl font-extralight text-gray-900">Coach</h1>
         <p className="text-gray-600">Chat with your personalized skating coach</p>
