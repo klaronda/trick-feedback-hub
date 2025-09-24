@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
 import CoachChat from "@/components/CoachChat";
+import { ViewTransition } from "@/components/ViewTransition";
 // Toast removed per user request
 
 
@@ -314,83 +315,85 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-sm mx-auto">
-        <div className="px-4 py-6">
-        {currentView === 'home' && (
-          <div className="space-y-6">
-            {/* Welcome Section */}
-            <div className="space-y-2">
-              <h1 className="text-2xl font-extralight text-gray-900">Welcome back{userProfile?.first_name ? `, ${userProfile.first_name}` : ''}!</h1>
-              <p className="text-gray-600">Ready to improve your skating today?</p>
-            </div>
+        <div className="px-4 py-6 min-h-[calc(100vh-140px)]">
+          <ViewTransition viewKey={currentView} className="w-full">
+            {currentView === 'home' && (
+              <div className="space-y-6">
+                {/* Welcome Section */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl font-extralight text-foreground">Welcome back{userProfile?.first_name ? `, ${userProfile.first_name}` : ''}!</h1>
+                  <p className="text-muted-foreground">Ready to improve your skating today?</p>
+                </div>
 
-            {/* Upload Button */}
-            <Button 
-              onClick={handleUploadNew}
-              className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
-            >
-              <Upload className="w-5 h-5 mr-2" />
-              Upload Video
-            </Button>
+                {/* Upload Button */}
+                <Button 
+                  onClick={handleUploadNew}
+                  className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200"
+                >
+                  <Upload className="w-5 h-5 mr-2" />
+                  Upload Video
+                </Button>
 
-            {/* Daily Trick Tips - Pro Only */}
-            <DailyTrickTips 
-              userPlan={userPlan} 
-              onTipClick={handleTrickTipClick}
-            />
+                {/* Daily Trick Tips - Pro Only */}
+                <DailyTrickTips 
+                  userPlan={userPlan} 
+                  onTipClick={handleTrickTipClick}
+                />
 
-            {/* Top Weekly Tricks */}
-            <TopWeeklyTricks />
+                {/* Top Weekly Tricks */}
+                <TopWeeklyTricks />
 
-            {/* Recent Uploads */}
-            <RecentUploads 
-              onViewDetails={handleViewDetails}
-              onUploadNew={handleUploadNew}
-              onViewAll={() => setCurrentView('videos')}
-            />
-          </div>
-        )}
+                {/* Recent Uploads */}
+                <RecentUploads 
+                  onViewDetails={handleViewDetails}
+                  onUploadNew={handleUploadNew}
+                  onViewAll={() => setCurrentView('videos')}
+                />
+              </div>
+            )}
 
-        {/* Upload Modal */}
-        <UploadModal
-          isOpen={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          onUploadSuccess={handleUploadSuccess}
-          userPlan={userPlan}
-        />
-        
-        {currentView === 'videos' && (
-          <AttemptsList 
-            onViewDetails={handleViewDetails}
-            onUploadNew={handleUploadNew}
+            {currentView === 'videos' && (
+              <AttemptsList 
+                onViewDetails={handleViewDetails}
+                onUploadNew={handleUploadNew}
+                userPlan={userPlan}
+                checking={checking}
+                uploadBlocked={false}
+                onShowUpgrade={() => setShowUploadLimitModal(true)}
+              />
+            )}
+            
+            {currentView === 'coach' && (
+              <CoachChat userFirstName={userProfile?.first_name} />
+            )}
+            
+            {currentView === 'details' && selectedAttemptId && (
+              <AttemptDetails 
+                attemptId={selectedAttemptId}
+                onBack={handleBackToList}
+                userPlan={userPlan}
+              />
+            )}
+            
+            {currentView === 'profile' && (
+              <Profile 
+                user={user}
+                userProfile={userProfile}
+                userPlan={userPlan}
+                onUpgrade={handleUpgrade}
+                onSignOut={handleSignOut}
+                onProfileUpdate={handleProfileUpdate}
+              />
+            )}
+          </ViewTransition>
+
+          {/* Upload Modal */}
+          <UploadModal
+            isOpen={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            onUploadSuccess={handleUploadSuccess}
             userPlan={userPlan}
-            checking={checking}
-            uploadBlocked={false}
-            onShowUpgrade={() => setShowUploadLimitModal(true)}
           />
-        )}
-        
-        {currentView === 'coach' && (
-          <CoachChat userFirstName={userProfile?.first_name} />
-        )}
-        
-        {currentView === 'details' && selectedAttemptId && (
-          <AttemptDetails 
-            attemptId={selectedAttemptId}
-            onBack={handleBackToList}
-            userPlan={userPlan}
-          />
-        )}
-        
-        {currentView === 'profile' && (
-          <Profile 
-            user={user}
-            userProfile={userProfile}
-            userPlan={userPlan}
-            onUpgrade={handleUpgrade}
-            onSignOut={handleSignOut}
-            onProfileUpdate={handleProfileUpdate}
-          />
-        )}
         </div>
       </main>
 

@@ -9,16 +9,16 @@ interface NavigationProps {
 
 const Navigation = memo(({ currentView, onNavigate }: NavigationProps) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border transition-all duration-300">
       <div className="flex items-center justify-around py-[11px] px-4 max-w-sm mx-auto">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('home')}
-          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all duration-300 ease-out transform ${
             currentView === 'home' 
-              ? 'text-black bg-gray-100 border-gray-300 hover:bg-gray-100 hover:border-gray-400' 
-              : 'text-gray-600 border-transparent hover:text-black hover:bg-gray-50 hover:border-gray-300'
+              ? 'text-foreground bg-muted border-border scale-105 shadow-sm' 
+              : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/50 hover:border-border hover:scale-102'
           }`}
         >
           <Home className="w-5 h-5" />
@@ -29,10 +29,10 @@ const Navigation = memo(({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('videos')}
-          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all duration-300 ease-out transform ${
             currentView === 'videos' 
-              ? 'text-black bg-gray-100 border-gray-300 hover:bg-gray-100 hover:border-gray-400' 
-              : 'text-gray-600 border-transparent hover:text-black hover:bg-gray-50 hover:border-gray-300'
+              ? 'text-foreground bg-muted border-border scale-105 shadow-sm' 
+              : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/50 hover:border-border hover:scale-102'
           }`}
         >
           <Video className="w-5 h-5" />
@@ -43,10 +43,10 @@ const Navigation = memo(({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('coach')}
-          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all duration-300 ease-out transform ${
             currentView === 'coach' 
-              ? 'text-black bg-gray-100 border-gray-300 hover:bg-gray-100 hover:border-gray-400' 
-              : 'text-gray-600 border-transparent hover:text-black hover:bg-gray-50 hover:border-gray-300'
+              ? 'text-foreground bg-muted border-border scale-105 shadow-sm' 
+              : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/50 hover:border-border hover:scale-102'
           }`}
         >
           <MessageCircle className="w-5 h-5" />
@@ -57,10 +57,10 @@ const Navigation = memo(({ currentView, onNavigate }: NavigationProps) => {
           variant="ghost"
           size="sm"
           onClick={() => onNavigate('profile')}
-          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all ${
+          className={`flex flex-col items-center gap-1 h-auto px-4 py-2 rounded-full border transition-all duration-300 ease-out transform ${
             currentView === 'profile' 
-              ? 'text-black bg-gray-100 border-gray-300 hover:bg-gray-100 hover:border-gray-400' 
-              : 'text-gray-600 border-transparent hover:text-black hover:bg-gray-50 hover:border-gray-300'
+              ? 'text-foreground bg-muted border-border scale-105 shadow-sm' 
+              : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted/50 hover:border-border hover:scale-102'
           }`}
         >
           <User className="w-5 h-5" />
