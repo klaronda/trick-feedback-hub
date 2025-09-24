@@ -67,7 +67,7 @@ export const AttemptsList = ({ onViewDetails, onUploadNew, userPlan, checking, u
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'reviewed':
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-[var(--success-bg)] text-[var(--success-text)] border-[var(--success-border)]";
       case 'pending':
       default:
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
