@@ -42,18 +42,19 @@ serve(async (req) => {
       .from('saved_trick_tips')
       .delete()
       .eq('saved_from', 'daily-tips')
-      .lt('created_at', cutoffUTC.toISOString());
+      .lt('created_at', cutoffUTC.toISOString())
+      .select();
 
     if (error) {
       console.error('Error removing old saved tips:', error);
       throw error;
     }
 
-    console.log(`Successfully removed ${data?.length || 0} old saved tips`);
+    console.log(`Successfully removed ${Array.isArray(data) ? data.length : 0} old saved tips`);
 
     return new Response(JSON.stringify({
       success: true,
-      removed_count: data?.length || 0,
+      removed_count: Array.isArray(data) ? data.length : 0,
       cutoff_time: cutoffUTC.toISOString()
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -62,7 +63,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in auto-unsave-tips function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       success: false 
     }), {
       status: 500,

@@ -85,7 +85,7 @@ serve(async (req) => {
     console.error('Error summarizing goals:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Internal server error',
+        error: error instanceof Error ? error.message : 'Internal server error',
         summary: 'Learning Goals' // Fallback summary
       }),
       {

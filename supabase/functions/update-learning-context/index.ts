@@ -51,7 +51,7 @@ serve(async (req) => {
     console.error('Error updating learning context:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Internal server error' 
+        error: error instanceof Error ? error.message : 'Internal server error' 
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -181,7 +181,7 @@ async function generateSingleTip(user: any, profile: any, recentAttempts: any[],
     .eq('user_id', user.id)
     .limit(10);
 
-  const savedTopics = savedTips?.map(st => st.tip?.headline || st.tip?.tip_text) || [];
+  const savedTopics = savedTips?.map((st: any) => st.tip?.headline || st.tip?.tip_text) || [];
 
   const formattedAttempts = recentAttempts.map(attempt => ({
     trick: attempt.trick_name,

@@ -95,7 +95,7 @@ serve(async (req) => {
           }
         }
       } catch (error) {
-        console.log('Could not fetch user profile for personalization:', error.message);
+        console.log('Could not fetch user profile for personalization:', error instanceof Error ? error.message : 'Unknown error');
       }
     }
 
@@ -153,7 +153,7 @@ Give short, simple advice that's easy to follow. Use everyday words and keep it 
   } catch (error) {
     console.error('Error in coach-chat function:', error);
     return new Response(JSON.stringify({ 
-      error: error.message || 'Failed to get coach response' 
+      error: error instanceof Error ? error.message : 'Failed to get coach response' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
