@@ -45,7 +45,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   console.log('DailyTrickTips isPro:', isPro);
 
   // Use React Query for caching daily tips
-  const { data: tips = [], isLoading: loading, error } = useQuery({
+  const { data: tips = [], isLoading: loading, error, refetch } = useQuery({
     queryKey: ['daily-tips', isPro],
     queryFn: async () => {
       if (!isPro) {
@@ -79,8 +79,9 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       return [];
     },
     enabled: isPro,
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    staleTime: 1000 * 60 * 30, // Cache for 30 minutes (reduced from 1 hour)
     gcTime: 1000 * 60 * 60 * 24, // Keep in cache for 24 hours
+    refetchInterval: 1000 * 60 * 30, // Auto-refetch every 30 minutes
   });
 
   useEffect(() => {
@@ -152,7 +153,15 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Daily Trick Tips</h2>
         <div className="bg-white rounded-[8px] border border-gray-200 p-4">
-          <p className="text-sm text-gray-600">No daily tips available. New tips will be generated for you soon!</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-600">No daily tips available. New tips will be generated for you soon!</p>
+            <button 
+              onClick={() => refetch()}
+              className="text-xs text-blue-600 hover:text-blue-800 underline"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -185,6 +194,17 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
             className="p-2 hover:bg-muted"
           >
             <ChevronRight className="w-4 h-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => refetch()}
+            className="p-2 hover:bg-muted ml-1"
+            title="Refresh tips"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
           </Button>
         </div>
       </div>

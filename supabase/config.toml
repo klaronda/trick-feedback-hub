@@ -61,5 +61,8 @@ verify_jwt = false
 [functions.generate-tips-batch]
 verify_jwt = false
 
+[functions.daily-tips-refresh]
+verify_jwt = false
+
 [functions.personalized-coach]
 verify_jwt = true

@@ -268,8 +268,51 @@ export type Database = {
         }
         Relationships: []
       }
+      trick_tips: {
+        Row: {
+          content_excerpt: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty: string | null
+          id: number
+          storage_path: string
+          tags: string[] | null
+          tip_uuid: string
+          title: string
+          trick_id: number | null
+        }
+        Insert: {
+          content_excerpt?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: never
+          storage_path: string
+          tags?: string[] | null
+          tip_uuid?: string
+          title: string
+          trick_id?: number | null
+        }
+        Update: {
+          content_excerpt?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          id?: never
+          storage_path?: string
+          tags?: string[] | null
+          tip_uuid?: string
+          title?: string
+          trick_id?: number | null
+        }
+        Relationships: []
+      }
       user_daily_tips: {
         Row: {
+          expires_at: string
           generated_at: string
           id: number
           last_shown_at: string | null
@@ -278,6 +321,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          expires_at?: string
           generated_at?: string
           id?: never
           last_shown_at?: string | null
@@ -286,6 +330,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          expires_at?: string
           generated_at?: string
           id?: never
           last_shown_at?: string | null

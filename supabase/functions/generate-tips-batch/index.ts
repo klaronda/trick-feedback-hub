@@ -309,13 +309,17 @@ Format as JSON:
       tipData = createFallbackTip(progression.skill_level, tipType, slot);
     }
 
-    // Store in database
+    // Store in database with expiration
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 24) // Expire in 24 hours
+    
     const { error: insertError } = await supabase
       .from('user_daily_tips')
       .insert({
         user_id: user.id,
         slot: slot,
-        tip: tipData
+        tip: tipData,
+        expires_at: expiresAt.toISOString()
       });
 
     if (insertError) {
@@ -328,13 +332,17 @@ Format as JSON:
     console.error('Error generating tip:', error);
     const fallbackTip = createFallbackTip(progression?.skill_level || 'beginner', tipType, slot);
     
-    // Store fallback tip
+    // Store fallback tip with expiration
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 24)
+    
     await supabase
       .from('user_daily_tips')
       .insert({
         user_id: user.id,
         slot: slot,
-        tip: fallbackTip
+        tip: fallbackTip,
+        expires_at: expiresAt.toISOString()
       });
 
     return fallbackTip;

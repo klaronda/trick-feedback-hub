@@ -78,11 +78,23 @@ serve(async (req) => {
       })
     }
 
-    // Get pre-stored tips from user_daily_tips table
+    // Clean up expired tips first
+    const { error: cleanupError } = await supabase
+      .from('user_daily_tips')
+      .delete()
+      .eq('user_id', user.id)
+      .lt('expires_at', new Date().toISOString())
+
+    if (cleanupError) {
+      console.error('Error cleaning up expired tips:', cleanupError)
+    }
+
+    // Get non-expired tips from user_daily_tips table
     const { data: storedTips, error: tipsError } = await supabase
       .from('user_daily_tips')
       .select('slot, tip')
       .eq('user_id', user.id)
+      .gt('expires_at', new Date().toISOString())
       .order('slot', { ascending: true })
       .limit(3)
 
@@ -94,27 +106,27 @@ serve(async (req) => {
       })
     }
 
-    // If we have pre-stored tips, return them
-    if (storedTips && storedTips.length > 0) {
-      console.log(`Found ${storedTips.length} pre-stored tips for user ${user.id}`)
+    // If we have 3 non-expired tips, return them
+    if (storedTips && storedTips.length >= 3) {
+      console.log(`Found ${storedTips.length} non-expired tips for user ${user.id}`)
       
       // Update last_shown_at for the tips being shown
       await supabase
         .from('user_daily_tips')
         .update({ last_shown_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .in('slot', storedTips.map(t => t.slot))
+        .gt('expires_at', new Date().toISOString())
 
       return new Response(JSON.stringify({
         success: true,
-        tips: storedTips
+        tips: storedTips.slice(0, 3)
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // If no pre-stored tips, trigger batch generation (this shouldn't happen often)
-    console.log(`No pre-stored tips found for user ${user.id}, triggering batch generation`)
+    // If less than 3 tips, trigger batch generation
+    console.log(`Found ${storedTips?.length || 0} tips for user ${user.id}, triggering batch generation`)
     
     const { error: batchError } = await supabase.functions.invoke('generate-tips-batch', {
       body: { userId: user.id }
