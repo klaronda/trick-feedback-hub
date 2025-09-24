@@ -154,13 +154,13 @@ export default function CoachChat({ userFirstName }: CoachChatProps) {
         </div>
       </section>
 
-      <div className="fixed left-0 right-0 bottom-[72px] bg-background border-t border-border p-4 z-40">
-        <div className="mx-auto max-w-sm rounded-[8px] border border-border bg-background shadow-sm p-1.5 flex items-center gap-2">
+      <div className="sticky bottom-[68px] bg-background border-t border-border p-4 z-10 -mx-4">
+        <div className="mx-auto max-w-sm flex items-center gap-2">
           <Input
             placeholder="Ask Coach something..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="border border-border bg-background focus-visible:ring-0 focus-visible:ring-offset-0"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
