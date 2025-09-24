@@ -32,6 +32,12 @@ export default function CoachChatPage({
     document.title = "Coach Chat • SkateCoach";
   }, []);
 
+  useEffect(() => {
+    if (messages.length > 0) {
+      listRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages]);
+
   return (
     <div className="space-y-6 pb-32">
       <section className="space-y-1">
