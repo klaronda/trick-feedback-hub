@@ -18,7 +18,8 @@ import { useUploadGuard } from "@/hooks/useUploadGuard";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
-import CoachChat from "@/components/CoachChat";
+import CoachChat, { useCoachChatState } from "@/components/CoachChat";
+import CoachChatInput from "@/components/CoachChatInput";
 import { ViewTransition } from "@/components/ViewTransition";
 // Toast removed per user request
 
@@ -43,6 +44,7 @@ const Index = () => {
   const [trickTipModalOpen, setTrickTipModalOpen] = useState(false);
   const navigate = useNavigate();
   const { checking, checkAndNavigate, invalidateCache, exhausted } = useUploadGuard();
+  const coachChatState = useCoachChatState();
   // Toast removed per user request
 
   useEffect(() => {
@@ -285,8 +287,16 @@ const Index = () => {
     return <Onboarding onComplete={handleOnboardingComplete} />;
   }
 
+  const handleScrollToConversation = () => {
+    // Scroll to the conversation section when message is sent from input
+    const conversationSection = document.querySelector('[data-conversation]');
+    if (conversationSection) {
+      conversationSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <Header userPlan={userPlan} onNotificationClick={handleNotificationClick} />
 
@@ -315,7 +325,7 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="max-w-sm mx-auto">
-        <div className="px-4 py-6 min-h-[calc(100vh-140px)]">
+        <div className={`px-4 py-6 ${currentView === 'coach' ? 'pb-32' : 'pb-20'} min-h-[calc(100vh-140px)]`}>
           <ViewTransition viewKey={currentView} className="w-full">
             {currentView === 'home' && (
               <div className="space-y-6">
@@ -364,7 +374,12 @@ const Index = () => {
             )}
             
             {currentView === 'coach' && (
-              <CoachChat userFirstName={userProfile?.first_name} />
+              <div data-conversation>
+                <CoachChat 
+                  userFirstName={userProfile?.first_name} 
+                  onSendMessage={handleScrollToConversation}
+                />
+              </div>
             )}
             
             {currentView === 'details' && selectedAttemptId && (
@@ -396,6 +411,19 @@ const Index = () => {
           />
         </div>
       </main>
+
+      {/* Coach Chat Input - Only show on coach page */}
+      {currentView === 'coach' && (
+        <CoachChatInput
+          input={coachChatState.input}
+          loading={coachChatState.loading}
+          onInputChange={coachChatState.setInput}
+          onSend={() => {
+            coachChatState.handleSend();
+            handleScrollToConversation();
+          }}
+        />
+      )}
 
       {/* Bottom Navigation */}
       <Navigation 
