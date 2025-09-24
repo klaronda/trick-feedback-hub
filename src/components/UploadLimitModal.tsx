@@ -7,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Crown } from "lucide-react";
 
 interface UploadLimitModalProps {
   isOpen: boolean;
@@ -25,28 +24,25 @@ export const UploadLimitModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100vw-32px)] sm:max-w-sm bg-white border-gray-200">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <Crown className="h-5 w-5 text-gray-900" />
-            <DialogTitle className="text-gray-900">Monthly upload limit reached</DialogTitle>
-          </div>
-          <DialogDescription className="text-gray-600 pt-2">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-gray-900 text-left">Monthly upload limit reached</DialogTitle>
+          <DialogDescription className="text-gray-600 pt-2 text-left">
             You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.
           </DialogDescription>
         </DialogHeader>
         
-        <DialogFooter className="flex gap-2 pt-4">
+        <DialogFooter className="flex flex-row gap-2 pt-4 sm:justify-start">
           <Button 
             variant="outline" 
             onClick={onClose}
-            className="border-gray-300 text-gray-700 hover:bg-gray-100"
+            className="border-gray-300 text-gray-700 hover:bg-gray-100 flex-1"
           >
             Maybe later
           </Button>
           <Button 
             onClick={onUpgrade}
             disabled={isUpgrading}
-            className="bg-gray-900 hover:bg-gray-800 text-white"
+            className="bg-gray-900 hover:bg-gray-800 text-white flex-1"
           >
             {isUpgrading ? "Processing..." : "Go Pro"}
           </Button>
