@@ -220,7 +220,7 @@ export const UploadAttempt = ({ onUploadSuccess, userPlan }: UploadAttemptProps)
       {showQuotaModal && (
         <Alert className="border-amber-200 bg-amber-50">
           <Crown className="h-4 w-4 text-amber-600" />
-          <AlertTitle className="text-amber-800">Monthly upload limit reached</AlertTitle>
+          <AlertTitle className="text-amber-800">Monthly upload limit reached.</AlertTitle>
           <AlertDescription className="text-amber-700 space-y-3">
             <p>You've reached your 5 free uploads for this month. Upgrade to Pro to upload unlimited videos and unlock priority processing.</p>
             <div className="flex gap-2 pt-2">
