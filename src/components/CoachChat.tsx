@@ -1,143 +1,29 @@
-import { useEffect, useMemo, useState, useRef } from "react";
-import { usePersonalizedCoach } from "@/hooks/usePersonalizedCoach";
-import { supabase } from "@/integrations/supabase/client";
 import CoachChatPage from "@/components/CoachChatPage";
 
 interface CoachChatProps {
   userFirstName?: string | null;
-  onSendMessage?: () => void;
+  messages: Array<{
+    role: "user" | "coach";
+    content: string;
+    timestamp: number;
+  }>;
+  error: string | null;
+  onQuickQuestion: (question: string) => void;
 }
 
-type ChatMessage = {
-  role: "user" | "coach";
-  content: string;
-  timestamp: number;
-};
-
-export default function CoachChat({ userFirstName, onSendMessage }: CoachChatProps) {
-  const { sendMessage, loading, error } = usePersonalizedCoach();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const storageKey = useMemo(
-    () => (userId ? `coach-chat-${userId}` : "coach-chat"),
-    [userId]
-  );
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
-  }, []);
-
-  useEffect(() => {
-    if (!storageKey) return;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) setMessages(JSON.parse(raw));
-    } catch (e) {
-      console.warn("Failed to load messages from storage", e);
-    }
-  }, [storageKey]);
-
-  useEffect(() => {
-    try {
-      const lastTen = messages.slice(-10);
-      localStorage.setItem(storageKey, JSON.stringify(lastTen));
-    } catch (e) {
-      // ignore
-    }
-  }, [messages, storageKey]);
-
-  const handleSend = async (text: string) => {
-    const content = text.trim();
-    if (!content) return;
-
-    const userMsg: ChatMessage = { role: "user", content, timestamp: Date.now() };
-    setMessages((prev) => [...prev.slice(-9), userMsg]);
-
-    // Call the callback to scroll to conversation
-    onSendMessage?.();
-
-    const res = await sendMessage(content, "general_coaching");
-    if (res?.response) {
-      const coachMsg: ChatMessage = {
-        role: "coach",
-        content: res.response,
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev.slice(-9), coachMsg]);
-    }
-  };
-
+export default function CoachChat({ 
+  userFirstName, 
+  messages, 
+  error, 
+  onQuickQuestion 
+}: CoachChatProps) {
   return (
     <CoachChatPage
       userFirstName={userFirstName}
       messages={messages}
       error={error}
-      onQuickQuestion={handleSend}
+      onQuickQuestion={onQuickQuestion}
     />
   );
 }
 
-// Export state and functions for sharing with input component
-export const useCoachChatState = () => {
-  const { sendMessage, loading, error } = usePersonalizedCoach();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const storageKey = useMemo(
-    () => (userId ? `coach-chat-${userId}` : "coach-chat"),
-    [userId]
-  );
-
-  useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
-  }, []);
-
-  useEffect(() => {
-    if (!storageKey) return;
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (raw) setMessages(JSON.parse(raw));
-    } catch (e) {
-      console.warn("Failed to load messages from storage", e);
-    }
-  }, [storageKey]);
-
-  useEffect(() => {
-    try {
-      const lastTen = messages.slice(-10);
-      localStorage.setItem(storageKey, JSON.stringify(lastTen));
-    } catch (e) {
-      // ignore
-    }
-  }, [messages, storageKey]);
-
-  const handleSend = async (text?: string) => {
-    const content = (text ?? input).trim();
-    if (!content) return;
-
-    const userMsg: ChatMessage = { role: "user", content, timestamp: Date.now() };
-    setMessages((prev) => [...prev.slice(-9), userMsg]);
-    setInput("");
-
-    const res = await sendMessage(content, "general_coaching");
-    if (res?.response) {
-      const coachMsg: ChatMessage = {
-        role: "coach",
-        content: res.response,
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev.slice(-9), coachMsg]);
-    }
-  };
-
-  return {
-    messages,
-    input,
-    loading,
-    error,
-    setInput,
-    handleSend
-  };
-}

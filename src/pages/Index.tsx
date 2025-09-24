@@ -18,7 +18,8 @@ import { useUploadGuard } from "@/hooks/useUploadGuard";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import type { User, Session } from "@supabase/supabase-js";
-import CoachChat, { useCoachChatState } from "@/components/CoachChat";
+import CoachChat from "@/components/CoachChat";
+import { useCoachChatState } from "@/hooks/useCoachChatState";
 import CoachChatInput from "@/components/CoachChatInput";
 import { ViewTransition } from "@/components/ViewTransition";
 // Toast removed per user request
@@ -375,9 +376,11 @@ const Index = () => {
             
             {currentView === 'coach' && (
               <div data-conversation>
-                <CoachChat 
-                  userFirstName={userProfile?.first_name} 
-                  onSendMessage={handleScrollToConversation}
+                <CoachChat
+                  userFirstName={userProfile?.first_name}
+                  messages={coachChatState.messages}
+                  error={coachChatState.error}
+                  onQuickQuestion={(question) => coachChatState.handleSend(question)}
                 />
               </div>
             )}
