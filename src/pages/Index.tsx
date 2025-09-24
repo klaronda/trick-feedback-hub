@@ -10,6 +10,7 @@ import { TrickTipModal } from "@/components/TrickTipModal";
 import { TopWeeklyTricks } from "@/components/TopWeeklyTricks";
 import { RecentUploads } from "@/components/RecentUploads";
 import { UploadLimitModal } from "@/components/UploadLimitModal";
+import { CoachUpgradeModal } from "@/components/CoachUpgradeModal";
 import { NotificationModal } from "@/components/NotificationModal";
 import { Profile } from "@/components/Profile";
 import Onboarding from "@/components/Onboarding";
@@ -36,6 +37,7 @@ const Index = () => {
   const [userProfile, setUserProfile] = useState<{ first_name: string | null; last_name: string | null; stance: string | null; learning_goals: string | null; profile_image_url: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUploadLimitModal, setShowUploadLimitModal] = useState(false);
+  const [showCoachUpgradeModal, setShowCoachUpgradeModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
@@ -256,7 +258,7 @@ const Index = () => {
       if (isPro) {
         setCurrentView('coach');
       } else {
-        setShowUploadLimitModal(true);
+        setShowCoachUpgradeModal(true);
       }
     } else if (view === 'profile') {
       setCurrentView('profile');
@@ -306,6 +308,17 @@ const Index = () => {
         isOpen={showUploadLimitModal}
         onClose={() => setShowUploadLimitModal(false)}
         onUpgrade={handleUpgrade}
+        isUpgrading={isUpgrading}
+      />
+
+      {/* Coach Upgrade Modal */}
+      <CoachUpgradeModal 
+        isOpen={showCoachUpgradeModal}
+        onClose={() => setShowCoachUpgradeModal(false)}
+        onUpgrade={() => {
+          setShowCoachUpgradeModal(false);
+          handleUpgrade();
+        }}
         isUpgrading={isUpgrading}
       />
 
