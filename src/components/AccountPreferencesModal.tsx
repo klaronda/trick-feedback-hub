@@ -164,6 +164,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 pressed={notificationsEnabled}
                 onPressedChange={handleNotificationsToggle}
                 disabled={isLoading || isSaving}
+                size="sm"
               />
             </div>
 
@@ -177,6 +178,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 pressed={cameraAccessEnabled}
                 onPressedChange={handleCameraToggle}
                 disabled={isLoading || isSaving}
+                size="sm"
               />
             </div>
 
@@ -190,6 +192,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 pressed={microphoneAccessEnabled}
                 onPressedChange={handleMicrophoneToggle}
                 disabled={isLoading || isSaving}
+                size="sm"
               />
             </div>
           </div>
