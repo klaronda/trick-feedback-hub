@@ -78,55 +78,44 @@ serve(async (req) => {
       })
     }
 
-    // Clean up expired tips first
-    const { error: cleanupError } = await supabase
+    // Get user's existing unviewed tips (first 3 from the 6-tip pool)
+    console.log(`Fetching unviewed tips for user ${user.id}...`);
+    const { data: existingTips, error: tipsError } = await supabase
       .from('user_daily_tips')
-      .delete()
+      .select('id, slot, tip')
       .eq('user_id', user.id)
-      .lt('expires_at', new Date().toISOString())
-
-    if (cleanupError) {
-      console.error('Error cleaning up expired tips:', cleanupError)
-    }
-
-    // Get non-expired tips from user_daily_tips table
-    const { data: storedTips, error: tipsError } = await supabase
-      .from('user_daily_tips')
-      .select('slot, tip')
-      .eq('user_id', user.id)
-      .gt('expires_at', new Date().toISOString())
-      .order('slot', { ascending: true })
-      .limit(3)
+      .is('viewed_at', null)
+      .order('slot')
+      .limit(3);
 
     if (tipsError) {
-      console.error('Error fetching stored tips:', tipsError)
+      console.error('Error fetching existing tips:', tipsError);
       return new Response(JSON.stringify({ error: 'Failed to fetch tips' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
-    // If we have 3 non-expired tips, return them
-    if (storedTips && storedTips.length >= 3) {
-      console.log(`Found ${storedTips.length} non-expired tips for user ${user.id}`)
-      
-      // Update last_shown_at for the tips being shown
-      await supabase
-        .from('user_daily_tips')
-        .update({ last_shown_at: new Date().toISOString() })
-        .eq('user_id', user.id)
-        .gt('expires_at', new Date().toISOString())
+    console.log(`Found ${existingTips?.length || 0} unviewed tips for user ${user.id}`);
+
+    // If user has unviewed tips, return the first 3
+    if (existingTips && existingTips.length > 0) {
+      const tips = existingTips.map((tip, index) => ({
+        slot: index + 1,
+        tip: tip.tip,
+        id: tip.id
+      }));
 
       return new Response(JSON.stringify({
         success: true,
-        tips: storedTips.slice(0, 3)
+        tips: tips
       }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    // If less than 3 tips, trigger batch generation
-    console.log(`Found ${storedTips?.length || 0} tips for user ${user.id}, triggering batch generation`)
+    // If user has no unviewed tips, trigger batch generation and return fallback
+    console.log(`No unviewed tips found for user ${user.id}, triggering generation...`);
     
     const { error: batchError } = await supabase.functions.invoke('generate-tips-batch', {
       body: { userId: user.id }

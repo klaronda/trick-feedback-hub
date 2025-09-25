@@ -319,6 +319,7 @@ export type Database = {
           slot: number
           tip: Json
           user_id: string
+          viewed_at: string | null
         }
         Insert: {
           expires_at?: string
@@ -328,6 +329,7 @@ export type Database = {
           slot: number
           tip: Json
           user_id: string
+          viewed_at?: string | null
         }
         Update: {
           expires_at?: string
@@ -337,6 +339,7 @@ export type Database = {
           slot?: number
           tip?: Json
           user_id?: string
+          viewed_at?: string | null
         }
         Relationships: []
       }
@@ -529,6 +532,14 @@ export type Database = {
         Returns: {
           id: number
         }[]
+      }
+      mark_tip_as_viewed: {
+        Args: { tip_id: number }
+        Returns: boolean
+      }
+      process_daily_tips_fifo: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       rotate_and_refill_daily_tips: {
         Args:

@@ -30,13 +30,12 @@ interface TrickTip {
 interface TipSlot {
   slot: number;
   tip: TrickTip;
+  id: number;
 }
 
 export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [seenSlots, setSeenSlots] = useState<number[]>([]);
   
-  // Toast removed per user request
   const queryClient = useQueryClient();
   
   const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
@@ -45,19 +44,17 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   console.log('DailyTrickTips isPro:', isPro);
 
   // Use React Query for caching daily tips
-  const { data: tips = [], isLoading: loading, error, refetch } = useQuery({
-    queryKey: ['daily-tips', isPro],
+  const { data: tips = [], isLoading: loading, error } = useQuery({
+    queryKey: ['daily-tips'],
     queryFn: async () => {
       if (!isPro) {
         console.log('Not pro user, skipping daily tips');
         return [];
       }
       
-      console.log('Fetching daily tips for pro user, seenSlots:', seenSlots);
+      console.log('Fetching daily tips for pro user');
       
-      const { data, error } = await supabase.functions.invoke('generate-daily-tips', {
-        body: { seenSlots }
-      });
+      const { data, error } = await supabase.functions.invoke('generate-daily-tips');
 
       console.log('Daily tips response:', { data, error });
 
@@ -68,10 +65,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       
       if (data.success && data.tips) {
         console.log('Successfully loaded tips:', data.tips);
-        // Mark first tip as seen when loaded
-        if (data.tips.length > 0 && !seenSlots.includes(1)) {
-          setSeenSlots(prev => [...prev, 1]);
-        }
         return data.tips;
       }
       
@@ -79,10 +72,27 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       return [];
     },
     enabled: isPro,
-    staleTime: 1000 * 60 * 30, // Cache for 30 minutes (reduced from 1 hour)
-    gcTime: 1000 * 60 * 60 * 24, // Keep in cache for 24 hours
-    refetchInterval: 1000 * 60 * 30, // Auto-refetch every 30 minutes
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    gcTime: 1000 * 60 * 60 * 2, // Keep in cache for 2 hours
   });
+
+  const markTipAsViewed = async (tipId: number) => {
+    try {
+      const { error } = await supabase.functions.invoke('mark-tip-viewed', {
+        body: { tipId }
+      });
+      
+      if (error) {
+        console.error('Error marking tip as viewed:', error);
+      } else {
+        console.log(`Tip ${tipId} marked as viewed`);
+        // Invalidate the query to potentially refresh tips
+        queryClient.invalidateQueries({ queryKey: ['daily-tips'] });
+      }
+    } catch (error) {
+      console.error('Error marking tip as viewed:', error);
+    }
+  };
 
   useEffect(() => {
     if (error) {
@@ -106,19 +116,11 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   const nextTip = () => {
     const newIndex = (currentTip + 1) % tips.length;
     setCurrentTip(newIndex);
-    const newSlot = tips[newIndex]?.slot;
-    if (newSlot && !seenSlots.includes(newSlot)) {
-      setSeenSlots(prev => [...prev, newSlot]);
-    }
   };
 
   const prevTip = () => {
     const newIndex = (currentTip - 1 + tips.length) % tips.length;
     setCurrentTip(newIndex);
-    const newSlot = tips[newIndex]?.slot;
-    if (newSlot && !seenSlots.includes(newSlot)) {
-      setSeenSlots(prev => [...prev, newSlot]);
-    }
   };
 
 
@@ -153,15 +155,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="space-y-4">
         <h2 className="text-lg font-medium">Daily Trick Tips</h2>
         <div className="bg-white rounded-[8px] border border-gray-200 p-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-600">No daily tips available. New tips will be generated for you soon!</p>
-            <button 
-              onClick={() => refetch()}
-              className="text-xs text-blue-600 hover:text-blue-800 underline"
-            >
-              Retry
-            </button>
-          </div>
+          <p className="text-sm text-gray-600">No daily tips available. New tips will be generated for you soon!</p>
         </div>
       </div>
     );
@@ -195,17 +189,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => refetch()}
-            className="p-2 hover:bg-muted ml-1"
-            title="Refresh tips"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </Button>
         </div>
       </div>
 
@@ -229,7 +212,12 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
         
         <div className="flex justify-end">
           <button 
-            onClick={() => handleLearnMore(tip)}
+            onClick={() => {
+              if (currentTipData?.id) {
+                markTipAsViewed(currentTipData.id);
+              }
+              handleLearnMore(tip);
+            }}
             className="p-0 h-auto font-medium text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
             Learn More

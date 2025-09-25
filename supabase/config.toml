@@ -64,5 +64,8 @@ verify_jwt = false
 [functions.daily-tips-refresh]
 verify_jwt = false
 
+[functions.mark-tip-viewed]
+verify_jwt = true
+
 [functions.personalized-coach]
 verify_jwt = true

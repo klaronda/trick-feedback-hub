@@ -36,7 +36,15 @@ serve(async (req) => {
       console.error('Error cleaning up expired tips:', cleanupError);
     }
 
-    // Get all Pro users who need fresh tips (have less than 3 non-expired tips)
+    // Process FIFO logic for viewed tips first
+    console.log('Processing FIFO logic for viewed tips...');
+    const { error: fifoError } = await supabaseClient.rpc('process_daily_tips_fifo');
+    
+    if (fifoError) {
+      console.error('Error processing FIFO logic:', fifoError);
+    }
+
+    // Get all Pro users who need fresh tips (have less than 6 total tips)
     console.log('Finding Pro users who need fresh tips...');
     
     const { data: proUsers, error: usersError } = await supabaseClient
@@ -58,12 +66,11 @@ serve(async (req) => {
     if (proUsers && proUsers.length > 0) {
       for (const user of proUsers) {
         try {
-          // Check how many non-expired tips this user has
+          // Check how many total tips this user has (maintain 6-tip pool)
           const { data: existingTips, error: tipsError } = await supabaseClient
             .from('user_daily_tips')
             .select('id, slot')
-            .eq('user_id', user.id)
-            .gt('expires_at', new Date().toISOString());
+            .eq('user_id', user.id);
 
           if (tipsError) {
             console.error(`Error checking tips for user ${user.id}:`, tipsError);
@@ -71,10 +78,10 @@ serve(async (req) => {
           }
 
           const tipCount = existingTips?.length || 0;
-          console.log(`User ${user.id} has ${tipCount} non-expired tips`);
+          console.log(`User ${user.id} has ${tipCount} total tips`);
 
-          // If user has less than 3 tips, generate new ones
-          if (tipCount < 3) {
+          // If user has less than 6 tips, generate new ones to fill the pool
+          if (tipCount < 6) {
             console.log(`Generating fresh tips for user ${user.id}...`);
             
             // Call generate-tips-batch for this user
