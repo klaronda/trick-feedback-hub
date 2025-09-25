@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlanBadge } from "@/components/ui/PlanBadge";
-import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
 import { Settings, TrendingUp, Upload, CheckCircle, LogOut, Trash2, X, Heart } from "lucide-react";
 import { SavedTipCard } from '@/components/SavedTipCard';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -455,8 +455,8 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               <h4 className="font-medium text-gray-900">Push Notifications</h4>
               <p className="text-sm text-gray-600">Get notified about new tips and updates</p>
             </div>
-            <Switch 
-              checked={preferences?.notifications_enabled ?? true} 
+            <Toggle 
+              pressed={preferences?.notifications_enabled ?? true} 
               disabled 
               onClick={() => setShowPreferencesModal(true)}
             />
@@ -466,8 +466,8 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               <h4 className="font-medium text-gray-900">Camera Access</h4>
               <p className="text-sm text-gray-600">Allow app to access your camera</p>
             </div>
-            <Switch 
-              checked={preferences?.camera_access_enabled ?? true} 
+            <Toggle 
+              pressed={preferences?.camera_access_enabled ?? true} 
               disabled 
               onClick={() => setShowPreferencesModal(true)}
             />
@@ -477,8 +477,8 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               <h4 className="font-medium text-gray-900">Microphone</h4>
               <p className="text-sm text-gray-600">Allow app to access your microphone</p>
             </div>
-            <Switch 
-              checked={preferences?.microphone_access_enabled ?? true} 
+            <Toggle 
+              pressed={preferences?.microphone_access_enabled ?? true} 
               disabled 
               onClick={() => setShowPreferencesModal(true)}
             />
