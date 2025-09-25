@@ -155,7 +155,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
           {/* Content */}
           <div className="space-y-6">
             {/* Notifications */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label className="text-base font-medium text-gray-900">Notifications</Label>
                 <p className="text-sm text-gray-600">Receive updates about your progress and new tips</p>
@@ -165,11 +165,12 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 onPressedChange={handleNotificationsToggle}
                 disabled={isLoading || isSaving}
                 size="sm"
+                className="ml-2 flex-shrink-0"
               />
             </div>
 
             {/* Camera Access */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label className="text-base font-medium text-gray-900">Camera Access</Label>
                 <p className="text-sm text-gray-600">Allow video uploads and photo capture</p>
@@ -179,11 +180,12 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 onPressedChange={handleCameraToggle}
                 disabled={isLoading || isSaving}
                 size="sm"
+                className="ml-2 flex-shrink-0"
               />
             </div>
 
             {/* Microphone Access */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label className="text-base font-medium text-gray-900">Microphone Access</Label>
                 <p className="text-sm text-gray-600">Enable audio features and voice commands</p>
@@ -193,6 +195,7 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 onPressedChange={handleMicrophoneToggle}
                 disabled={isLoading || isSaving}
                 size="sm"
+                className="ml-2 flex-shrink-0"
               />
             </div>
           </div>

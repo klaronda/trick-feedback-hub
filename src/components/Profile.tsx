@@ -450,7 +450,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
         </div>
           <Card className="bg-white border-gray-200">
           <CardContent className="space-y-4 pt-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Push Notifications</h4>
               <p className="text-sm text-gray-600">Get notified about new tips and updates</p>
@@ -460,9 +460,10 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               disabled 
               onClick={() => setShowPreferencesModal(true)}
               size="sm"
+              className="ml-2 flex-shrink-0"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Camera Access</h4>
               <p className="text-sm text-gray-600">Allow app to access your camera</p>
@@ -472,9 +473,10 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               disabled 
               onClick={() => setShowPreferencesModal(true)}
               size="sm"
+              className="ml-2 flex-shrink-0"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium text-gray-900">Microphone</h4>
               <p className="text-sm text-gray-600">Allow app to access your microphone</p>
@@ -484,6 +486,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
               disabled 
               onClick={() => setShowPreferencesModal(true)}
               size="sm"
+              className="ml-2 flex-shrink-0"
             />
           </div>
           </CardContent>
