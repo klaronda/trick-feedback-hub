@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { X, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -71,26 +79,15 @@ export function UpdateEmailModal({ isOpen, onClose, currentEmail }: UpdateEmailM
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl text-primary-foreground font-semibold">Update Email</h2>
-            <p className="text-sm text-gray-600">Change your account email address</p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClose}
-            className="p-2 h-8 w-8"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-[calc(100vw-32px)] sm:max-w-md bg-white border-gray-200">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl text-gray-900 font-semibold">Update Email</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">Change your account email address</DialogDescription>
+        </DialogHeader>
 
         {/* Content */}
-        <div className="p-6">
+        <div>
           {success ? (
             <div className="text-center">
               <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -154,8 +151,7 @@ export function UpdateEmailModal({ isOpen, onClose, currentEmail }: UpdateEmailM
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
+        <DialogFooter className="flex gap-3">
           <Button
             variant="outline"
             onClick={handleClose}
@@ -172,8 +168,8 @@ export function UpdateEmailModal({ isOpen, onClose, currentEmail }: UpdateEmailM
               {isLoading ? 'Updating...' : 'Update Email'}
             </Button>
           )}
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

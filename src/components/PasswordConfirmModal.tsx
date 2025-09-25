@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { X, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -61,67 +69,53 @@ export function PasswordConfirmModal({ isOpen, onClose, onConfirm }: PasswordCon
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl text-primary-foreground font-semibold">Confirm Password</h2>
-            <p className="text-sm text-gray-600">Enter your password to change email</p>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClose}
-            className="p-2 h-8 w-8"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="w-[calc(100vw-32px)] sm:max-w-md bg-white border-gray-200">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl text-gray-900 font-semibold">Confirm Password</DialogTitle>
+          <DialogDescription className="text-sm text-gray-600">Enter your password to change email</DialogDescription>
+        </DialogHeader>
 
         {/* Content */}
-        <div className="p-6">
-          <div>
-            <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-              Current Password
-            </Label>
-            <div className="relative mt-1">
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setError('');
-                }}
-                className="bg-white placeholder:text-gray-400/60 pr-10"
-                placeholder="Enter your current password"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') handleConfirm();
-                }}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6"
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4 text-gray-500" />
-                ) : (
-                  <Eye className="h-4 w-4 text-gray-500" />
-                )}
-              </Button>
-            </div>
-            {error && (
-              <p className="text-sm text-red-600 mt-1">{error}</p>
-            )}
+        <div>
+          <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+            Current Password
+          </Label>
+          <div className="relative mt-1">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError('');
+              }}
+              className="bg-white placeholder:text-gray-400/60 pr-10"
+              placeholder="Enter your current password"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') handleConfirm();
+              }}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 h-6 w-6"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4 text-gray-500" />
+              ) : (
+                <Eye className="h-4 w-4 text-gray-500" />
+              )}
+            </Button>
           </div>
+          {error && (
+            <p className="text-sm text-red-600 mt-1">{error}</p>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 flex gap-3">
+        <DialogFooter className="flex gap-3">
           <Button
             variant="outline"
             onClick={handleClose}
@@ -137,8 +131,8 @@ export function PasswordConfirmModal({ isOpen, onClose, onConfirm }: PasswordCon
           >
             {isLoading ? 'Verifying...' : 'Confirm'}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

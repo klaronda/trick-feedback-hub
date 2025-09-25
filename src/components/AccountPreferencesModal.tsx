@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Toggle } from "@/components/ui/toggle";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { X } from 'lucide-react';
 import { ConfirmationModal } from './ConfirmationModal';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
@@ -64,8 +72,8 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
     }
   }, [notificationsEnabled, cameraAccessEnabled, microphoneAccessEnabled, preferences]);
 
-  const handleNotificationsToggle = (checked: boolean) => {
-    if (!checked) {
+  const handleNotificationsToggle = (pressed: boolean) => {
+    if (!pressed) {
       setConfirmText("You won't receive important updates about your progress and new tips. Are you sure you want to disable notifications?");
       setConfirmAction(() => () => {
         setNotificationsEnabled(false);
@@ -77,8 +85,8 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
     }
   };
 
-  const handleCameraToggle = (checked: boolean) => {
-    if (!checked) {
+  const handleCameraToggle = (pressed: boolean) => {
+    if (!pressed) {
       setConfirmText("You won't be able to upload videos or take photos within the app. Are you sure you want to disable camera access?");
       setConfirmAction(() => () => {
         setCameraAccessEnabled(false);
@@ -90,8 +98,8 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
     }
   };
 
-  const handleMicrophoneToggle = (checked: boolean) => {
-    if (!checked) {
+  const handleMicrophoneToggle = (pressed: boolean) => {
+    if (!pressed) {
       setConfirmText("Audio features and voice commands will be disabled. Are you sure you want to disable microphone access?");
       setConfirmAction(() => () => {
         setMicrophoneAccessEnabled(false);
@@ -133,35 +141,28 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-gray-50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
-          {/* Header */}
-          <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Account Preferences</h2>
-              <p className="text-sm text-gray-600">Manage your app settings and permissions</p>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className="w-[calc(100vw-32px)] sm:max-w-lg bg-gray-50 border-gray-200">
+          <DialogHeader className="bg-white px-6 py-4 border-b border-gray-200 rounded-t-lg -mx-6 -mt-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Account Preferences</DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">Manage your app settings and permissions</DialogDescription>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="p-2 h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          </DialogHeader>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="space-y-6">
             {/* Notifications */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label className="text-base font-medium text-gray-900">Notifications</Label>
                 <p className="text-sm text-gray-600">Receive updates about your progress and new tips</p>
               </div>
-              <Switch
-                checked={notificationsEnabled}
-                onCheckedChange={handleNotificationsToggle}
+              <Toggle
+                pressed={notificationsEnabled}
+                onPressedChange={handleNotificationsToggle}
                 disabled={isLoading || isSaving}
               />
             </div>
@@ -172,9 +173,9 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 <Label className="text-base font-medium text-gray-900">Camera Access</Label>
                 <p className="text-sm text-gray-600">Allow video uploads and photo capture</p>
               </div>
-              <Switch
-                checked={cameraAccessEnabled}
-                onCheckedChange={handleCameraToggle}
+              <Toggle
+                pressed={cameraAccessEnabled}
+                onPressedChange={handleCameraToggle}
                 disabled={isLoading || isSaving}
               />
             </div>
@@ -185,16 +186,15 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
                 <Label className="text-base font-medium text-gray-900">Microphone Access</Label>
                 <p className="text-sm text-gray-600">Enable audio features and voice commands</p>
               </div>
-              <Switch
-                checked={microphoneAccessEnabled}
-                onCheckedChange={handleMicrophoneToggle}
+              <Toggle
+                pressed={microphoneAccessEnabled}
+                onPressedChange={handleMicrophoneToggle}
                 disabled={isLoading || isSaving}
               />
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-white px-6 py-4 border-t border-gray-200 flex gap-3">
+          <DialogFooter className="bg-white px-6 py-4 border-t border-gray-200 rounded-b-lg -mx-6 -mb-6 mt-6 flex gap-3">
             <Button
               variant="outline"
               onClick={handleClose}
@@ -210,9 +210,9 @@ export function AccountPreferencesModal({ isOpen, onClose }: AccountPreferencesM
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </Button>
-          </div>
-        </div>
-      </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Confirmation Modal */}
       <ConfirmationModal

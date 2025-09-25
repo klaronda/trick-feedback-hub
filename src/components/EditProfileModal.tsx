@@ -4,6 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { X } from 'lucide-react';
 import { CropPhotoModal } from './CropPhotoModal';
 import { PasswordConfirmModal } from './PasswordConfirmModal';
@@ -190,26 +198,19 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-gray-50 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-hidden">
-          {/* Header */}
-          <div className="bg-white px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Edit Profile</h2>
-              <p className="text-sm text-gray-600">Update your account information</p>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
+        <DialogContent className="w-[calc(100vw-32px)] sm:max-w-lg bg-gray-50 border-gray-200 max-h-[90vh] overflow-hidden">
+          <DialogHeader className="bg-white px-6 py-4 border-b border-gray-200 rounded-t-lg -mx-6 -mt-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <DialogTitle className="text-xl font-semibold" style={{ color: 'var(--soft-black)' }}>Edit Profile</DialogTitle>
+                <DialogDescription className="text-sm text-gray-600">Update your account information</DialogDescription>
+              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleClose}
-              className="p-2 h-8 w-8"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          </DialogHeader>
 
           {/* Content */}
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
             {/* Profile Photo */}
             <div className="flex items-center gap-4 mb-6">
               <Avatar className="h-20 w-20">
@@ -294,8 +295,7 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="bg-white px-6 py-4 border-t border-gray-200 flex gap-3">
+          <DialogFooter className="bg-white px-6 py-4 border-t border-gray-200 rounded-b-lg -mx-6 -mb-6 mt-6 flex gap-3">
             <Button
               variant="outline"
               onClick={handleClose}
@@ -311,9 +311,9 @@ export function EditProfileModal({ isOpen, onClose, user, userProfile, onProfile
             >
               {isLoading ? 'Saving...' : 'Save Changes'}
             </Button>
-          </div>
-        </div>
-      </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Modals */}
       <CropPhotoModal
