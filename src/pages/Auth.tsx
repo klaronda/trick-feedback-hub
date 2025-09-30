@@ -41,39 +41,43 @@ export default function Auth() {
 
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        // Check if user has completed onboarding to determine if they're new
-        try {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('onboarding_completed')
-            .eq('user_id', session.user.id)
-            .single();
-          
-          const { data: userData } = await supabase
-            .from('users')
-            .select('onboarding_completed')
-            .eq('id', session.user.id)
-            .maybeSingle();
+        // Defer Supabase calls to prevent auth state deadlock
+        setTimeout(async () => {
+          try {
+            // Check if user has completed onboarding to determine if they're new
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('onboarding_completed')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
+            
+            const { data: userData } = await supabase
+              .from('users')
+              .select('onboarding_completed')
+              .eq('id', session.user.id)
+              .maybeSingle();
 
-          const onboardingCompleted = profileData?.onboarding_completed ?? userData?.onboarding_completed;
-          
-          // Only show success toast for existing users (not new signups)
-          if (onboardingCompleted) {
-            showNotification('You successfully signed in.', 'success');
-            // Delay navigation to show notification
-            setTimeout(() => {
+            const onboardingCompleted = profileData?.onboarding_completed ?? userData?.onboarding_completed;
+            
+            // Only show success toast for existing users (not new signups)
+            if (onboardingCompleted) {
+              showNotification('You successfully signed in.', 'success');
+              // Delay navigation to show notification
+              setTimeout(() => {
+                navigate('/');
+              }, 500);
+            } else {
+              // New user - navigate immediately without toast
               navigate('/');
-            }, 500);
-          } else {
-            // New user - navigate immediately without toast
+            }
+          } catch (error) {
+            console.error('Error checking onboarding status:', error);
+            // If there's an error checking onboarding status, navigate anyway
             navigate('/');
           }
-        } catch (error) {
-          // If there's an error checking onboarding status, assume new user
-          navigate('/');
-        }
+        }, 0);
       }
     });
 
