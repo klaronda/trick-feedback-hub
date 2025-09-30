@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +35,6 @@ interface TipSlot {
 
 export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) => {
   const [currentTip, setCurrentTip] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const queryClient = useQueryClient();
   
@@ -112,28 +111,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
     }
   };
 
-  const handleRefreshTips = async () => {
-    setIsRefreshing(true);
-    try {
-      console.log('Manually refreshing daily tips...');
-      const { error } = await supabase.functions.invoke('refresh-user-tips');
-      
-      if (error) {
-        console.error('Error refreshing tips:', error);
-      } else {
-        console.log('Tips refresh triggered successfully');
-        // Wait a moment for the batch to complete, then refetch
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ['daily-tips'] });
-        }, 2000);
-      }
-    } catch (error) {
-      console.error('Error refreshing tips:', error);
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
-
   if (!isPro) return null;
 
   const nextTip = () => {
@@ -194,16 +171,6 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">Daily Trick Tips</h2>
         <div className="flex gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={handleRefreshTips}
-            disabled={isRefreshing}
-            className="p-2 hover:bg-muted"
-            title="Refresh daily tips"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-          </Button>
           <Button 
             variant="ghost" 
             size="sm" 
