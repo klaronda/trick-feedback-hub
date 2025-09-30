@@ -50,23 +50,26 @@ serve(async (req) => {
 
     console.log('Authenticated user:', user.id)
 
-    // Check if user is pro
-    const { data: userPlan, error: planError } = await supabase
+    // Check if user is pro - check profiles first, then fallback to users
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('plan_name, is_subscribed')
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    const { data: userData } = await supabase
       .from('users')
       .select('plan_name, is_subscribed')
       .eq('id', user.id)
-      .single()
+      .maybeSingle()
 
-    if (planError) {
-      console.error('Error fetching user plan:', planError)
-      return new Response(JSON.stringify({ error: 'Failed to fetch user plan' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      })
-    }
-
-    const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed
-    console.log(`User ${user.id} plan check: plan_name=${userPlan?.plan_name}, is_subscribed=${userPlan?.is_subscribed}, isPro=${isPro}`)
+    // User is Pro if either profiles OR users table shows pro status
+    const isPro = 
+      (profileData?.plan_name === 'pro' || profileData?.is_subscribed === true) ||
+      (userData?.plan_name === 'pro' || userData?.is_subscribed === true)
+    
+    console.log(`User ${user.id} pro check: profiles(plan=${profileData?.plan_name}, sub=${profileData?.is_subscribed}), users(plan=${userData?.plan_name}, sub=${userData?.is_subscribed}), isPro=${isPro}`)
+    
     if (!isPro) {
       return new Response(JSON.stringify({ 
         success: false, 
@@ -79,12 +82,14 @@ serve(async (req) => {
     }
 
     // Get user's existing unviewed tips (first 3 from the 6-tip pool)
+    // Filter out expired tips
     console.log(`Fetching unviewed tips for user ${user.id}...`);
     const { data: existingTips, error: tipsError } = await supabase
       .from('user_daily_tips')
       .select('id, slot, tip')
       .eq('user_id', user.id)
       .is('viewed_at', null)
+      .gt('expires_at', new Date().toISOString())
       .order('slot')
       .limit(3);
 

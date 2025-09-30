@@ -17,13 +17,17 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const openaiKey = Deno.env.get('OPENAI_API_KEY');
 
-    if (!supabaseUrl || !supabaseKey || !openaiKey) {
-      console.error('Missing environment variables');
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('Missing Supabase environment variables');
       return new Response(JSON.stringify({ error: 'Server configuration error' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    // OpenAI key is optional - we'll use fallback tips if missing
+    const useAI = !!openaiKey;
+    console.log(`Batch generation mode: ${useAI ? 'AI-powered' : 'fallback-only'}`)
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -33,42 +37,52 @@ serve(async (req) => {
     let usersToProcess = [];
     
     if (userId) {
-      // Single user mode
-      const { data: singleUser, error: singleUserError } = await supabase
+      // Single user mode - check both profiles and users tables
+      const { data: profileUser } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('user_id', userId)
+        .or('plan_name.eq.pro,is_subscribed.eq.true')
+        .maybeSingle();
+
+      const { data: tableUser } = await supabase
         .from('users')
         .select('id')
         .eq('id', userId)
         .eq('plan_name', 'pro')
         .eq('is_subscribed', true)
-        .single();
+        .maybeSingle();
         
-      if (singleUserError || !singleUser) {
+      if (!profileUser && !tableUser) {
+        console.log(`User ${userId} not found or not pro subscriber`);
         return new Response(JSON.stringify({ error: 'User not found or not pro subscriber' }), {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
       
-      usersToProcess = [singleUser];
-      console.log(`Processing single user: ${userId}`);
+      usersToProcess = [{ id: userId }];
+      console.log(`Processing single user: ${userId} (found via ${profileUser ? 'profiles' : 'users'} table)`);
     } else {
-      // All pro users mode
-      const { data: proUsers, error: usersError } = await supabase
+      // All pro users mode - union of profiles and users
+      const { data: profileUsers } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .or('plan_name.eq.pro,is_subscribed.eq.true');
+
+      const { data: tableUsers } = await supabase
         .from('users')
         .select('id')
         .eq('plan_name', 'pro')
         .eq('is_subscribed', true);
 
-      if (usersError) {
-        console.error('Error fetching pro users:', usersError);
-        return new Response(JSON.stringify({ error: 'Failed to fetch users' }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
+      // Combine and deduplicate user IDs
+      const profileIds = new Set((profileUsers || []).map(p => p.user_id));
+      const tableIds = new Set((tableUsers || []).map(u => u.id));
+      const allProIds = new Set([...profileIds, ...tableIds]);
       
-      usersToProcess = proUsers || [];
-      console.log(`Found ${usersToProcess.length} pro users`);
+      usersToProcess = Array.from(allProIds).map(id => ({ id }));
+      console.log(`Found ${usersToProcess.length} pro users (${profileIds.size} from profiles, ${tableIds.size} from users table)`);
     }
 
     let processedUsers = 0;
@@ -130,10 +144,12 @@ serve(async (req) => {
         const generatedTips = [];
         for (let i = 0; i < Math.min(neededTips, availableSlots.length); i++) {
           const slot = availableSlots[i];
-          const tip = await generateSingleTip(user, profile, recentAttempts || [], progression, openaiKey, supabase, slot, generatedTips);
+          const tip = await generateSingleTip(user, profile, recentAttempts || [], progression, useAI ? openaiKey : null, supabase, slot, generatedTips);
           generatedTips.push(tip);
           totalTipsGenerated++;
         }
+        
+        console.log(`Generated ${generatedTips.length} tips for user ${user.id}`);
 
         processedUsers++;
         
@@ -165,7 +181,7 @@ serve(async (req) => {
   }
 });
 
-async function generateSingleTip(user: any, profile: any, recentAttempts: any[], progression: any, openaiKey: string, supabase: any, slot: number, previousTips: any[] = []) {
+async function generateSingleTip(user: any, profile: any, recentAttempts: any[], progression: any, openaiKey: string | null, supabase: any, slot: number, previousTips: any[] = []) {
   const age = profile?.birthday ? 
     new Date().getFullYear() - new Date(profile.birthday).getFullYear() : null;
   
@@ -223,6 +239,27 @@ async function generateSingleTip(user: any, profile: any, recentAttempts: any[],
     default:
       tipFocus = 'general skateboarding improvement';
       tipType = 'general';
+  }
+
+  // If no OpenAI key, use fallback immediately
+  if (!openaiKey) {
+    console.log(`No OpenAI key available - using fallback tip for user ${user.id}, slot ${slot}`);
+    const fallbackTip = createFallbackTip(progression?.skill_level || 'beginner', tipType, slot);
+    
+    // Store fallback tip in database
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24);
+    
+    await supabase
+      .from('user_daily_tips')
+      .insert({
+        user_id: user.id,
+        slot: slot,
+        tip: fallbackTip,
+        expires_at: expiresAt.toISOString()
+      });
+    
+    return fallbackTip;
   }
 
   const previousTipSummaries = previousTips.map(tip => ({

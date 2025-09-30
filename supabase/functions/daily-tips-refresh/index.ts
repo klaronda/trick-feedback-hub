@@ -47,18 +47,26 @@ serve(async (req) => {
     // Get all Pro users who need fresh tips (have less than 6 total tips)
     console.log('Finding Pro users who need fresh tips...');
     
-    const { data: proUsers, error: usersError } = await supabaseClient
+    // Check both profiles and users tables for Pro users
+    const { data: profileUsers } = await supabaseClient
+      .from('profiles')
+      .select('user_id')
+      .or('plan_name.eq.pro,is_subscribed.eq.true');
+
+    const { data: tableUsers } = await supabaseClient
       .from('users')
-      .select('id, plan_name, is_subscribed')
+      .select('id')
       .eq('is_subscribed', true)
       .eq('plan_name', 'pro');
 
-    if (usersError) {
-      console.error('Error fetching Pro users:', usersError);
-      throw usersError;
-    }
-
-    console.log(`Found ${proUsers?.length || 0} Pro users`);
+    // Combine and deduplicate user IDs
+    const profileIds = new Set((profileUsers || []).map(p => p.user_id));
+    const tableIds = new Set((tableUsers || []).map(u => u.id));
+    const allProIds = new Set([...profileIds, ...tableIds]);
+    
+    const proUsers = Array.from(allProIds).map(id => ({ id }));
+    
+    console.log(`Found ${proUsers.length} Pro users (${profileIds.size} from profiles, ${tableIds.size} from users table)`);
 
     let refreshedCount = 0;
     let generatedCount = 0;
@@ -70,7 +78,8 @@ serve(async (req) => {
           const { data: existingTips, error: tipsError } = await supabaseClient
             .from('user_daily_tips')
             .select('id, slot')
-            .eq('user_id', user.id);
+            .eq('user_id', user.id)
+            .gt('expires_at', new Date().toISOString()); // Only count non-expired tips
 
           if (tipsError) {
             console.error(`Error checking tips for user ${user.id}:`, tipsError);
