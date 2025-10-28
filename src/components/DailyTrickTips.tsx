@@ -40,14 +40,8 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   
   console.log('DailyTrickTips userPlan:', userPlan);
   
-  // Early return if userPlan hasn't loaded yet
-  if (!userPlan) {
-    console.log('DailyTrickTips: No userPlan provided yet, waiting...');
-    return null;
-  }
-  
-  const isPro = userPlan.plan_name === 'pro' || userPlan.is_subscribed;
-  console.log('DailyTrickTips isPro:', isPro, '(plan_name:', userPlan.plan_name, ', is_subscribed:', userPlan.is_subscribed, ')');
+  const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
+  console.log('DailyTrickTips isPro:', isPro, '(plan_name:', userPlan?.plan_name, ', is_subscribed:', userPlan?.is_subscribed, ')');
 
   // Use React Query for caching daily tips
   const { data: tips = [], isLoading: loading, error } = useQuery({
@@ -110,6 +104,12 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       // });
     }
   }, [error]);
+
+  // Early return if userPlan hasn't loaded yet (after all hooks)
+  if (!userPlan) {
+    console.log('DailyTrickTips: No userPlan provided yet, waiting...');
+    return null;
+  }
 
   const handleLearnMore = (tip: TrickTip) => {
     if (onTipClick) {
