@@ -38,14 +38,20 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
   
   const queryClient = useQueryClient();
   
-  const isPro = userPlan?.plan_name === 'pro' || userPlan?.is_subscribed;
-  
   console.log('DailyTrickTips userPlan:', userPlan);
-  console.log('DailyTrickTips isPro:', isPro);
+  
+  // Early return if userPlan hasn't loaded yet
+  if (!userPlan) {
+    console.log('DailyTrickTips: No userPlan provided yet, waiting...');
+    return null;
+  }
+  
+  const isPro = userPlan.plan_name === 'pro' || userPlan.is_subscribed;
+  console.log('DailyTrickTips isPro:', isPro, '(plan_name:', userPlan.plan_name, ', is_subscribed:', userPlan.is_subscribed, ')');
 
   // Use React Query for caching daily tips
   const { data: tips = [], isLoading: loading, error } = useQuery({
-    queryKey: ['daily-tips'],
+    queryKey: ['daily-tips', isPro],
     queryFn: async () => {
       if (!isPro) {
         console.log('Not pro user, skipping daily tips');
@@ -71,7 +77,7 @@ export const DailyTrickTips = ({ userPlan, onTipClick }: DailyTrickTipsProps) =>
       console.log('No tips returned or unsuccessful response');
       return [];
     },
-    enabled: isPro,
+    enabled: !!userPlan && isPro,
     staleTime: 1000 * 60 * 60, // Cache for 1 hour
     gcTime: 1000 * 60 * 60 * 2, // Keep in cache for 2 hours
   });
