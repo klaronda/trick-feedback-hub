@@ -400,20 +400,18 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
                       {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
                         <div key={monthYear}>
                           <h3 className="text-sm font-normal text-gray-700 mb-2">{monthYear}</h3>
-                           <ScrollArea className="h-[400px]">
-                             <div className="space-y-2">
-                               {tips.map((tip) => (
-                                 <SavedTipCard
-                                   key={tip.id}
-                                   tip={tip}
-                                   onDelete={handleDeleteTipClick}
-                                   onTogglePin={togglePin}
-                                   onExpandClick={handleExpandTrickTip}
-                                   showPinIcon={true}
-                                 />
-                               ))}
-                            </div>
-                          </ScrollArea>
+                           <div className="space-y-2">
+                             {tips.map((tip) => (
+                               <SavedTipCard
+                                 key={tip.id}
+                                 tip={tip}
+                                 onDelete={handleDeleteTipClick}
+                                 onTogglePin={togglePin}
+                                 onExpandClick={handleExpandTrickTip}
+                                 showPinIcon={true}
+                               />
+                             ))}
+                           </div>
                         </div>
                       ))}
                     </div>
