@@ -12,45 +12,18 @@ export const TopWeeklyTricks = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTopTricks();
+    // Using mock data by default since no video uploads yet
+    const mockTricks = [
+      { trick_name: "Ollie", count: 12 },
+      { trick_name: "Kickflip", count: 9 },
+      { trick_name: "Shuvit", count: 7 },
+      { trick_name: "Frontside 180", count: 5 },
+      { trick_name: "Heelflip", count: 3 }
+    ];
+    
+    setTopTricks(mockTricks);
+    setLoading(false);
   }, []);
-
-  const fetchTopTricks = async () => {
-    try {
-      const { data, error } = await supabase.rpc('get_top_tricks_last_7_days', {
-        limit_count: 5
-      });
-
-      if (error) throw error;
-
-      const topFiveTricks: TrickData[] = (data ?? []).map((row: any) => ({
-        trick_name: row.trick_name,
-        count: row.attempt_count
-      }));
-      // Fill with mock data if not enough real data
-      const mockTricks = [
-        { trick_name: "Ollie", count: 12 },
-        { trick_name: "Kickflip", count: 9 },
-        { trick_name: "Shuvit", count: 7 },
-        { trick_name: "Frontside 180", count: 5 },
-        { trick_name: "Heelflip", count: 3 }
-      ];
-
-      setTopTricks(topFiveTricks.length > 0 ? topFiveTricks : mockTricks);
-    } catch (error) {
-      console.error('Error fetching top tricks:', error);
-      // Use mock data on error
-      setTopTricks([
-        { trick_name: "Ollie", count: 12 },
-        { trick_name: "Kickflip", count: 9 },
-        { trick_name: "Shuvit", count: 7 },
-        { trick_name: "Frontside 180", count: 5 },
-        { trick_name: "Heelflip", count: 3 }
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
