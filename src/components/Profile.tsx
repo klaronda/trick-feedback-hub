@@ -359,7 +359,7 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
         <div className="space-y-3">
             <h2 className="text-lg font-normal text-gray-900">Saved Tips</h2>
             <Card className="bg-white border-gray-200">
-              <CardContent className="pt-6">
+              <CardContent className="p-4">
                 {tipsLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3, 4, 5].map((i) => (
@@ -399,30 +399,19 @@ export const Profile = ({ user, userProfile, userPlan, onUpgrade, onSignOut, onP
                     <div className="space-y-4">
                       {Object.entries(tipsByMonth).map(([monthYear, tips]) => (
                         <div key={monthYear}>
-                          <h3 className="text-sm font-normal text-gray-700 mb-3">{monthYear}</h3>
-                           <ScrollArea className="h-[400px]">
+                          <h3 className="text-sm font-normal text-gray-700 mb-2">{monthYear}</h3>
+                           <ScrollArea className="h-[400px] pr-4">
                              <div className="space-y-2">
-                               {tips.slice(0, 6).map((tip, index) => (
-                                 <div
+                               {tips.map((tip) => (
+                                 <SavedTipCard
                                    key={tip.id}
-                                   className={index === 5 ? "opacity-50" : ""}
-                                 >
-                                   <SavedTipCard
-                                     tip={tip}
-                                     onDelete={handleDeleteTipClick}
-                                     onTogglePin={togglePin}
-                                     onExpandClick={handleExpandTrickTip}
-                                     showPinIcon={true}
-                                   />
-                                 </div>
+                                   tip={tip}
+                                   onDelete={handleDeleteTipClick}
+                                   onTogglePin={togglePin}
+                                   onExpandClick={handleExpandTrickTip}
+                                   showPinIcon={true}
+                                 />
                                ))}
-                              {tips.length > 6 && (
-                                <div className="text-center py-2">
-                                  <p className="text-sm text-gray-500">
-                                    +{tips.length - 6} more tips...
-                                  </p>
-                                </div>
-                              )}
                             </div>
                           </ScrollArea>
                         </div>
